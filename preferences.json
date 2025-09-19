@@ -1,0 +1,118 @@
+{
+    "preferredfirstword": {
+        "Mastering": 10,
+        "Exploring": 0.15000000000000002,
+        "Unveiling": 0.2,
+        "Discovering": -0.25,
+        "Creating": 0.05000000000000002,
+        "Transforming": -0.30000000000000004,
+        "Understanding": 0,
+        "Navigating": 0,
+        "Building": -0.2,
+        "Enhancing": 0.25
+    },
+    "preferredsecondword": {
+        "Digital Marketing Strategies": -0.1,
+        "The Human Brain": 0.05,
+        "Artificial Intelligence": -0.2,
+        "Culinary Arts": 0,
+        "Personal Finance": -0.1,
+        "Travel Destinations": 0.4,
+        "Fitness Routines": 0.05000000000000002,
+        "Photography Techniques": 0.25,
+        "Home Decor Ideas": -0.35,
+        "Mindfulness Practices": -0.1
+    },
+    "preferredthirdword": {
+        "for Beginners": 0.30000000000000004,
+        "on a Budget": 0.05000000000000002,
+        "in 10 Minutes": -0.1,
+        "You Need to Know": -0.04999999999999999,
+        "Like a Pro": 0,
+        "Step-by-Step": 0.15000000000000002,
+        "for this year": 0,
+        "That Will Change Your Life": -0.15000000000000002,
+        "Revealed": -0.1,
+        "Made Easy": -0.2
+    },
+    "preferredcategorie": {
+        "Education": -0.15000000000000002,
+        "Travel": 0.15000000000000002,
+        "Entertainment": 0.15000000000000002,
+        "DIY & How-To": -0.050000000000000044,
+        "Business & Finance": -0.1,
+        "Science": 0,
+        "Technology": -0.1,
+        "Food & Cooking": 0,
+        "Health & Fitness": 0,
+        "Motivation & Inspiration": 0
+    },
+    "preferredduration": {
+        "1": 0,
+        "2": 0,
+        "3": 0,
+        "4": 0.4,
+        "5": -0.2,
+        "6": -0.1,
+        "7": 0,
+        "8": 0,
+        "9": 0,
+        "10": 0,
+        "11": -0.15000000000000002,
+        "12": 0.15000000000000002,
+        "13": -0.1,
+        "14": -0.2,
+        "15": 0,
+        "16": 0.05,
+        "17": 0.05,
+        "18": 0,
+        "19": 0,
+        "20": 0
+    },
+    "preferredviews": {
+        "0-10k": 0,
+        "11k-100k": -0.1,
+        "101k-500k": -0.15000000000000002,
+        "501k-1M": 0.15000000000000002
+    },
+    "preferredlikes": {
+        "0-10k": -0.05,
+        "11k-100k": -0.2,
+        "101k-500k": 0.15000000000000002,
+        "501k-1M": 0
+    },
+    "preferreddislikes": {
+        "0-10k": -0.05,
+        "11k-100k": -0.2,
+        "101k-500k": -0.15000000000000005,
+        "501k-1M": 0.30000000000000004
+    },
+    "preferrednbcomments": {
+        "0-2000": -0.05,
+        "2001-5000": -0.30000000000000004,
+        "5001-10000": -0.050000000000000044,
+        "10001-15k": 0.30000000000000004
+    },
+    "preferredyear": {
+        "2005": 0.25,
+        "2006": 0.25,
+        "2007": 0,
+        "2008": -0.1,
+        "2009": 0,
+        "2010": 0,
+        "2011": 0,
+        "2012": 0.15000000000000002,
+        "2013": -0.1,
+        "2014": 0,
+        "2015": -0.1,
+        "2016": 0.15000000000000002,
+        "2017": -0.1,
+        "2018": -0.1,
+        "2019": -0.1,
+        "2020": 0,
+        "2021": -0.05,
+        "2022": 0,
+        "2023": -0.25,
+        "2024": 0
+    }
+}

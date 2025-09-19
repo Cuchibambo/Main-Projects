@@ -1,0 +1,24 @@
+#title {
+    width: 80%;
+    margin: 0 auto;
+    padding: 20px;
+    background-color: #4c4b57;
+    border: 3px solid #656777;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    text-align: center;
+    color: rgb(219, 215, 255);
+    margin-bottom: 30px;
+}
+
+#main {
+    width: 80%;
+    margin: 0 auto;
+    padding: 20px;
+    background-color: #4c4b57;
+    border: 3px solid #656777;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    text-align: center;
+    color: rgb(219, 215, 255);
+}
