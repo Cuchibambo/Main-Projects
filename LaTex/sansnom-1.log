@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.27 (MiKTeX 25.4) (preloaded format=pdflatex 2025.9.12)  21 SEP 2025 18:09
+This is pdfTeX, Version 3.141592653-2.6-1.40.27 (MiKTeX 25.4) (preloaded format=pdflatex 2025.9.12)  28 SEP 2025 11:03
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -243,7 +243,7 @@ Here is how much of TeX's memory you used:
  32060 multiletter control sequences out of 15000+600000
  629973 words of font info for 50 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
- 57i,9n,65p,228b,385s stack positions out of 10000i,1000n,20000p,200000b,200000s
+ 57i,8n,65p,228b,385s stack positions out of 10000i,1000n,20000p,200000b,200000s
  <C:\Users\maubi\AppData\Local\MiKTeX\fonts/pk/ljfour/jknappen/ec/dpi600\ecti
 1000.pk> <C:\Users\maubi\AppData\Local\MiKTeX\fonts/pk/ljfour/jknappen/ec/dpi60
 0\ecrm1000.pk><C:/Users/maubi/AppData/Local/Programs/MiKTeX/fonts/type1/public/
@@ -256,7 +256,7 @@ Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmsy10.pfb><C:/Users/maubi
 /AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmsy7.pfb><C:/Use
 rs/maubi/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/symbols/msbm
 10.pfb>
-Output written on sansnom-1.pdf (1 page, 91631 bytes).
+Output written on sansnom-1.pdf (1 page, 90180 bytes).
 PDF statistics:
  88 PDF objects out of 1000 (max. 8388607)
  0 named destinations out of 1000 (max. 500000)
