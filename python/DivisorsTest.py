@@ -1,5 +1,6 @@
 import math
-import matplotlib as plt
+import matplotlib.pyplot as plt
+import numpy as np
 # Diviseurs d'un nombre
 # n = (5^4)-1
 # for i in range(n):
@@ -39,6 +40,16 @@ import matplotlib as plt
 
 # print(deriv_kxn(1,0.5))
 
+axx = np.linspace(-10,10,100)
+# d = 2
+k=2
+n=4
+
+def f(x):
+    u=k*(x**n)
+    # v=5*(x**2)
+    return u
+
 def u(d,k,x,n):
     n_factorial = math.factorial(n)
     n_d_factorial = math.factorial(n-d)
@@ -49,8 +60,16 @@ def u(d,k,x,n):
     return ans
 
 def fullsum(d,x):
+    sum = 0
     for i in range(2**(d-1)):
-        sum = 0
-        sum += u(d-i,)
+        sum += u(d-i,2,x,4)*u(i,5,x,2)+u(i,2,x,4)*u(d-i,5,x,2)
+    return sum
 
-print(fullsum(2,0))
+axy0 = f(axx)
+axy = u(1,k,axx,n)
+axy2 = u(2,k,axx,n)
+plt.plot(axx,axy,'r--')
+plt.plot(axx,axy2,'b-')
+plt.plot(axx,axy0,'g-')
+plt.grid(True)
+plt.show()
