@@ -1,6 +1,8 @@
 import math
 import matplotlib.pyplot as plt
 import numpy as np
+import random
+
 # Diviseurs d'un nombre
 # n = (5^4)-1
 # for i in range(n):
@@ -28,48 +30,78 @@ import numpy as np
 #             a = test
 #             return (a,b)
     
-# print(findab(4,64,434,76,65))
+# print(findab(4,64,434,76))
 
+# Suite recurence Template
 # u = 1
 # for i in range(99999):
 #     u = (1/3)*(u)+i-2
 #     print(i+1,u)
 
-# def deriv_kxn(k,n):
-#     return k*n,'x',(n-1)
+# Derivees polynomiales
+manual = True
+x_min, x_max = -10, 10
+y_min, y_max = -10, 10
 
-# print(deriv_kxn(1,0.5))
-
-axx = np.linspace(-10,10,100)
+axx = np.linspace(x_min,x_max,5*(abs(x_min)+abs(x_max))+1)
 # d = 2
-k=2
-n=4
+k=10*random.random()
+n=random.randint(1,5)
+k1=10*random.random()
+n1=random.randint(1,5)
+k2=10*random.random()
+n2=random.randint(1,5)
 
 def f(x):
-    u=k*(x**n)
+    u=k*(x**n)+k1*(x**n1)+k2*(x**n2)
     # v=5*(x**2)
     return u
 
+# def f1(x):
+#     u=k*n*(x**(n-1))
+#     return u
+
+# def f2(x):
+#     u=k*n*(n-1)*(x**(n-2))
+#     return u
+
 def u(d,k,x,n):
-    n_factorial = math.factorial(n)
-    n_d_factorial = math.factorial(n-d)
-    k = (k*n_factorial)/(n_d_factorial)
-    n = n-d
-    ans = x**n
-    ans = ans*k
+    # handle cases where n and n-d are non-negative integers; if derivative order is larger than power, return zero
+    n_minus_d = n - d
+    # if the resulting power is negative, the (integer) derivative is zero for polynomial terms
+    if n_minus_d < 0:
+        return np.zeros_like(x)
+    # use integer factorials (cast to int for safety)
+    n_int = int(n)
+    n_minus_d_int = int(n_minus_d)
+    n_factorial = math.factorial(n_int)
+    n_d_factorial = math.factorial(n_minus_d_int)
+    coeff = (k * n_factorial) / (n_d_factorial)
+    ans = (x ** n_minus_d) * coeff
     return ans
 
-def fullsum(d,x):
-    sum = 0
-    for i in range(2**(d-1)):
-        sum += u(d-i,2,x,4)*u(i,5,x,2)+u(i,2,x,4)*u(d-i,5,x,2)
-    return sum
+# def fullsum(d,x):
+#     sum = 0
+#     for i in range(2**(d-1)):
+#         sum += u(d-i,2,x,4)*u(i,5,x,2)+u(i,2,x,4)*u(d-i,5,x,2)
+#     return sum
 
 axy0 = f(axx)
-axy = u(1,k,axx,n)
-axy2 = u(2,k,axx,n)
-plt.plot(axx,axy,'r--')
-plt.plot(axx,axy2,'b-')
+axy1 = u(1,k,axx,n)+u(1,k1,axx,n1)+u(1,k2,axx,n2)
+axy2 = u(2,k,axx,n)+u(2,k1,axx,n1)+u(2,k2,axx,n2)
 plt.plot(axx,axy0,'g-')
+plt.plot(axx,axy1,'r-')
+plt.plot(axx,axy2,'b-')
+
+print("Function: {}x^{} + {}x^{} + {}x^{}".format(round(k,2),n,round(k1,2),n1,round(k2,2),n2))
+
+if manual:
+    plt.xlim(x_min, x_max)
+    plt.ylim(y_min, y_max)
+    # set ticks (adjust count as needed)
+    plt.xticks(np.linspace(x_min, x_max, 11))
+    plt.yticks(np.linspace(y_min, y_max, 11))
+else:
+    plt.autoscale()
 plt.grid(True)
 plt.show()
