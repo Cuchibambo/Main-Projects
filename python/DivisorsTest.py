@@ -87,7 +87,7 @@ def u(d,k,x,n):
 #     return sum
 
 axy0 = f(axx)
-axy1 = u(1,k,axx,n)+u(1,k1,axx,n1)+u(1,k2,axx,n2)
+axy1 = u(97,k,axx,100)+u(97,k1,axx,99)+u(97,k2,axx,98)
 axy2 = u(2,k,axx,n)+u(2,k1,axx,n1)+u(2,k2,axx,n2)
 plt.plot(axx,axy0,'g-')
 plt.plot(axx,axy1,'r-')
@@ -99,8 +99,8 @@ if manual:
     plt.xlim(x_min, x_max)
     plt.ylim(y_min, y_max)
     # set ticks (adjust count as needed)
-    plt.xticks(np.linspace(x_min, x_max, 11))
-    plt.yticks(np.linspace(y_min, y_max, 11))
+    # plt.xticks(np.linspace(x_min, x_max, 11))
+    # plt.yticks(np.linspace(y_min, y_max, 11))
 else:
     plt.autoscale()
 plt.grid(True)
