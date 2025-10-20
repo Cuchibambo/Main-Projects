@@ -1,0 +1,43 @@
+{
+    "preferredfirstword": {
+        "Apprendre": -0.6666666666666666,
+        "Explorer": 3.3306690738754696e-16,
+        "D\u00e9couvrir": -0.3333333333333333,
+        "Transform\u00e9": 0,
+        "Comprendre": 0,
+        "Entreprendre": -0.3333333333333333,
+        "Construire": -1.0,
+        "Am\u00e9liorer": -1.0
+    },
+    "preferredsecondword": {
+        "Le v\u00e9lo": -0.3333333333333333,
+        "La natation": -0.6666666666666666,
+        "Les jeux vid\u00e9o": 1.1102230246251565e-16,
+        "La musique": -0.6666666666666666,
+        "Le dessin": 10.3333333333333334,
+        "La photographie": -0.6666666666666666,
+        "Le cin\u00e9ma": -0.3333333333333333,
+        "La cuisine": -1.0
+    },
+    "preferredthirdword": {
+        "pour les d\u00e9butants": -0.3333333333333333,
+        "\u00e0 petit budget": -0.6666666666666666,
+        "en 10 minutes": 0,
+        "que vous devez savoir": 0,
+        "comme un pro": -1.0,
+        "\u00e9tape par \u00e9tape": -0.6666666666666666,
+        "cette ann\u00e9e": -0.3333333333333333,
+        "qui va changer votre vie": -0.3333333333333333,
+        "r\u00e9v\u00e9l\u00e9": 0.666666666666667,
+        "facilement": -0.6666666666666666
+    },
+    "preferredcategorie": {
+        "\u00c9ducation": -0.6666666666666666,
+        "Sant\u00e9 et fitness": -0.6666666666666666,
+        "Divertissement": -0.333333333333333,
+        "Bricolage et tutoriels": -1.0,
+        "Affaires et finances": -0.3333333333333333,
+        "Motivation et inspiration": 0,
+        "Nourriture et cuisine": -0.3333333333333333
+    }
+}
