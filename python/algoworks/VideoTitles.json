@@ -6,31 +6,26 @@
         "Transformé": "Éducation",
         "Comprendre" : "Éducation",
         "Entreprendre" : "Affaires et finances",
-        "Construire" : "Bricolage et tutoriels",
-        "Améliorer": "Bricolage et tutoriels"
+        "Construire" : "Bricolage et tutoriels"
     },
 
     "secondwordcategories" : {
-        "Le vélo": "Santé et fitness",
-        "La natation": "Santé et fitness",
-        "Les jeux vidéo": "Divertissement",
-        "La musique": "Divertissement",
-        "Le dessin": "Divertissement",
-        "La photographie": "Divertissement",
-        "Le cinéma": "Divertissement",
-        "La cuisine": "Nourriture et cuisine"
+        "le vélo": "Santé et fitness",
+        "la natation": "Santé et fitness",
+        "les jeux vidéo": "Divertissement",
+        "la musique": "Divertissement",
+        "le dessin": "Divertissement",
+        "la photographie": "Divertissement",
+        "le cinéma": "Divertissement",
+        "la cuisine": "Nourriture et cuisine"
     },
 
     "thirdwordcategories" : {
-        "pour les débutants": "Éducation",
-        "à petit budget": "Affaires et finances",
         "en 10 minutes": "Bricolage et tutoriels",
-        "que vous devez savoir": "Éducation",
         "comme un pro": "Bricolage et tutoriels",
         "étape par étape": "Bricolage et tutoriels",
         "cette année": "Éducation",
         "qui va changer votre vie": "Motivation et inspiration",
-        "révélé": "Éducation",
         "facilement": "Bricolage et tutoriels"
     }
 }

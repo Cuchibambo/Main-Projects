@@ -144,7 +144,7 @@ def FindBestVideo():
         Secondword = data.get("preferredfirstword").get(candidateVideos[i].titlefirstword)
         Thirdword = data.get("preferredfirstword").get(candidateVideos[i].titlefirstword)
         Category = data.get("preferredfirstword").get(candidateVideos[i].titlefirstword)
-        candidates[i] = (candidateVideos[i], Firstword+Secondword+Thirdword+Category)
+        candidates[i] = (candidateVideos[i], (Firstword*0.5)+(Secondword*1)+(Thirdword*0.3)+(Category*0.2))
     
     # Sort Vids by score
     sortedcandidates = sorted(candidates, key=lambda x: x[1], reverse=True)

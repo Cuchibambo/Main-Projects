@@ -1,43 +1,38 @@
 {
     "preferredfirstword": {
-        "Se faire chier": 7.666666666666667,
-        "Explorer": -0.6666666666666666,
-        "D\u00e9couvrir": 1.1102230246251565e-16,
-        "Transform\u00e9": -0.6666666666666666,
-        "Comprendre": -0.6666666666666666,
-        "Entreprendre": 1.1102230246251565e-16,
-        "Construire": -0.3333333333333333,
-        "Am\u00e9liorer": -0.6666666666666665
+        "Apprendre": 0.6666666666666672,
+        "Explorer": -0.3333333333333333,
+        "D\u00e9couvrir": -0.3333333333333333,
+        "Transform\u00e9": -0.3333333333333333,
+        "Comprendre": 1.6666666666666665,
+        "Entreprendre": -0.3333333333333333,
+        "Construire": -0.3333333333333333
     },
     "preferredsecondword": {
-        "Le v\u00e9lo": 1.0,
-        "La natation": 1.3333333333333335,
-        "Les jeux vid\u00e9o": -1.6666666666666665,
-        "La musique": 1.6666666666666667,
-        "Le dessin": 1.1102230246251565e-16,
-        "La photographie": 0.33333333333333337,
-        "Le cin\u00e9ma": 0.3333333333333334,
-        "La cuisine": 1.6666666666666667
+        "le v\u00e9lo": -1.9999999999999998,
+        "la natation": -0.3333333333333333,
+        "les jeux vid\u00e9o": 2.666666666666667,
+        "la musique": 2.6666666666666665,
+        "le dessin": 0,
+        "la photographie": -1.6666666666666665,
+        "le cin\u00e9ma": -0.6666666666666665,
+        "la cuisine": 0
     },
     "preferredthirdword": {
-        "pour les d\u00e9butants": -0.6666666666666666,
-        "\u00e0 petit budget": -1.0,
-        "en 10 minutes": 0.6666666666666667,
-        "que vous devez savoir": 0.0,
-        "comme un pro": 1.3333333333333335,
-        "\u00e9tape par \u00e9tape": 1.1102230246251565e-16,
-        "cette ann\u00e9e": 1.0000000000000002,
-        "qui va changer votre vie": 2.666666666666667,
-        "r\u00e9v\u00e9l\u00e9": -1.0,
-        "facilement": 1.6666666666666667
+        "en 10 minutes": 2,
+        "comme un pro": -0.6666666666666665,
+        "\u00e9tape par \u00e9tape": 0.6666666666666667,
+        "cette ann\u00e9e": 1.6653345369377348e-16,
+        "qui va changer votre vie": -0.9999999999999998,
+        "facilement": -0.3333333333333332
     },
     "preferredcategorie": {
-        "\u00c9ducation": 4.333333333333335,
-        "Divertissement": -1.6666666666666663,
-        "Affaires et finances": -1.3333333333333333,
-        "Bricolage et tutoriels": 2.333333333333333,
-        "Sant\u00e9 et fitness": 1.1102230246251565e-16,
+        "\u00c9ducation": -0.6666666666666665,
+        "Divertissement": 3.333333333333333,
+        "Affaires et finances": 0,
+        "Bricolage et tutoriels": -0.6666666666666666,
+        "Sant\u00e9 et fitness": -1.0,
         "Nourriture et cuisine": 0,
-        "Motivation et inspiration": 1
+        "Motivation et inspiration": -0.3333333333333333
     }
 }
