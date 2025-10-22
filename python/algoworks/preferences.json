@@ -1,38 +1,38 @@
 {
     "preferredfirstword": {
-        "Apprendre": 0.6666666666666672,
-        "Explorer": -0.3333333333333333,
-        "D\u00e9couvrir": -0.3333333333333333,
-        "Transform\u00e9": -0.3333333333333333,
-        "Comprendre": 1.6666666666666665,
-        "Entreprendre": -0.3333333333333333,
-        "Construire": -0.3333333333333333
+        "Apprendre": 0,
+        "Explorer": 0,
+        "D\u00e9couvrir": 0,
+        "Transform\u00e9": 0,
+        "Comprendre": 0,
+        "Entreprendre": 0,
+        "Construire": 0
     },
     "preferredsecondword": {
-        "le v\u00e9lo": -1.9999999999999998,
-        "la natation": -0.3333333333333333,
-        "les jeux vid\u00e9o": 2.666666666666667,
-        "la musique": 2.6666666666666665,
+        "le v\u00e9lo": 0,
+        "la natation": 0,
+        "les jeux vid\u00e9o": 0,
+        "la musique": 0,
         "le dessin": 0,
-        "la photographie": -1.6666666666666665,
-        "le cin\u00e9ma": -0.6666666666666665,
+        "la photographie": 0,
+        "le cin\u00e9ma": 0,
         "la cuisine": 0
     },
     "preferredthirdword": {
-        "en 10 minutes": 2,
-        "comme un pro": -0.6666666666666665,
-        "\u00e9tape par \u00e9tape": 0.6666666666666667,
-        "cette ann\u00e9e": 1.6653345369377348e-16,
-        "qui va changer votre vie": -0.9999999999999998,
-        "facilement": -0.3333333333333332
+        "en 10 minutes": 0,
+        "comme un pro": 0,
+        "\u00e9tape par \u00e9tape": 0,
+        "cette ann\u00e9e": 0,
+        "qui va changer votre vie": 0,
+        "facilement": 0
     },
     "preferredcategorie": {
-        "\u00c9ducation": -0.6666666666666665,
-        "Divertissement": 3.333333333333333,
+        "\u00c9ducation": 0,
+        "Divertissement": 0,
         "Affaires et finances": 0,
-        "Bricolage et tutoriels": -0.6666666666666666,
-        "Sant\u00e9 et fitness": -1.0,
+        "Bricolage et tutoriels": 0,
+        "Sant\u00e9 et fitness": 0,
         "Nourriture et cuisine": 0,
-        "Motivation et inspiration": -0.3333333333333333
+        "Motivation et inspiration": 0
     }
 }
