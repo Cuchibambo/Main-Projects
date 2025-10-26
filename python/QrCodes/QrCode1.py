@@ -21,7 +21,7 @@ qr.add_data('tel:0033768332252') # tel:[Phone Number]
 # qr.add_data('BEGIN:VCARD\nVERSION:3.0\nN:Last-name;First-name\nORG:CompanyName\nTITLE:JobTitle\nADR:;;123 Sesame St;SomeCity;CA;12345;USA\nTEL;WORK;VOICE:1234567890\nTEL;CELL:Mobile\nEMAIL;WORK;INTERNET:foo@email.com\nURL:http://website.com\nEND:VCARD')
 qr.make(fit=True)
 save_path = os.path.join(r"c:\Users\maubi\Bureau\Programation\python\QrCodes", name)
-img = qr.make_image(fill_color="#67636B", back_color="#1F1F1F")
+img = qr.make_image(fill_color="#DFDFDF", back_color="#1F1F1F")
 img.save(save_path)
 
 # dbc951b4ab01646888b2a91da73a94dd920054c2f27c8cfeacae3eba298e71b0

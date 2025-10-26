@@ -1,0 +1,20 @@
+{
+  "manifest_version": 2,
+  "name": "LogelDownArrow",
+  "version": "1.0",
+
+  "description": "Change le bouton qui va en haut à un bouton qui va en bas",
+  "permissions": ["scripting", "activeTab"],
+
+  "icons": {
+    "48": "icons/down-48.png"
+  },
+
+  "content_scripts": [
+    {
+      "matches": ["*://philippelogel.free.fr/2026/*"],
+      "js": ["down.js"],
+      "run_at": "document_end"
+    }
+  ]
+}
