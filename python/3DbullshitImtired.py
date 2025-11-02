@@ -215,63 +215,82 @@ def DefineMesh():
     #     (2,0,3),
     # ]
     # # Octogone
-    MAGICNUMBER = (np.sqrt(2)/2)*50
+    # MAGICNUMBER = (np.sqrt(2)/2)*50
+    # Points = np.array([
+    #     (200,200,25), # close left
+    #     (200+MAGICNUMBER,150+MAGICNUMBER,25), # close right
+    #     (250,150,25), # kinda far right
+    #     (200+MAGICNUMBER,150-MAGICNUMBER,25), # further right
+    #     (200,100,25), # furthest right
+    #     (200-MAGICNUMBER,150-MAGICNUMBER,25), # furthest left
+    #     (150,150,25), # further left
+    #     (200-MAGICNUMBER,150+MAGICNUMBER,25), # kinda far left
+    #     (200,150,25), # Center top
+    #     # Behind
+    #     (200,200,50), # close left
+    #     (200+MAGICNUMBER,150+MAGICNUMBER,50), # close right
+    #     (250,150,50), # kinda far right
+    #     (200+MAGICNUMBER,150-MAGICNUMBER,50), # further right
+    #     (200,100,50), # furthest right
+    #     (200-MAGICNUMBER,150-MAGICNUMBER,50), # furthest left
+    #     (150,150,50), # further left
+    #     (200-MAGICNUMBER,150+MAGICNUMBER,50), # kinda far left
+    #     (200,150,50) # Center Bottom
+    # ])
+    # Faces = [
+    #     (0,1,8),
+    #     (1,2,8),
+    #     (2,3,8),
+    #     (3,4,8),
+    #     (4,5,8),
+    #     (5,6,8),
+    #     (6,7,8),
+    #     (7,0,8),
+    #     # Behind
+    #     (10,9,17),
+    #     (11,10,17),
+    #     (12,11,17),
+    #     (13,12,17),
+    #     (14,13,17),
+    #     (15,14,17),
+    #     (16,15,17),
+    #     (9,16,17),
+    #     # Sides
+    #     (9,10,0),
+    #     (10,1,0),
+    #     (10,11,1),
+    #     (11,2,1),
+    #     (11,12,2),
+    #     (12,3,2),
+    #     (12,13,3),
+    #     (13,4,3),
+    #     (13,14,4),
+    #     (14,5,4),
+    #     (14,15,5),
+    #     (15,6,5),
+    #     (15,16,6),
+    #     (16,7,6),
+    #     (16,9,7),
+    #     (9,0,7),
+    # ]
     Points = np.array([
-        (200,200,25), # close left
-        (200+MAGICNUMBER,150+MAGICNUMBER,25), # close right
-        (250,150,25), # kinda far right
-        (200+MAGICNUMBER,150-MAGICNUMBER,25), # further right
-        (200,100,25), # furthest right
-        (200-MAGICNUMBER,150-MAGICNUMBER,25), # furthest left
-        (150,150,25), # further left
-        (200-MAGICNUMBER,150+MAGICNUMBER,25), # kinda far left
-        (200,150,25), # Center top
-        # Behind
-        (200,200,50), # close left
-        (200+MAGICNUMBER,150+MAGICNUMBER,50), # close right
-        (250,150,50), # kinda far right
-        (200+MAGICNUMBER,150-MAGICNUMBER,50), # further right
-        (200,100,50), # furthest right
-        (200-MAGICNUMBER,150-MAGICNUMBER,50), # furthest left
-        (150,150,50), # further left
-        (200-MAGICNUMBER,150+MAGICNUMBER,50), # kinda far left
-        (200,150,50) # Center Bottom
+        (150,250,100),
+        (250,250,100),
+        (150,250,300),
+        (250,250,300),
+        (200,350,200),
+        (200,150,200)
     ])
     Faces = [
-        (0,1,8),
-        (1,2,8),
-        (2,3,8),
-        (3,4,8),
-        (4,5,8),
-        (5,6,8),
-        (6,7,8),
-        (7,0,8),
-        # Behind
-        (10,9,17),
-        (11,10,17),
-        (12,11,17),
-        (13,12,17),
-        (14,13,17),
-        (15,14,17),
-        (16,15,17),
-        (9,16,17),
-        # Sides
-        (9,10,0),
-        (10,1,0),
-        (10,11,1),
-        (11,2,1),
-        (11,12,2),
-        (12,3,2),
-        (12,13,3),
-        (13,4,3),
-        (13,14,4),
-        (14,5,4),
-        (14,15,5),
-        (15,6,5),
-        (15,16,6),
-        (16,7,6),
-        (16,9,7),
-        (9,0,7),
+        (0,1,4),
+        (1,3,4),
+        (3,2,4),
+        (2,0,4),
+        # Under
+        (0,5,1),
+        (1,5,3),
+        (3,5,2),
+        (2,5,0),
     ]
 
 def middleOfPoints(Points):
