@@ -39,10 +39,17 @@ def Normalize(pos,target):
 def ChooseRandomColor():
     return (math.floor(random.random()*255),math.floor(random.random()*255),math.floor(random.random()*255))
 
-def ConvertCoords(coords):
+def Good2BadCoords(coords):
     newcords = (
         ((coords[0]+1)*width)//2,
         ((1-coords[1])*height)//2
+    )
+    return newcords
+
+def Bad2GoodCoords(coords):
+    newcords = (
+        ((coords[0]*2)//width)-1,
+        ((coords[0]*-2)//width)+1
     )
     return newcords
 
@@ -80,7 +87,7 @@ def main():
             Points[i+1].pos = Normalize(Points[i].pos,Points[i+1].pos)
 
         for point in Points:
-            pygame.draw.circle(Surface, point.color, ConvertCoords(point.pos),8)
+            pygame.draw.circle(Surface, point.color, Good2BadCoords(point.pos),8)
         pygame.display.flip()
         
 if __name__ == '__main__':
