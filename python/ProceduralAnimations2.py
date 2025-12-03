@@ -14,6 +14,11 @@ class Point():
         except:
             return f'Point {self.num} on ({self.pos[0]},{self.pos[1]}), follows {self.folloWho.num}'
 
+class Food():
+    def __init__(self, pos, color):
+        self.pos = pos
+        self.color = color
+
 def GetVectorMagnitude(vec):
     return math.sqrt((vec[0]**2)+(vec[1]**2))
 
@@ -53,9 +58,16 @@ def AddAPoint():
     color = RandomColor()
     Points.append(Point(folloWho,pos,num,color))
 
-nbPoints = 10
+def AddFood(width,height):
+    Foods.append(Food([random.randint(0,width),random.randint(0,height)], (255,0,0)))
+
+MaxFood = 10
+Foods = []
+nbPoints = 2
+PointRadius = 8
 Closeness = 30
 grow = False
+FoodSpawn = True
 TimeBetweenPointsSpawn = 1000*5
 Points = [Point(None, [0,0], 0, RandomColor())]
 for i in range(nbPoints-1):
@@ -64,8 +76,11 @@ for i in range(nbPoints-1):
 def main():
     pygame.init()
     width, height = 1920, 1080
-    APPEAR = pygame.USEREVENT+1
-    pygame.time.set_timer(APPEAR, TimeBetweenPointsSpawn)
+    GROW = pygame.USEREVENT+1
+    pygame.time.set_timer(GROW, TimeBetweenPointsSpawn)
+    if FoodSpawn:
+        while len(Foods) < MaxFood:
+            AddFood(width,height)
     Surface = pygame.display.set_mode((width,height))
     backgroundColor = (50,50,50)
     pygame.draw.rect(Surface, backgroundColor, pygame.Rect(0, 0, width, height))
@@ -76,10 +91,9 @@ def main():
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 running = False
-            elif event.type == APPEAR:
+            elif event.type == GROW:
                 if grow:
                     AddAPoint()
-
 
         pygame.draw.rect(Surface, backgroundColor, pygame.Rect(0, 0, width, height))
 
@@ -87,9 +101,22 @@ def main():
         Points[0].pos = [mouse_pos[0], mouse_pos[1]]
         for i in range(len(Points)-1):
             Points[i+1].pos = GetNextPos(Points[i+1].folloWho.pos,Points[i+1].pos)
+            
+        for point in Points:
+            for food in Foods:
+                if (point.pos[0] <= food.pos[0]+PointRadius and
+                    point.pos[0] >= food.pos[0]-PointRadius and
+                    point.pos[1] <= food.pos[1]+PointRadius and
+                    point.pos[1] >= food.pos[1]-PointRadius):
+                    AddAPoint()
+                    Foods.remove(food)
+                    AddFood(width,height)
 
         for point in Points:
-            pygame.draw.circle(Surface, point.color, (point.pos[0],point.pos[1]), 8)
+            pygame.draw.circle(Surface, point.color, (point.pos[0],point.pos[1]), PointRadius)
+            
+        for food in Foods:
+            pygame.draw.circle(Surface, food.color, (food.pos[0],food.pos[1]), PointRadius)
 
         pygame.display.flip()
 
