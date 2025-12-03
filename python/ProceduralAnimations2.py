@@ -53,8 +53,9 @@ def AddAPoint():
     color = RandomColor()
     Points.append(Point(folloWho,pos,num,color))
 
-nbPoints = 2
+nbPoints = 10
 Closeness = 30
+grow = False
 TimeBetweenPointsSpawn = 1000*5
 Points = [Point(None, [0,0], 0, RandomColor())]
 for i in range(nbPoints-1):
@@ -76,7 +77,8 @@ def main():
             if event.type == pygame.QUIT:
                 running = False
             elif event.type == APPEAR:
-                AddAPoint()
+                if grow:
+                    AddAPoint()
 
 
         pygame.draw.rect(Surface, backgroundColor, pygame.Rect(0, 0, width, height))
