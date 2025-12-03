@@ -4,7 +4,8 @@ import numpy as np
 x_lim = (-100,100)
 
 x = np.linspace(x_lim[0],x_lim[1],500)
-y = ((x**2)-(3*x)+(2))*(np.e**x)
+# y = ((x**2)-(3*x)+(2))*(np.e**x)
+y = (np.exp(2*(x**3)+(x**2)-(7*x)+2))/(np.sqrt((x**2)+x+1))
 # y = np.sqrt((x**2)+(2*x)+5)
 
 def deriv(x,y):
@@ -25,6 +26,6 @@ ax.plot(x,y,'r-')
 ax.plot(x,y1,'b-')
 ax.plot(x,y2,'g-')
 ax.set_xlim(x_lim)
-ax.set_ylim(-3,5)
+# ax.set_ylim(-3,5)
 plt.grid(True)
 plt.show()
