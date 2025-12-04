@@ -51,29 +51,88 @@ def GetNextPos(center,previousPos):
         pos[1] + center[1]
     ]
 
-def AddAPoint():
+def AddAPoint(color):
     folloWho = Points[-1]
     pos = [0,0]
     num = len(Points)+1
-    color = RandomColor()
     Points.append(Point(folloWho,pos,num,color))
 
 def AddFood(width,height):
     Foods.append(Food([random.randint(0,width),random.randint(0,height)], (255,0,0)))
 
-MaxFood = 10
-Foods = []
-nbPoints = 2
+def Convert_HSV_to_RGB(color):
+    H = color[0]
+    S = color[1]
+    V = color[2]
+    # H in degrees
+    # S in percent
+    # V in percent
+    hR, hG, hB = 0, 0, 0
+    H = H%360
+    if H >= 0 and H < 60:
+        hR = 1
+        hG = H/60
+        hB = 0
+    elif H >= 60 and H < 120:
+        hR = (-H/60)+2
+        hG = 1
+        hB = 0
+    elif H >= 120 and H < 180:
+        hR = 0
+        hG = 1
+        hB = (H/60)-2
+    elif H >= 180 and H < 240:
+        hR = 0
+        hG = (-H/60)+4
+        hB = 1
+    elif H >= 240 and H < 300:
+        hR = (H/60)-4
+        hG = 0
+        hB = 1
+    elif H >= 300 and H < 360:
+        hR = 1
+        hG = 0
+        hB = (-H/60)+6
+        
+    R = hR+1-S
+    G = hG+1-S
+    B = hB+1-S
+    if R>1: R=1
+    if G>1: G=1
+    if B>1: B=1
+    R = R*V
+    G = G*V
+    B = B*V
+    print((int(R*255),int(G*255),int(B*255)))
+    return (int(R*255),int(G*255),int(B*255))
+        
+
+nbPoints = 100
 PointRadius = 8
 Closeness = 30
 grow = False
-FoodSpawn = True
+FoodSpawn = False
+MaxFood = 10
+Foods = []
 TimeBetweenPointsSpawn = 1000*5
-Points = [Point(None, [0,0], 0, RandomColor())]
-for i in range(nbPoints-1):
-    Points.append(Point(Points[i], [0,0], i+1, RandomColor()))
+ColorsRandom = True
+PointsPerRainbow = 100
+StartColor = [0,1,1] # HSV in degrees and ratios respectively
+CurrentColor = StartColor
+RandomBgColor = False
+
+if not ColorsRandom:
+    Points = [Point(None, [0,0], 0, RandomColor())]
+    for _ in range(nbPoints-1):
+        AddAPoint(RandomColor())
+else:
+    Points = [Point(None, [0,0], 0, Convert_HSV_to_RGB(StartColor))]
+    for i in range(nbPoints-1):
+        CurrentColor[0] += 360/(PointsPerRainbow-1)
+        AddAPoint(Convert_HSV_to_RGB(CurrentColor))
 
 def main():
+    global nbPoints, CurrentColor
     pygame.init()
     width, height = 1920, 1080
     GROW = pygame.USEREVENT+1
@@ -82,7 +141,10 @@ def main():
         while len(Foods) < MaxFood:
             AddFood(width,height)
     Surface = pygame.display.set_mode((width,height))
-    backgroundColor = (50,50,50)
+    if RandomBgColor:
+        backgroundColor = RandomColor()
+    else:
+       backgroundColor = (50,50,50) 
     pygame.draw.rect(Surface, backgroundColor, pygame.Rect(0, 0, width, height))
     pygame.display.flip()
 
@@ -93,8 +155,15 @@ def main():
                 running = False
             elif event.type == GROW:
                 if grow:
-                    AddAPoint()
-
+                    if ColorsRandom:
+                        nbPoints+=1
+                        CurrentColor[0] += 360/(PointsPerRainbow-1)
+                        AddAPoint(Convert_HSV_to_RGB(CurrentColor))
+                    else:
+                        nbPoints+=1
+                        AddAPoint(RandomColor())
+                        
+                        
         pygame.draw.rect(Surface, backgroundColor, pygame.Rect(0, 0, width, height))
 
         mouse_pos = pygame.mouse.get_pos()
@@ -108,12 +177,21 @@ def main():
                     point.pos[0] >= food.pos[0]-PointRadius and
                     point.pos[1] <= food.pos[1]+PointRadius and
                     point.pos[1] >= food.pos[1]-PointRadius):
-                    AddAPoint()
-                    Foods.remove(food)
-                    AddFood(width,height)
+                    if ColorsRandom:
+                        nbPoints+=1
+                        CurrentColor[0] += 360/(PointsPerRainbow-1)
+                        AddAPoint(Convert_HSV_to_RGB(CurrentColor))
+                        Foods.remove(food)
+                        AddFood(width,height)
+                    else:
+                        nbPoints+=1
+                        AddAPoint(RandomColor())
+                        Foods.remove(food)
+                        AddFood(width,height)
 
         for point in Points:
             pygame.draw.circle(Surface, point.color, (point.pos[0],point.pos[1]), PointRadius)
+        print(nbPoints)
             
         for food in Foods:
             pygame.draw.circle(Surface, food.color, (food.pos[0],food.pos[1]), PointRadius)
