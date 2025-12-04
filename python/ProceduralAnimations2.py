@@ -103,25 +103,24 @@ def Convert_HSV_to_RGB(color):
     R = R*V
     G = G*V
     B = B*V
-    print((int(R*255),int(G*255),int(B*255)))
     return (int(R*255),int(G*255),int(B*255))
         
 
-nbPoints = 100
+nbPoints = 30
 PointRadius = 8
 Closeness = 30
 grow = False
-FoodSpawn = False
-MaxFood = 10
-Foods = []
 TimeBetweenPointsSpawn = 1000*5
-ColorsRandom = True
-PointsPerRainbow = 100
+FoodSpawn = True
+MaxFood = 1
+Foods = []
+NotColorsRandom = True
+PointsPerRainbow = 30
 StartColor = [0,1,1] # HSV in degrees and ratios respectively
-CurrentColor = StartColor
 RandomBgColor = False
 
-if not ColorsRandom:
+CurrentColor = StartColor
+if not NotColorsRandom:
     Points = [Point(None, [0,0], 0, RandomColor())]
     for _ in range(nbPoints-1):
         AddAPoint(RandomColor())
@@ -155,7 +154,7 @@ def main():
                 running = False
             elif event.type == GROW:
                 if grow:
-                    if ColorsRandom:
+                    if NotColorsRandom:
                         nbPoints+=1
                         CurrentColor[0] += 360/(PointsPerRainbow-1)
                         AddAPoint(Convert_HSV_to_RGB(CurrentColor))
@@ -177,7 +176,7 @@ def main():
                     point.pos[0] >= food.pos[0]-PointRadius and
                     point.pos[1] <= food.pos[1]+PointRadius and
                     point.pos[1] >= food.pos[1]-PointRadius):
-                    if ColorsRandom:
+                    if NotColorsRandom:
                         nbPoints+=1
                         CurrentColor[0] += 360/(PointsPerRainbow-1)
                         AddAPoint(Convert_HSV_to_RGB(CurrentColor))
@@ -191,7 +190,6 @@ def main():
 
         for point in Points:
             pygame.draw.circle(Surface, point.color, (point.pos[0],point.pos[1]), PointRadius)
-        print(nbPoints)
             
         for food in Foods:
             pygame.draw.circle(Surface, food.color, (food.pos[0],food.pos[1]), PointRadius)
