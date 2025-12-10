@@ -1,7 +1,5 @@
 import matplotlib.pyplot as plt
 
-
-
 """Perlin noise implementation."""
 # Licensed under ISC
 from itertools import product
