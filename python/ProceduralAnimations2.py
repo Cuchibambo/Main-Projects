@@ -178,7 +178,7 @@ def main():
         mouse_pos = pygame.mouse.get_pos()
         Points[0].pos = [mouse_pos[0], mouse_pos[1]]
         for i in range(len(Points)-1):
-            Points[i+1].pos = GetNextPos(Points[i+1].folloWho.pos,Points[i+1].pos)
+            Points[i+1].pos = GetNextPos(Points[i+1].folloWho.pos,Points[i+1].pos) # type: ignore
             
         for point in Points:
             for food in Foods:
@@ -205,7 +205,7 @@ def main():
                 point.size = FirstPointSize
             else:
                 size = FirstPointSize-(((FirstPointSize-1)/(nbPoints-1))*point.num)
-                point.size = size
+                point.size = size # type: ignore
 
             pygame.draw.circle(Surface, point.color, (point.pos[0],point.pos[1]), point.size)
             
