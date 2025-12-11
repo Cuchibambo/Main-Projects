@@ -1,5 +1,4 @@
 from MathScripts import *
-import time
 import pygame
 
 class Point():
@@ -14,6 +13,11 @@ backgroundColor = (50, 50, 50)
 PointColor = (255, 100, 100)
 pygame.draw.rect(Surface, backgroundColor, pygame.Rect(0, 0, width, height))
 pygame.display.flip()
+
+def PlacePointInFront():
+    Points.append(Point((-Center[0],
+                         -Center[1],
+                         -Center[2]),[]))
 
 Center = (0,0,0)
 CameraDistance = 1
@@ -59,6 +63,9 @@ while running == True:
                 isUPpressed = 1
             if event.key == pygame.K_DOWN:
                 isDOWNpressed = 1
+                
+            if event.key == pygame.K_e:
+                PlacePointInFront()
 
         elif event.type == pygame.KEYUP:
             if event.key == pygame.K_z:
@@ -77,6 +84,10 @@ while running == True:
                 isUPpressed = 0
             if event.key == pygame.K_DOWN:
                 isDOWNpressed = 0
+            
+        elif event.type == pygame.MOUSEBUTTONDOWN:
+            if event.button == 1:
+                PlacePointInFront()
             
     # game loop
     pygame.draw.rect(Surface, backgroundColor, pygame.Rect(0, 0, width, height)) # empty
@@ -102,17 +113,18 @@ while running == True:
               Center[1] + DepthMoveSpeed*MovementVector[1], 
               Center[2] + VerticalMoveSpeed*MovementVector[2])
     
+    # Rotation Amounts
     Z_Rotation += Z_RotationSpeed*RotationVector[2]
     X_Rotation += X_RotationSpeed*RotationVector[0]
-    
 
-    # Handle Left-Right rotation
-    Rotatedvec1 = Z_RotationMatrix(vec1,Z_Rotation)
-    Rotatedvec2 = Z_RotationMatrix(vec2,Z_Rotation)
-    
     # Handle Up-Down Rotation
-    Rotatedvec1 = X_RotationMatrix(Rotatedvec1,X_Rotation)
-    Rotatedvec2 = X_RotationMatrix(Rotatedvec2,X_Rotation)
+    Rotatedvec1 = X_RotationMatrix(vec1,X_Rotation)
+    Rotatedvec2 = X_RotationMatrix(vec2,X_Rotation)
+    
+    # Handle Left-Right rotation
+    Rotatedvec1 = Z_RotationMatrix(Rotatedvec1,Z_Rotation)
+    Rotatedvec2 = Z_RotationMatrix(Rotatedvec2,Z_Rotation)
+    
 
     # Get Normal and Camera Pos
     Normal = GetNormalVector(Rotatedvec1,Rotatedvec2)
@@ -121,27 +133,37 @@ while running == True:
             Normal[2] * CameraDistance)
 
     # Draw points
-
-    PointsPos = []
+    PointsPos = [None for i in range(len(Points))]
 
     for point in Points:
         
         CenteredPointPos = (point.pos[0] + Center[0],
                             point.pos[1] + Center[1],
                             point.pos[2] + Center[2])
-        NormalPosPoint3D = FindIntersectionBetweeenPointAndPlane(Normal,CenteredPointPos,Camera)
-        NormalPointPos2D = GetLinearCoeficientsRepresentationOfPointOnPlane(Rotatedvec1,Rotatedvec2,NormalPosPoint3D)
-        PointPos2D = (ChangeRange(NormalPointPos2D[0],-1,1,0,width),
-                      ChangeRange(NormalPointPos2D[1],-1,1,0,height))
+        
+        # Culling
+        if ProduitScalaire(NormalizeVector(CenteredPointPos),Normal) < 0:
 
-        PointsPos.append(PointPos2D)
+            NormalPosPoint3D = FindIntersectionBetweeenPointAndPlane(Normal,CenteredPointPos,Camera)
+            NormalPointPos2D = GetLinearCoeficientsRepresentationOfPointOnPlane(Rotatedvec1,Rotatedvec2,NormalPosPoint3D)
+            PointPos2D = (ChangeRange(NormalPointPos2D[0],-1,1,0,width),
+                        ChangeRange(NormalPointPos2D[1],-1,1,0,height))
 
-        pygame.draw.circle(Surface, PointColor, PointPos2D, 5)
+            PointsPos[Points.index(point)] = PointPos2D # type: ignore
+
+            pygame.draw.circle(Surface, PointColor, PointPos2D, 5)
     
+    # Culling makes it weird
     for i in range(len(Points)):
-        for vertex in Points[i].connectedVertexIndex:
-            pygame.draw.line(Surface,PointColor,PointsPos[i],PointsPos[vertex])
+        try:
+            for vertex in Points[i].connectedVertexIndex:
+                if PointsPos[vertex] != None:
+                    pygame.draw.line(Surface,PointColor,PointsPos[i],PointsPos[vertex]) # type: ignore
+                else:
+                    pass
+        except:
+            pass
 
     pygame.display.flip()
     
-# TODO Up-Down Rotation
+# TODO Add Culling
