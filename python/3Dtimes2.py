@@ -3,22 +3,22 @@ from pythonOBJparser import *
 import pygame
 
 class Point():
-    def __init__(self, pos:tuple, connectedVertexIndex:list):
+    def __init__(self, pos:tuple):
         self.pos = pos
-        self.connectedVertexIndex = connectedVertexIndex
 
 pygame.init()
 width,height = 500, 500
 Surface = pygame.display.set_mode((width,height))
 backgroundColor = (50, 50, 50)
 PointColor = (255, 100, 100)
+FaceColor = (20, 100, 100)
 pygame.draw.rect(Surface, backgroundColor, pygame.Rect(0, 0, width, height))
 pygame.display.flip()
 
 def PlacePointInFront():
     Points.append(Point((-Center[0],
                          -Center[1],
-                         -Center[2]),[]))
+                         -Center[2])))
 
 Center = (0,0,0)
 CameraDistance = 1
@@ -26,17 +26,20 @@ vec1 = NormalizeVector((1,0,0))
 vec2 = NormalizeVector((0,0,1))
 Points = []
 
-PointsVertexPos = GetVerteciesFromOBJ('Ball.obj')
+PointsVertexPos = GetVerteciesFromOBJ('3DModels\Cubeandcone.obj')
+Faces = GetFacesFromOBJ('3DModels\Cubeandcone.obj')
 
 for pos in PointsVertexPos:
-    Points.append(Point(pos,[]))
+    Points.append(Point(pos))
 
-HorizontalMoveSpeed, DepthMoveSpeed, VerticalMoveSpeed = 0.001, 0.001, 0.001
-X_RotationSpeed, Y_RotationSpeed, Z_RotationSpeed = 0.001, 0.001, 0.001
+FPS = 120
+HorizontalMoveSpeed, DepthMoveSpeed, VerticalMoveSpeed = 0.05, 0.05, 0.05
+X_RotationSpeed, Y_RotationSpeed, Z_RotationSpeed = 0.03, 0.03, 0.03
 MovementVector = (0, 0, 0)
 RotationVector = (0, 0, 0)
-isZpressed, isSpressed, isQpressed, isDpressed, isLEFTpressed, isRIGHTpressed, isUPpressed, isDOWNpressed = 0, 0, 0, 0, 0, 0, 0, 0
+isZpressed, isSpressed, isQpressed, isDpressed, isLEFTpressed, isRIGHTpressed, isUPpressed, isDOWNpressed, isSPACEpressed, isSHIFTpressed = 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
 X_Rotation, Z_Rotation = 0, 0
+clock = pygame.time.Clock()
 
 running = True
 while running == True:
@@ -61,6 +64,10 @@ while running == True:
                 isUPpressed = 1
             if event.key == pygame.K_DOWN:
                 isDOWNpressed = 1
+            if event.key == pygame.K_SPACE:
+                isSPACEpressed = 1
+            if event.key == pygame.K_LSHIFT:
+                isSHIFTpressed = 1
                 
             if event.key == pygame.K_e:
                 PlacePointInFront()
@@ -82,19 +89,24 @@ while running == True:
                 isUPpressed = 0
             if event.key == pygame.K_DOWN:
                 isDOWNpressed = 0
+            if event.key == pygame.K_SPACE:
+                isSPACEpressed = 0
+            if event.key == pygame.K_LSHIFT:
+                isSHIFTpressed = 0
             
-        elif event.type == pygame.MOUSEBUTTONDOWN:
-            if event.button == 1:
-                PlacePointInFront()
+        # elif event.type == pygame.MOUSEBUTTONDOWN:
+        #     if event.button == 1:
+        #         PlacePointInFront()
             
     # game loop
+    clock.tick(FPS)
     pygame.draw.rect(Surface, backgroundColor, pygame.Rect(0, 0, width, height)) # empty
     
     # Handle Movement Vector
     MovementVector = (
         isQpressed-isDpressed,
         isSpressed-isZpressed,
-        0
+        isSPACEpressed-isSHIFTpressed
     )
     
     # Handle Rotation Vector
@@ -148,18 +160,21 @@ while running == True:
                         ChangeRange(NormalPointPos2D[1],-1,1,0,height))
 
             PointsPos[Points.index(point)] = PointPos2D # type: ignore
-
-            pygame.draw.circle(Surface, PointColor, PointPos2D, 5)
     
-    # Culling makes it weird
-    for i in range(len(Points)):
+    for face in Faces:
         try:
-            for vertex in Points[i].connectedVertexIndex:
-                if PointsPos[vertex] != None:
-                    pygame.draw.line(Surface,PointColor,PointsPos[i],PointsPos[vertex]) # type: ignore
-                else:
-                    pass
+            pygame.draw.polygon(Surface, FaceColor, (PointsPos[face[0]-1],
+                                                     PointsPos[face[1]-1],
+                                                     PointsPos[face[2]-1]))
+        except:
+            pass   
+        
+    for pos in PointsPos:
+        try:
+            pygame.draw.circle(Surface, PointColor, pos, 5)
         except:
             pass
+
+    # pygame.draw.rect(Surface, PointColor, (250,250,1,1))
 
     pygame.display.flip()
