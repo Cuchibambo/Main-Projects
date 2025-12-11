@@ -144,7 +144,7 @@ while running == True:
         # Culling
         if ProduitScalaire(NormalizeVector(CenteredPointPos),Normal) < 0:
 
-            NormalPosPoint3D = FindIntersectionBetweeenPointAndPlane(Normal,CenteredPointPos,Camera)
+            NormalPosPoint3D = FindIntersectionBetweeenLineAndPlane(Normal,CenteredPointPos,Camera)
             NormalPointPos2D = GetLinearCoeficientsRepresentationOfPointOnPlane(Rotatedvec1,Rotatedvec2,NormalPosPoint3D)
             PointPos2D = (ChangeRange(NormalPointPos2D[0],-1,1,0,width),
                         ChangeRange(NormalPointPos2D[1],-1,1,0,height))
@@ -165,5 +165,3 @@ while running == True:
             pass
 
     pygame.display.flip()
-    
-# TODO Add Culling

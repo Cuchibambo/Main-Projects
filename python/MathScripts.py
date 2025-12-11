@@ -75,7 +75,7 @@ def isVecOnPlane(vec:tuple,normal:tuple) -> bool:
     c = normal[2]
     return round(a*vec[0]+b*vec[1]+c*vec[2]) == 0
 
-def FindIntersectionBetweeenPointAndPlane(normal:tuple,Point1:tuple,Point2:tuple) -> tuple:
+def FindIntersectionBetweeenLineAndPlane(normal:tuple,Point1:tuple,Point2:tuple) -> tuple:
 
     div1 = -(normal[0]*Point1[0]+normal[1]*Point1[1]+normal[2]*Point1[2])
     Div2 = (normal[0]*(Point2[0]-Point1[0])+normal[1]*(Point2[1]-Point1[1])+normal[2]*(Point2[2]-Point1[2]))
