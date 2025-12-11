@@ -26,8 +26,14 @@ vec1 = NormalizeVector((1,0,0))
 vec2 = NormalizeVector((0,0,1))
 Points = []
 
-PointsVertexPos = GetVerteciesFromOBJ('3DModels\Cubeandcone.obj')
-Faces = GetFacesFromOBJ('3DModels\Cubeandcone.obj')
+OBJImport = r'3DModels\Ultrakill Peircer.obj'
+
+PointsVertexPos = GetVerteciesFromOBJ(OBJImport,1)
+Faces = GetFacesFromOBJ(OBJImport)
+
+for i in range(len(Faces)):
+    Faces[i] = [Faces[i],0]
+
 
 for pos in PointsVertexPos:
     Points.append(Point(pos))
@@ -143,13 +149,15 @@ while running == True:
             Normal[2] * CameraDistance)
 
     # Draw points
-    PointsPos = [None for i in range(len(Points))]
+    PointsPos = [None for _ in range(len(Points))]
 
+    CenteredPointsPos = []
+    
     for point in Points:
-        
         CenteredPointPos = (point.pos[0] + Center[0],
                             point.pos[1] + Center[1],
                             point.pos[2] + Center[2])
+        CenteredPointsPos.append(CenteredPointPos)
         
         # Culling
         if ProduitScalaire(NormalizeVector(CenteredPointPos),Normal) < 0:
@@ -160,21 +168,33 @@ while running == True:
                         ChangeRange(NormalPointPos2D[1],-1,1,0,height))
 
             PointsPos[Points.index(point)] = PointPos2D # type: ignore
+            
+    for i in range(len(Faces)):
+        Faces[i] = [Faces[i][0],GetMagnitude((Average([CenteredPointsPos[Faces[i][0][0]-1][0],
+                                                    CenteredPointsPos[Faces[i][0][1]-1][0],
+                                                    CenteredPointsPos[Faces[i][0][2]-1][0]]),
+                                            Average([CenteredPointsPos[Faces[i][0][0]-1][1],
+                                                    CenteredPointsPos[Faces[i][0][1]-1][1],
+                                                    CenteredPointsPos[Faces[i][0][2]-1][1]]),
+                                            Average([CenteredPointsPos[Faces[i][0][0]-1][2],
+                                                    CenteredPointsPos[Faces[i][0][1]-1][2],
+                                                    CenteredPointsPos[Faces[i][0][2]-1][2]]),))]
+    
+    Faces.sort(key= lambda x : x[1], reverse=True)
+    
+    # for pos in PointsPos:
+    #     try:
+    #         pygame.draw.circle(Surface, PointColor, pos, 5) # type: ignore
+    #     except:
+    #         pass
     
     for face in Faces:
+        FaceColor = int(ChangeRange(face[1],Faces[-1][1],Faces[0][1],0,255))
         try:
-            pygame.draw.polygon(Surface, FaceColor, (PointsPos[face[0]-1],
-                                                     PointsPos[face[1]-1],
-                                                     PointsPos[face[2]-1]))
-        except:
-            pass   
-        
-    for pos in PointsPos:
-        try:
-            pygame.draw.circle(Surface, PointColor, pos, 5)
+            pygame.draw.polygon(Surface, (FaceColor,FaceColor,FaceColor), (PointsPos[face[0][0]-1],
+                                                     PointsPos[face[0][1]-1],
+                                                     PointsPos[face[0][2]-1]))
         except:
             pass
-
-    # pygame.draw.rect(Surface, PointColor, (250,250,1,1))
-
+        
     pygame.display.flip()

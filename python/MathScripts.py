@@ -147,3 +147,9 @@ def Z_RotationMatrix(vec:tuple,angle:float) -> tuple:
         vec[2]
     )
     return rotatedVec
+
+def Average(data:list) -> float:
+    sum = 0
+    for num in data:
+        sum += num
+    return sum/len(data)
