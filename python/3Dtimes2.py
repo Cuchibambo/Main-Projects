@@ -11,7 +11,6 @@ width,height = 500, 500
 Surface = pygame.display.set_mode((width,height))
 backgroundColor = (50, 50, 50)
 PointColor = (255, 100, 100)
-FaceColor = (20, 100, 100)
 pygame.draw.rect(Surface, backgroundColor, pygame.Rect(0, 0, width, height))
 pygame.display.flip()
 
@@ -198,3 +197,5 @@ while running == True:
             pass
         
     pygame.display.flip()
+    
+ # TODO Allow for faces connected to more than 3 verts
