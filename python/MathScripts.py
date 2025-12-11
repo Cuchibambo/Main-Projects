@@ -15,7 +15,7 @@ def isColinaire(vec1:tuple, vec2:tuple) -> bool:
             try:
                 k = vec1[0]/vec2[0]
             except:
-                return None
+                return None # pyright: ignore[reportReturnType]
     if (vec1[0] == k*vec2[0]
     and vec1[1] == k*vec2[1]
     and vec1[2] == k*vec2[2]):
@@ -61,7 +61,7 @@ def NormalizeVector(vec:tuple) -> tuple:
     if mag != 0:
         return (vec[0]/mag, vec[1]/mag, vec[2]/mag)
     else:
-        return ValueError('Vector is zeros vector')
+        return (0,0,0)
 
 def GetNormalVector(vec1:tuple, vec2:tuple) -> tuple:
     return NormalizeVector(ProduitVectoriel(vec1,vec2))
@@ -112,3 +112,38 @@ def GetLinearCoeficientsRepresentationOfPointOnPlane(vec1:tuple,vec2:tuple,point
         for i in range(len(vec1)): # len(vec1) should always be 3
             if vec1[i] != 0 and vec2[i] != 0:
                 x = (point[i]-(y*vec2[i]))/vec1[i]
+    
+    if x != 'None' and y != 'None':
+        return (x,y)
+
+    y = ((point[0]*vec1[1])-(point[1]*vec1[0]))/((vec2[0]*vec1[1])-(vec2[2]*vec1[0]))
+    x = (point[0]-(y*vec2[0]))/vec1[0]
+    return (x,y)
+    
+                
+def ChangeRange(x:float,min1:float,max1:float,min2:float,max2:float) -> float:
+    return (((x-min1)*(max2-min2))/(max1-min1))+min1
+
+def X_RotationMatrix(vec:tuple,angle:float) -> tuple:
+    rotatedVec = (
+        vec[0],
+        (vec[1]*math.cos(angle))+(vec[2]*math.sin(angle)),
+        -(vec[1]*math.sin(angle))+(vec[2]*math.cos(angle))
+    )
+    return rotatedVec
+
+def Y_RotationMatrix(vec:tuple,angle:float) -> tuple:
+    rotatedVec = (
+        (vec[0]*math.cos(angle))-(vec[2]*math.sin(angle)),
+        vec[1],
+        (vec[0]*math.sin(angle))+(vec[2]*math.cos(angle))
+    )
+    return rotatedVec
+
+def Z_RotationMatrix(vec:tuple,angle:float) -> tuple:
+    rotatedVec = (
+        (vec[0]*math.cos(angle))+(vec[1]*math.sin(angle)),
+        -(vec[0]*math.sin(angle))+(vec[1]*math.cos(angle)),
+        vec[2]
+    )
+    return rotatedVec
