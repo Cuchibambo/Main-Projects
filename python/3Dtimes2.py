@@ -1,4 +1,5 @@
 from MathScripts import *
+from pythonOBJparser import *
 import pygame
 
 class Point():
@@ -23,15 +24,12 @@ Center = (0,0,0)
 CameraDistance = 1
 vec1 = NormalizeVector((1,0,0))
 vec2 = NormalizeVector((0,0,1))
-Points = [Point((1,1,1),[1,3,4]),
-          Point((1,1,-1),[2,5]),
-          Point((-1,1,-1),[6,3]),
-          Point((-1,1,1),[7]),
-          Point((1,3,1),[5,7]),
-          Point((1,3,-1),[6]),
-          Point((-1,3,-1),[7]),
-          Point((-1,3,1),[]),
-          Point((0,2,-2),[1,2,5,6])]
+Points = []
+
+PointsVertexPos = GetVerteciesFromOBJ('Ball.obj')
+
+for pos in PointsVertexPos:
+    Points.append(Point(pos,[]))
 
 HorizontalMoveSpeed, DepthMoveSpeed, VerticalMoveSpeed = 0.001, 0.001, 0.001
 X_RotationSpeed, Y_RotationSpeed, Z_RotationSpeed = 0.001, 0.001, 0.001
