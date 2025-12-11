@@ -24,7 +24,7 @@ plt.plot(t,s3,label=r'$A_{1}\cos(\dfrac{2\pi}{T}t)+A_{2}\cos(\dfrac{2\pi}{T}t+\v
 plt.xlabel('t (en ms)')
 plt.ylabel('s1,s2 et s3')
 plt.xlim((0,4))
-plt.ylim(-max(A1,A2)+2,max(A1,A2)+2)
+plt.ylim((-A1-A2-1,A1+A2+1))
 plt.grid()
 plt.legend(loc = 9, ncol=3)
 plt.show()
