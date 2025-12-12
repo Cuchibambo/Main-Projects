@@ -7,31 +7,31 @@ class Point():
     def __init__(self, pos:tuple):
         self.pos = pos
 
-# pygame.init() 
-pygame.display.init() # Might not work if it crashes change this
-width,height = 1000, 1000
-Surface = pygame.display.set_mode((width,height))
-backgroundColor = (100, 100, 150)
-PointColor = (255, 100, 100)
-StartColor = 180
-Saturation = 0
-RainbowColorsTime = False
-RainbowColorsDistance = False
-pygame.draw.rect(Surface, backgroundColor, pygame.Rect(0, 0, width, height))
-pygame.display.flip()
-
 def PlacePointInFront():
     Points.append(Point((-Center[0],
                          -Center[1],
                          -Center[2])))
 
+# pygame.init() 
+pygame.display.init() # Might not work if it crashes change this
+width,height = 1920, 1080
+mult = 2*337*(width/height)
+Surface = pygame.display.set_mode((width,height))
+backgroundColor = (100, 100, 150)
+PointColor = (255, 100, 100)
+StartColor = 180
+Saturation = 0.3
+RainbowColorsTime = False
+RainbowColorsDistance = True
+pygame.draw.rect(Surface, backgroundColor, pygame.Rect(0, 0, width, height))
+pygame.display.flip()
 Center = (0,0,0)
 CameraDistance = 1
 vec1 = NormalizeVector((1,0,0))
 vec2 = NormalizeVector((0,0,1))
 Points = []
 
-OBJImport = r"3DModels\Suzanne.obj"
+OBJImport = r"3DModels\Lowpoly_tree_sample.obj"
 
 PointsVertexPos = GetVerteciesFromOBJ(OBJImport,1)
 Faces = GetFacesFromOBJ(OBJImport)
@@ -49,7 +49,7 @@ X_RotationSpeed, Y_RotationSpeed, Z_RotationSpeed = 0.03, 0.03, 0.03
 MovementVector = (0, 0, 0)
 RotationVector = (0, 0, 0)
 MouseSensitivity = 0.2
-KeyboardOnly = True
+KeyboardOnly = False
 if KeyboardOnly == False:
     pygame.mouse.set_visible(False)
     pygame.event.set_grab(True)
@@ -88,9 +88,9 @@ while running == True:
                 
             if event.key == pygame.K_e:
                 PlacePointInFront()
-            if event.key == pygame.K_KP_PLUS:
+            if event.key == pygame.K_KP_PLUS or event.key == pygame.K_DOLLAR:
                 LightRadius += 1
-            if event.key == pygame.K_KP_MINUS:
+            if event.key == pygame.K_KP_MINUS or event.key == pygame.K_ASTERISK:
                 LightRadius -= 1
                 
             if event.key == pygame.K_ESCAPE:
@@ -197,8 +197,8 @@ while running == True:
 
             NormalPosPoint3D = FindIntersectionBetweeenLineAndPlane(Normal,CenteredPointPos,Camera)
             NormalPointPos2D = GetLinearCoeficientsRepresentationOfPointOnPlane(Rotatedvec1,Rotatedvec2,NormalPosPoint3D)
-            PointPos2D = (ChangeRange(NormalPointPos2D[0],-1,1,0,width),
-                        ChangeRange(NormalPointPos2D[1],-1,1,0,height))
+            PointPos2D = (ChangeRange(NormalPointPos2D[0],-width/mult,width/mult,0,width),
+                        ChangeRange(NormalPointPos2D[1],-height/mult,height/mult,0,height))
 
             PointsPos[Points.index(point)] = PointPos2D # type: ignore
             
@@ -222,8 +222,11 @@ while running == True:
     #         pass
     
     for face in Faces:
-        Value = (1-(face[1]/LightRadius))
-        Value = Clamp(Value,1,0)
+        if LightRadius == 0:
+            Value = 0
+        else:
+            Value = (1-(face[1]/LightRadius))
+            Value = Clamp(Value,1,0)
         if RainbowColorsTime:
             face[2] += 0.1
             FaceColor = Convert_HSV_to_RGB((face[2],Saturation,Value))
