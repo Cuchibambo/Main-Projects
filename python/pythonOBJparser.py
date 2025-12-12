@@ -18,5 +18,14 @@ def GetFacesFromOBJ(FileName:str) -> list:
             line = line[2:] # removes the 'f '
             line = line.strip('\n')
             line = line.split(' ')
-            Faces.append((int(line[0].split('/')[0]),int(line[1].split('/')[0]),int(line[2].split('/')[0])))
+            LineStriped = []
+            for vertex in line:
+                LineStriped.append(int(vertex.split(('/'))[0]))
+            Faces.append(tuple(LineStriped))
     return Faces
+
+if __name__ == '__main__':
+    Faces = GetFacesFromOBJ(r'3DModels\Suzanne.obj')
+    for face in Faces:
+        if len(face) > 4:
+            print(face)

@@ -33,7 +33,6 @@ Faces = GetFacesFromOBJ(OBJImport)
 for i in range(len(Faces)):
     Faces[i] = [Faces[i],0]
 
-
 for pos in PointsVertexPos:
     Points.append(Point(pos))
 
@@ -189,10 +188,15 @@ while running == True:
     
     for face in Faces:
         FaceColor = int(ChangeRange(face[1],Faces[-1][1],Faces[0][1],0,255))
+        if FaceColor > 255:
+            FaceColor = 255
+        elif FaceColor < 0:
+            FaceColor = 0
         try:
-            pygame.draw.polygon(Surface, (FaceColor,FaceColor,FaceColor), (PointsPos[face[0][0]-1],
-                                                     PointsPos[face[0][1]-1],
-                                                     PointsPos[face[0][2]-1]))
+            PointsToDraw = []
+            for i in range(len(face[0])):
+                PointsToDraw.append(PointsPos[face[0][i]-1])
+            pygame.draw.polygon(Surface, (FaceColor, FaceColor, FaceColor), tuple(PointsToDraw))
         except:
             pass
         
