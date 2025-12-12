@@ -78,8 +78,8 @@ def isVecOnPlane(vec:tuple,normal:tuple) -> bool:
 def FindIntersectionBetweeenLineAndPlane(normal:tuple,Point1:tuple,Point2:tuple) -> tuple:
 
     div1 = -(normal[0]*Point1[0]+normal[1]*Point1[1]+normal[2]*Point1[2])
-    Div2 = (normal[0]*(Point2[0]-Point1[0])+normal[1]*(Point2[1]-Point1[1])+normal[2]*(Point2[2]-Point1[2]))
-    t = div1/Div2
+    div2 = (normal[0]*(Point2[0]-Point1[0])+normal[1]*(Point2[1]-Point1[1])+normal[2]*(Point2[2]-Point1[2]))
+    t = div1/div2
 
     IntersectionPoint = (Point1[0]+t*(Point2[0]-Point1[0]),
                  Point1[1]+t*(Point2[1]-Point1[1]),
@@ -104,9 +104,9 @@ def GetLinearCoeficientsRepresentationOfPointOnPlane(vec1:tuple,vec2:tuple,point
         return (x,y)
     
     if x != 'None':
-            for i in range(len(vec1)): # len(vec1) should always be 3
-                if vec2[i] != 0 and vec1[i] != 0:
-                    y = (point[i]-(x*vec1[i]))/vec2[i]
+        for i in range(len(vec1)): # len(vec1) should always be 3
+            if vec2[i] != 0 and vec1[i] != 0:
+                y = (point[i]-(x*vec1[i]))/vec2[i]
 
     if y != 'None':
         for i in range(len(vec1)): # len(vec1) should always be 3

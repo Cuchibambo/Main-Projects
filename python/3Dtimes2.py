@@ -1,17 +1,22 @@
 from MathScripts import *
 from pythonOBJparser import *
 import pygame
-import random
+import sys
 
 class Point():
     def __init__(self, pos:tuple):
         self.pos = pos
 
-pygame.init()
-width,height = 500, 500
+# pygame.init() 
+pygame.display.init() # Might not work if it crashes change this
+width,height = 1000, 1000
 Surface = pygame.display.set_mode((width,height))
 backgroundColor = (100, 100, 150)
 PointColor = (255, 100, 100)
+StartColor = 180
+Saturation = 0
+RainbowColorsTime = False
+RainbowColorsDistance = False
 pygame.draw.rect(Surface, backgroundColor, pygame.Rect(0, 0, width, height))
 pygame.display.flip()
 
@@ -26,13 +31,13 @@ vec1 = NormalizeVector((1,0,0))
 vec2 = NormalizeVector((0,0,1))
 Points = []
 
-OBJImport = r"3DModels\Ultrakill Peircer.obj"
+OBJImport = r"3DModels\Suzanne.obj"
 
 PointsVertexPos = GetVerteciesFromOBJ(OBJImport,1)
 Faces = GetFacesFromOBJ(OBJImport)
 
 for i in range(len(Faces)):
-    Faces[i] = [Faces[i],0,0]
+    Faces[i] = [Faces[i],0,StartColor]
 
 for pos in PointsVertexPos:
     pos = X_RotationMatrix(pos,3.14/2) # rotate imported 3D model
@@ -43,9 +48,15 @@ HorizontalMoveSpeed, DepthMoveSpeed, VerticalMoveSpeed = 0.05, 0.05, 0.05
 X_RotationSpeed, Y_RotationSpeed, Z_RotationSpeed = 0.03, 0.03, 0.03
 MovementVector = (0, 0, 0)
 RotationVector = (0, 0, 0)
+MouseSensitivity = 0.2
+KeyboardOnly = True
+if KeyboardOnly == False:
+    pygame.mouse.set_visible(False)
+    pygame.event.set_grab(True)
 isZpressed, isSpressed, isQpressed, isDpressed, isLEFTpressed, isRIGHTpressed, isUPpressed, isDOWNpressed, isSPACEpressed, isSHIFTpressed = 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
 X_Rotation, Z_Rotation = 0.0001, 0
 clock = pygame.time.Clock()
+LightRadius = 7
 
 running = True
 while running == True:
@@ -77,6 +88,15 @@ while running == True:
                 
             if event.key == pygame.K_e:
                 PlacePointInFront()
+            if event.key == pygame.K_KP_PLUS:
+                LightRadius += 1
+            if event.key == pygame.K_KP_MINUS:
+                LightRadius -= 1
+                
+            if event.key == pygame.K_ESCAPE:
+                running = False
+                pygame.quit()
+                sys.exit()
 
         elif event.type == pygame.KEYUP:
             if event.key == pygame.K_z:
@@ -108,6 +128,10 @@ while running == True:
     clock.tick(FPS)
     pygame.draw.rect(Surface, backgroundColor, pygame.Rect(0, 0, width, height)) # empty
     
+    if KeyboardOnly == False:
+        delta_y, delta_x = pygame.mouse.get_rel()
+        pygame.mouse.set_pos([width/2, height/2])
+    
     # Handle Movement Vector
     MovementVector = (
         isQpressed-isDpressed,
@@ -115,13 +139,23 @@ while running == True:
         isSPACEpressed-isSHIFTpressed
     )
     
-    # Handle Rotation Vector
-    RotationVector = (
-        isUPpressed-isDOWNpressed,
-        0,
-        isRIGHTpressed-isLEFTpressed
-    )
+    if KeyboardOnly:
     
+        # Handle Rotation Vector Keyboard
+        RotationVector = (
+            isUPpressed-isDOWNpressed,
+            0,
+            isRIGHTpressed-isLEFTpressed
+        )
+    else:
+        
+        # Handle Rotation Vector Mouse
+        RotationVector = (
+            float(-delta_x) * MouseSensitivity, # type: ignore
+            0,
+            float(delta_y) * MouseSensitivity
+        )
+        
     # Handle Movement
     MovementVector = NormalizeVector(MovementVector)
     MovementVector = Z_RotationMatrix(MovementVector,Z_Rotation)
@@ -132,7 +166,7 @@ while running == True:
     # Rotation Amounts
     Z_Rotation += Z_RotationSpeed*RotationVector[2]
     X_Rotation += X_RotationSpeed*RotationVector[0]
-
+    
     # Handle Up-Down Rotation
     Rotatedvec1 = X_RotationMatrix(vec1,X_Rotation)
     Rotatedvec2 = X_RotationMatrix(vec2,X_Rotation)
@@ -140,7 +174,6 @@ while running == True:
     # Handle Left-Right rotation
     Rotatedvec1 = Z_RotationMatrix(Rotatedvec1,Z_Rotation)
     Rotatedvec2 = Z_RotationMatrix(Rotatedvec2,Z_Rotation)
-    
 
     # Get Normal and Camera Pos
     Normal = GetNormalVector(Rotatedvec1,Rotatedvec2)
@@ -189,14 +222,16 @@ while running == True:
     #         pass
     
     for face in Faces:
-        Value = ChangeRange(face[1],Faces[-1][1],Faces[0][1],0,255)
-        # print(face[1],Faces[-1][1],Faces[0][1],Value)
-        if Value > 255:
-            Value = 255
-        elif Value < 0:
-            Value = 0
-
-        FaceColor = Convert_HSV_to_RGB((face[2],0,Value/255))
+        Value = (1-(face[1]/LightRadius))
+        Value = Clamp(Value,1,0)
+        if RainbowColorsTime:
+            face[2] += 0.1
+            FaceColor = Convert_HSV_to_RGB((face[2],Saturation,Value))
+        elif RainbowColorsDistance:
+            face[2] = StartColor + face[1]*20
+            FaceColor = Convert_HSV_to_RGB((face[2],Saturation,Value))
+        else:
+            FaceColor = Convert_HSV_to_RGB((face[2],Saturation,Value))
 
         try:
             PointsToDraw = []
