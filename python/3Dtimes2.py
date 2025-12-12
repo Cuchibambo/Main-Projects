@@ -1,6 +1,7 @@
 from MathScripts import *
 from pythonOBJparser import *
 import pygame
+import random
 
 class Point():
     def __init__(self, pos:tuple):
@@ -9,7 +10,7 @@ class Point():
 pygame.init()
 width,height = 500, 500
 Surface = pygame.display.set_mode((width,height))
-backgroundColor = (50, 50, 50)
+backgroundColor = (100, 100, 150)
 PointColor = (255, 100, 100)
 pygame.draw.rect(Surface, backgroundColor, pygame.Rect(0, 0, width, height))
 pygame.display.flip()
@@ -25,15 +26,16 @@ vec1 = NormalizeVector((1,0,0))
 vec2 = NormalizeVector((0,0,1))
 Points = []
 
-OBJImport = r'3DModels\Ultrakill Peircer.obj'
+OBJImport = r"3DModels\Ultrakill Peircer.obj"
 
 PointsVertexPos = GetVerteciesFromOBJ(OBJImport,1)
 Faces = GetFacesFromOBJ(OBJImport)
 
 for i in range(len(Faces)):
-    Faces[i] = [Faces[i],0]
+    Faces[i] = [Faces[i],0,0]
 
 for pos in PointsVertexPos:
+    pos = X_RotationMatrix(pos,3.14/2) # rotate imported 3D model
     Points.append(Point(pos))
 
 FPS = 120
@@ -42,7 +44,7 @@ X_RotationSpeed, Y_RotationSpeed, Z_RotationSpeed = 0.03, 0.03, 0.03
 MovementVector = (0, 0, 0)
 RotationVector = (0, 0, 0)
 isZpressed, isSpressed, isQpressed, isDpressed, isLEFTpressed, isRIGHTpressed, isUPpressed, isDOWNpressed, isSPACEpressed, isSHIFTpressed = 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
-X_Rotation, Z_Rotation = 0, 0
+X_Rotation, Z_Rotation = 0.0001, 0
 clock = pygame.time.Clock()
 
 running = True
@@ -176,7 +178,7 @@ while running == True:
                                                     CenteredPointsPos[Faces[i][0][2]-1][1]]),
                                             Average([CenteredPointsPos[Faces[i][0][0]-1][2],
                                                     CenteredPointsPos[Faces[i][0][1]-1][2],
-                                                    CenteredPointsPos[Faces[i][0][2]-1][2]]),))]
+                                                    CenteredPointsPos[Faces[i][0][2]-1][2]]),)),Faces[i][2]]
     
     Faces.sort(key= lambda x : x[1], reverse=True)
     
@@ -187,19 +189,21 @@ while running == True:
     #         pass
     
     for face in Faces:
-        FaceColor = int(ChangeRange(face[1],Faces[-1][1],Faces[0][1],0,255))
-        if FaceColor > 255:
-            FaceColor = 255
-        elif FaceColor < 0:
-            FaceColor = 0
+        Value = ChangeRange(face[1],Faces[-1][1],Faces[0][1],0,255)
+        # print(face[1],Faces[-1][1],Faces[0][1],Value)
+        if Value > 255:
+            Value = 255
+        elif Value < 0:
+            Value = 0
+
+        FaceColor = Convert_HSV_to_RGB((face[2],0,Value/255))
+
         try:
             PointsToDraw = []
             for i in range(len(face[0])):
                 PointsToDraw.append(PointsPos[face[0][i]-1])
-            pygame.draw.polygon(Surface, (FaceColor, FaceColor, FaceColor), tuple(PointsToDraw))
+            pygame.draw.polygon(Surface, FaceColor, tuple(PointsToDraw))
         except:
             pass
         
     pygame.display.flip()
-    
- # TODO Allow for faces connected to more than 3 verts
