@@ -122,7 +122,7 @@ def GetLinearCoeficientsRepresentationOfPointOnPlane(vec1:tuple,vec2:tuple,point
     
                 
 def ChangeRange(x:float,min1:float,max1:float,min2:float,max2:float) -> float:
-    return (((x-min1)*(max2-min2))/(max1-min1))+min1
+    return (((x-min1)/(max1-min1))*(max2-min2))+min1
 
 def X_RotationMatrix(vec:tuple,angle:float) -> tuple:
     rotatedVec = (
@@ -153,3 +153,55 @@ def Average(data:list) -> float:
     for num in data:
         sum += num
     return sum/len(data)
+
+def Convert_HSV_to_RGB(color:tuple) -> tuple:
+    H = color[0]
+    S = color[1]
+    V = color[2]
+    # H in degrees
+    # S in 0-1
+    # V in 0-1
+    hR, hG, hB = 0, 0, 0
+    H = H%360
+    if H >= 0 and H < 60:
+        hR = 1
+        hG = H/60
+        hB = 0
+    elif H >= 60 and H < 120:
+        hR = (-H/60)+2
+        hG = 1
+        hB = 0
+    elif H >= 120 and H < 180:
+        hR = 0
+        hG = 1
+        hB = (H/60)-2
+    elif H >= 180 and H < 240:
+        hR = 0
+        hG = (-H/60)+4
+        hB = 1
+    elif H >= 240 and H < 300:
+        hR = (H/60)-4
+        hG = 0
+        hB = 1
+    elif H >= 300 and H < 360:
+        hR = 1
+        hG = 0
+        hB = (-H/60)+6
+        
+    R = hR+1-S
+    G = hG+1-S
+    B = hB+1-S
+    if R>1: R=1
+    if G>1: G=1
+    if B>1: B=1
+    R = R*V
+    G = G*V
+    B = B*V
+    return (int(R*255),int(G*255),int(B*255))
+
+def Clamp(x:float,rangeUp:float,rangeDown:float) -> float:
+    if x > rangeUp:
+        x = rangeUp
+    elif x < rangeDown:
+        x = rangeDown
+    return x
