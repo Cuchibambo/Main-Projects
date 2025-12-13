@@ -19,10 +19,10 @@ mult = 2*337*(width/height)
 Surface = pygame.display.set_mode((width,height))
 backgroundColor = (100, 100, 150)
 PointColor = (255, 100, 100)
-StartColor = 180
+StartColor = 240
 Saturation = 0.3
 RainbowColorsTime = False
-RainbowColorsDistance = True
+RainbowColorsDistance = False
 pygame.draw.rect(Surface, backgroundColor, pygame.Rect(0, 0, width, height))
 pygame.display.flip()
 Center = (0,0,0)
@@ -31,7 +31,7 @@ vec1 = NormalizeVector((1,0,0))
 vec2 = NormalizeVector((0,0,1))
 Points = []
 
-OBJImport = r"3DModels\Lowpoly_tree_sample.obj"
+OBJImport = r"3DModels\Ultrakill Peircer.obj"
 
 PointsVertexPos = GetVerteciesFromOBJ(OBJImport,1)
 Faces = GetFacesFromOBJ(OBJImport)
@@ -48,7 +48,7 @@ HorizontalMoveSpeed, DepthMoveSpeed, VerticalMoveSpeed = 0.05, 0.05, 0.05
 X_RotationSpeed, Y_RotationSpeed, Z_RotationSpeed = 0.03, 0.03, 0.03
 MovementVector = (0, 0, 0)
 RotationVector = (0, 0, 0)
-MouseSensitivity = 0.2
+MouseSensitivity = 0.02
 KeyboardOnly = False
 if KeyboardOnly == False:
     pygame.mouse.set_visible(False)
