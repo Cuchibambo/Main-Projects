@@ -15,7 +15,7 @@ def PlacePointInFront():
 # pygame.init() 
 pygame.display.init() # Might not work if it crashes change this
 width,height = 1920, 1080
-mult = 2*337*(width/height)
+mult = 674*(width/height)
 Surface = pygame.display.set_mode((width,height))
 backgroundColor = (100, 100, 150)
 PointColor = (255, 100, 100)

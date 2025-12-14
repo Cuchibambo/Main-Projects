@@ -13,9 +13,9 @@ def isColinaire(vec1:tuple, vec2:tuple) -> bool:
             k = vec1[1]/vec2[1]
         except:
             try:
-                k = vec1[0]/vec2[0]
+                k = vec1[2]/vec2[2]
             except:
-                return None # pyright: ignore[reportReturnType]
+                return True
     if (vec1[0] == k*vec2[0]
     and vec1[1] == k*vec2[1]
     and vec1[2] == k*vec2[2]):
@@ -73,12 +73,12 @@ def isVecOnPlane(vec:tuple,normal:tuple) -> bool:
     a = normal[0]
     b = normal[1]
     c = normal[2]
-    return round(a*vec[0]+b*vec[1]+c*vec[2]) == 0
+    return round(ProduitScalaire((a,b,c),vec),5) == 0
 
 def FindIntersectionBetweeenLineAndPlane(normal:tuple,Point1:tuple,Point2:tuple) -> tuple:
 
-    div1 = -(normal[0]*Point1[0]+normal[1]*Point1[1]+normal[2]*Point1[2])
-    div2 = (normal[0]*(Point2[0]-Point1[0])+normal[1]*(Point2[1]-Point1[1])+normal[2]*(Point2[2]-Point1[2]))
+    div1 = -ProduitScalaire(normal,Point1)
+    div2 = ProduitScalaire(normal,TupleSubtract(Point2,Point1))
     t = div1/div2
 
     IntersectionPoint = (Point1[0]+t*(Point2[0]-Point1[0]),
@@ -119,7 +119,6 @@ def GetLinearCoeficientsRepresentationOfPointOnPlane(vec1:tuple,vec2:tuple,point
     y = ((point[0]*vec1[1])-(point[1]*vec1[0]))/((vec2[0]*vec1[1])-(vec2[2]*vec1[0]))
     x = (point[0]-(y*vec2[0]))/vec1[0]
     return (x,y)
-    
                 
 def ChangeRange(x:float,min1:float,max1:float,min2:float,max2:float) -> float:
     return (((x-min1)/(max1-min1))*(max2-min2))+min1
@@ -200,8 +199,18 @@ def Convert_HSV_to_RGB(color:tuple) -> tuple:
     return (int(R*255),int(G*255),int(B*255))
 
 def Clamp(x:float,rangeUp:float,rangeDown:float) -> float:
-    if x > rangeUp:
-        x = rangeUp
-    elif x < rangeDown:
-        x = rangeDown
+    if x > rangeUp: x = rangeUp
+    elif x < rangeDown: x = rangeDown
     return x
+
+def TupleSubtract(tuple1:tuple,tuple2:tuple) -> tuple:
+    AnsTuple = []
+    for i in range(len(tuple1)):
+        AnsTuple.append(tuple1[i]-tuple2[i])
+    return tuple(AnsTuple)
+
+def GetCoordsOfPointOnLine(t:float,Point1:tuple,Point2:tuple) -> tuple:
+    AnsTuple = []
+    for i in range(len(Point1)):
+        AnsTuple.append(Point1[i] + t*(Point2[i]-Point1[i]))
+    return tuple(AnsTuple)
