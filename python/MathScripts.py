@@ -58,16 +58,24 @@ def GetMagnitude(vec:tuple) -> float:
 
 def NormalizeVector(vec:tuple) -> tuple:
     mag = GetMagnitude(vec)
+    out = []
     if mag != 0:
-        return (vec[0]/mag, vec[1]/mag, vec[2]/mag)
+        for i in range(len(vec)):
+            out.append(vec[i]/mag)
+        return tuple(out)
     else:
-        return (0,0,0)
+        for i in range(len(vec)):
+            out.append(0)
+        return tuple(out)
 
 def GetNormalVector(vec1:tuple, vec2:tuple) -> tuple:
     return NormalizeVector(ProduitVectoriel(vec1,vec2))
 
 def ProduitScalaire(vec1:tuple,vec2:tuple) -> float:
-    return vec1[0]*vec2[0]+vec1[1]*vec2[1]+vec1[2]*vec2[2]
+    ans = 0
+    for i in range(len(vec1)):
+        ans += vec1[i]*vec2[i]
+    return ans
 
 def isVecOnPlane(vec:tuple,normal:tuple) -> bool:
     a = normal[0]
