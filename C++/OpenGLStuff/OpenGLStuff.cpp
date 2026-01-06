@@ -2,28 +2,21 @@
 #include <GLFW/glfw3.h>
 
 #include <iostream>
+#include <fstream>
+#include <sstream>
 
 void framebuffer_size_callback(GLFWwindow *window, int width, int height);
 void processInput(GLFWwindow *window);
+std::string ReadTextFile(const std::string& FileName);
 
 // settings
 const unsigned int SCR_WIDTH = 800;
 const unsigned int SCR_HEIGHT = 600;
 
-const char *vertexShaderSource = 
-    "#version 330 core\n"
-    "layout (location = 0) in vec3 aPos;\n"
-    "void main()\n"
-    "{\n"
-    "   gl_Position = vec4(aPos.x, aPos.y, aPos.z, 1.0);\n"
-    "}\0";
-const char *fragmentShaderSource = 
-    "#version 330 core\n"
-    "out vec4 FragColor;\n"
-    "void main()\n"
-    "{\n"
-    "   FragColor = vec4(1.0f, 0.5f, 0.2f, 1.0f);\n"
-    "}\n\0";
+std::string fragmentShaderSource = ReadTextFile("frag.frag");
+std::string vertexShaderSource = ReadTextFile("vert.vert");
+const char* fragShaderCStr = fragmentShaderSource.c_str();
+const char* vertShaderCStr = vertexShaderSource.c_str();
 
 int main()
 {
@@ -63,7 +56,7 @@ int main()
     // ------------------------------------
     // vertex shader
     unsigned int vertexShader = glCreateShader(GL_VERTEX_SHADER);
-    glShaderSource(vertexShader, 1, &vertexShaderSource, NULL);
+    glShaderSource(vertexShader, 1, &vertShaderCStr, NULL);
     glCompileShader(vertexShader);
     // check for shader compile errors
     int success;
@@ -76,7 +69,7 @@ int main()
     }
     // fragment shader
     unsigned int fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
-    glShaderSource(fragmentShader, 1, &fragmentShaderSource, NULL);
+    glShaderSource(fragmentShader, 1, &fragShaderCStr, NULL);
     glCompileShader(fragmentShader);
     // check for shader compile errors
     glGetShaderiv(fragmentShader, GL_COMPILE_STATUS, &success);
@@ -156,6 +149,10 @@ int main()
 
         // draw our first triangle
         glUseProgram(shaderProgram);
+
+        int resLoc = glGetUniformLocation(shaderProgram, "uResolution");
+        glUniform2f(resLoc, (float)SCR_WIDTH, (float)SCR_HEIGHT);
+
         glBindVertexArray(VAO); // seeing as we only have a single VAO there's no need to bind it every time, but we'll do so to keep things a bit more organized
         //glDrawArrays(GL_TRIANGLES, 0, 6);
         glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
@@ -195,4 +192,17 @@ void framebuffer_size_callback(GLFWwindow *window, int width, int height)
     // make sure the viewport matches the new window dimensions; note that width and 
     // height will be significantly larger than specified on retina displays.
     glViewport(0, 0, width, height);
+}
+
+std::string ReadTextFile(const std::string& FileName)
+{
+    std::ifstream file(FileName);
+    if (!file.is_open())
+        return "";
+    
+    std::stringstream ss{};
+    ss << file.rdbuf();
+    file.close();
+    
+    return ss.str();
 }
