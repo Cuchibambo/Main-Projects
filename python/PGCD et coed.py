@@ -33,4 +33,4 @@ def PGCD(n1,n2):
         u1 = -qs[1]
         return f'PGCD : {a}, {n1} * {u1} + {n2} * {v1} = {n1*u1+n2*v1}.'
         
-print(PGCD(5484657,674536))
+print(PGCD(int(input('a= ')),int(input('b= '))))
