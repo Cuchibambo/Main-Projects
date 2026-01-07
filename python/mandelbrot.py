@@ -1,51 +1,87 @@
-import matplotlib.pyplot as plt
+import pygame
 import numpy as np
+from MathScripts import ChangeRange, Convert_HSV_to_RGB
 
-# Define the Mandelbrot function
-def mandelbrot(c, max_iterations):
-    z = 0
-    iteration = 0
-    while abs(z) <= 2 and iteration < max_iterations:
-        z = z*z + c
-        iteration += 1
-    return iteration
+iterations = 100
+def GetNextValue(z,c):
+    i = 0
+    while i < iterations and abs(z) < 2:
+        i += 1
+        z = z*z+c
+    return i
 
-# Set up the image size and plot range
-width, height = 800, 800  # Image size
-xmin, xmax = -2.5, 1.5    # X range (real part)
-ymin, ymax = -2.0, 2.0    # Y range (imaginary part)
+pygame.init()
+width, height = 500, 500
+Surface = pygame.display.set_mode((width, height))
+BackgroundColor = "#474747"
+pygame.draw.rect(Surface, BackgroundColor, pygame.Rect(0,0,width,height))
+pygame.display.flip()                                                
 
-# # Zoomed in range
-# xmin, xmax = -0.75, 0.25  # X range for zoom
-# ymin, ymax = -0.5, 0.5    # Y range for zoom
+ranges = 1.5
 
-# Create an array to hold the colors for each pixel
-image = np.zeros((height, width))
+isLEFT, isRIGHT, isUP, isDOWN, isP, isM = 0, 0, 0, 0, 0, 0
 
-# Maximum number of iterations
-max_iterations = 100
+Xoffset, Yoffset = 2, 2
 
-# Loop over each pixel in the image
-for i in range(width):
-    for j in range(height):
-        # Map pixel position to a point in the complex plane
-        x0 = xmin + (i / width) * (xmax - xmin)
-        y0 = ymin + (j / height) * (ymax - ymin)
-        c = complex(x0, y0)
+running = True
+while running:
+    for event in pygame.event.get():
+        if event.type == pygame.QUIT:
+            pygame.quit()
+            running = False
+            quit()
+        elif event.type == pygame.KEYDOWN:
+            if event.key == pygame.K_ESCAPE:
+                pygame.quit()
+                running = False
+                quit()
+
+            elif event.key == pygame.K_LEFT:
+                isLEFT = 1
+            elif event.key == pygame.K_RIGHT:
+                isRIGHT = 1
+            elif event.key == pygame.K_UP:
+                isUP = 1
+            elif event.key == pygame.K_DOWN:
+                isDOWN = 1
+            elif event.key == pygame.K_p:
+                isP = 1
+            elif event.key == pygame.K_m:
+                isM = 1
         
-        # Compute the Mandelbrot function for this point
-        iteration = mandelbrot(c, max_iterations)
-        
-        # Set the color based on the number of iterations
-        if iteration == max_iterations:
-            color = 0  # Black for points inside the set
-        else:
-            color = iteration  # Color based on the number of iterations
-        
-        image[j, i] = color
+        elif event.type == pygame.KEYUP:
+            if event.key == pygame.K_LEFT:
+                isLEFT = 0
+            elif event.key == pygame.K_RIGHT:
+                isRIGHT = 0
+            elif event.key == pygame.K_UP:
+                isUP = 0
+            elif event.key == pygame.K_DOWN:
+                isDOWN = 0
+            elif event.key == pygame.K_p:
+                isP = 0
+            elif event.key == pygame.K_m:
+                isM = 0
 
-# Display the Mandelbrot set
-plt.imshow(image, extent=[xmin, xmax, ymin, ymax], cmap='inferno')
-plt.colorbar()
-plt.title('Mandelbrot Set')
-plt.show()
+    MovementVector = (
+        isLEFT-isRIGHT,
+        isUP-isDOWN
+    )
+
+    Zoom = isP-isM
+    Xoffset += MovementVector[0]*0.1
+    Yoffset += MovementVector[1]*0.1
+    ranges += Zoom*0.1
+
+
+    pygame.draw.rect(Surface, BackgroundColor, pygame.Rect(0,0,width,height))
+
+    for x in range(width):
+        for y in range(height):
+            pixelDependent = complex(ChangeRange(x,0,width,-ranges,ranges)-Xoffset,ChangeRange(y,0,height,-ranges,ranges)-Yoffset)
+            Static = complex(-0.5251993,-0.5251993)
+            i = GetNextValue(pixelDependent,Static)
+            color = Convert_HSV_to_RGB((i*6,1,1))
+            pygame.draw.rect(Surface, color, pygame.Rect(x,y,1,1))
+
+    pygame.display.flip()

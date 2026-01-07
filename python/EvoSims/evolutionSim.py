@@ -21,7 +21,7 @@ class Blob():
 
 # Start pygame
 pygame.init()
-width, height = 500, 500
+width, height = 1920, 1080
 Surface = pygame.display.set_mode((width,height))
 clock = pygame.time.Clock()
 FPS = 30
@@ -68,6 +68,11 @@ while running:
             pygame.quit()
             running = False
             quit()
+        elif event.type == pygame.KEYDOWN:
+            if event.key == pygame.K_ESCAPE:
+                pygame.quit()
+                running = False
+                quit()
 
     clock.tick(FPS) # FPS handling
     pygame.draw.rect(Surface, BackgroundColor, pygame.Rect(0,0,width,height)) # Erase screen
@@ -123,7 +128,8 @@ while running:
             blob.hunger -= reproductionCost
             newSpeed = blob.speed + (random.random()*2) - 0.5
             newMaxhunger = blob.maxhunger + random.randint(-1, 1)
-            newHungerdecay = blob.hungerdecay + random.randint(-1, 1)
+            # newHungerdecay = blob.hungerdecay + random.randint(-1, 1)
+            newHungerdecay = blob.hungerdecay
             if BlobColorDependSpeed: currentColor = Convert_HSV_to_RGB((int((newSpeed/StartSpeed)*20),1,1))
             else: currentColor = BlobColor
             if BlobSizeDependsMaxHunger: currentSize = (blob.maxhunger*BaseSize)/StartMaxHunger

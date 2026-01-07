@@ -34,7 +34,12 @@ def GetDivisor(a:int) -> list:
     return Divisors
 
 def PGCD(a:int,b:int) -> int:
-    
+    Divisora, Divisorb = GetDivisor(a), GetDivisor(b)
+    PGCDcandidates = []
+    for i in Divisora:
+        if i in Divisorb:
+            PGCDcandidates.append(i)
+    return PGCDcandidates[-1]
 
 def isPrime(a:int) -> bool:
     if len(GetDivisor(a)) == 2:
@@ -217,6 +222,3 @@ def GetCoordsOfPointOnLine(t:float,Point1:tuple,Point2:tuple) -> tuple:
     for i in range(len(Point1)):
         AnsTuple.append(Point1[i] + t*(Point2[i]-Point1[i]))
     return tuple(AnsTuple)
-
-if __name__ == "__main__":
-    print(PGCD(13829,1928))
