@@ -31,7 +31,7 @@ vec1 = NormalizeVector((1,0,0))
 vec2 = NormalizeVector((0,0,1))
 Points = []
 
-OBJImport = r"3DModels\Ultrakill Peircer.obj"
+OBJImport = r"3DModels\wooden watch tower2.obj"
 
 PointsVertexPos = GetVerteciesFromOBJ(OBJImport,1)
 Faces = GetFacesFromOBJ(OBJImport)
