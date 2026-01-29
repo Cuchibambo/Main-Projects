@@ -1,4 +1,4 @@
-Word = "still"
+Word = "forts"
 WordArray = list(Word.lower())
 Guess = ""
 GuessArray = []

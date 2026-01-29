@@ -33,6 +33,17 @@ def GetDivisor(a:int) -> list:
     Divisors.sort()
     return Divisors
 
+<<<<<<< HEAD
+=======
+def PGCD(a:int,b:int) -> int:
+    r = 1
+    while r > 0:
+        r = a % b
+        a = b
+        b = r
+    return a
+
+>>>>>>> cb3c8c5b3eb84037f532378b1bfb12e374d2c048
 def isPrime(a:int) -> bool:
     if len(GetDivisor(a)) == 2:
         return True
@@ -245,5 +256,9 @@ def GetCoordsOfPointOnLine(t:float,Point1:tuple,Point2:tuple) -> tuple:
     return tuple(AnsTuple)
 
 if __name__ == "__main__":
+<<<<<<< HEAD
     print(toRGB((285,0.75,1)))
     print(toHSV(toRGB((285,0.75,1))))
+=======
+    print(Average((17.5,15.5,14.5,12,10.5,15,16.5,18,15.5,14.5,17,18)))
+>>>>>>> cb3c8c5b3eb84037f532378b1bfb12e374d2c048
