@@ -33,9 +33,6 @@ def GetDivisor(a:int) -> list:
     Divisors.sort()
     return Divisors
 
-def PGCD(a:int,b:int) -> int:
-    
-
 def isPrime(a:int) -> bool:
     if len(GetDivisor(a)) == 2:
         return True
@@ -156,7 +153,7 @@ def Average(data:list) -> float:
         sum += num
     return sum/len(data)
 
-def Convert_HSV_to_RGB(color:tuple) -> tuple:
+def toRGB(color:tuple) -> tuple:
     H = color[0]
     S = color[1]
     V = color[2]
@@ -201,6 +198,35 @@ def Convert_HSV_to_RGB(color:tuple) -> tuple:
     B = B*V
     return (int(R*255),int(G*255),int(B*255))
 
+def toHSV(color):
+    R = color[0]/255
+    G = color[1]/255
+    B = color[2]/255
+    V = max(R,G,B)
+    R = R/V
+    G = G/V
+    B = B/V
+    new_color = [R,G,B]
+    natural1 = new_color.index(1)
+    new_color.remove(1)
+    S = 1-min(new_color[0],new_color[1])
+    if natural1 != 0: R += S-1
+    if natural1 != 1: G += S-1
+    if natural1 != 2: B += S-1
+    if R == 1 and 0 <= G and G < 1:
+        H = G*60
+    elif G == 1 and 0 <= R and R < 1:
+        H = (2-R)*60
+    elif G == 1 and 0 <= B and B < 1:
+        H = (2+B)*60
+    elif B == 1 and 0 <= G and G < 1:
+        H = (4-G)*60
+    elif B == 1 and 0 <= R and R < 1:
+        H = (4+R)*60
+    elif R == 1 and 0 <= B and B < 1:
+        H = (6-B)*60
+    return [H,S,V]
+
 def Clamp(x:float,rangeUp:float,rangeDown:float) -> float:
     if x > rangeUp: x = rangeUp
     elif x < rangeDown: x = rangeDown
@@ -219,4 +245,5 @@ def GetCoordsOfPointOnLine(t:float,Point1:tuple,Point2:tuple) -> tuple:
     return tuple(AnsTuple)
 
 if __name__ == "__main__":
-    print(PGCD(13829,1928))
+    print(toRGB((285,0.75,1)))
+    print(toHSV(toRGB((285,0.75,1))))

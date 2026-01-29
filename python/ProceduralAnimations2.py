@@ -122,7 +122,7 @@ def InitializePoints(isRngColors,isSameSize):
             AddAPoint(Convert_HSV_to_RGB(CurrentColor),FirstPointSize)
 
 
-nbPoints = 30
+nbPoints = 100
 FoodSize = 8
 Closeness = 30
 grow = False
@@ -132,7 +132,7 @@ MaxFood = 12
 FoodOffset = 300
 Foods = []
 ColorsRandom = False
-PointsPerRainbow = 20
+PointsPerRainbow = 75
 StartColor = [60,0.8,1] # HSV in degrees and ratios respectively
 RandomBgColor = False
 SameSizePoints = True

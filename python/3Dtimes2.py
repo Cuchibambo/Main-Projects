@@ -229,12 +229,12 @@ while running == True:
             Value = Clamp(Value,1,0)
         if RainbowColorsTime:
             face[2] += 0.1
-            FaceColor = Convert_HSV_to_RGB((face[2],Saturation,Value))
+            FaceColor = toRGB((face[2],Saturation,Value))
         elif RainbowColorsDistance:
             face[2] = StartColor + face[1]*20
-            FaceColor = Convert_HSV_to_RGB((face[2],Saturation,Value))
+            FaceColor = toRGB((face[2],Saturation,Value))
         else:
-            FaceColor = Convert_HSV_to_RGB((face[2],Saturation,Value))
+            FaceColor = toRGB((face[2],Saturation,Value))
 
         try:
             PointsToDraw = []

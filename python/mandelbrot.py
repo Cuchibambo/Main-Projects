@@ -1,6 +1,6 @@
 import pygame
 import numpy as np
-from MathScripts import ChangeRange, Convert_HSV_to_RGB
+from MathScripts import ChangeRange, toRGB
 
 iterations = 100
 def GetNextValue(z,c):
@@ -81,7 +81,7 @@ while running:
             pixelDependent = complex(ChangeRange(x,0,width,-ranges,ranges)-Xoffset,ChangeRange(y,0,height,-ranges,ranges)-Yoffset)
             Static = complex(-0.5251993,-0.5251993)
             i = GetNextValue(pixelDependent,Static)
-            color = Convert_HSV_to_RGB((i*6,1,1))
+            color = toRGB((i*6,1,1))
             pygame.draw.rect(Surface, color, pygame.Rect(x,y,1,1))
 
     pygame.display.flip()
