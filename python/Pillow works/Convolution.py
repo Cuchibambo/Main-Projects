@@ -4,11 +4,12 @@ import requests
 
 res = 500
 
+print('Getting Image...')
 url = f"https://picsum.photos/{str(res)}"
 response = requests.get(url)
 img_data = response.content
-img = Image.open(BytesIO(img_data))
-
+Original_Image = Image.open(BytesIO(img_data))
+print('Image Gotten!')
 
 def AverageColor(cols):
     sum = [0,0,0]
@@ -16,15 +17,12 @@ def AverageColor(cols):
         sum[0] += col[0]
         sum[1] += col[1]
         sum[2] += col[2]
-    if sum[0] >5 : col[0] =5
-    if sum[1] >5 : col[1] =5
-    if sum[2] >5 : col[2] =5
     sum[0] = int(sum[0])
     sum[1] = int(sum[1])
     sum[2] = int(sum[2])
     return sum
 
-BoxBlur_Kernel = [
+BoxBlur_Kernel5x5 = [
     [1,1,1,1,1],
     [1,1,1,1,1],
     [1,1,1,1,1],
@@ -44,8 +42,34 @@ EdgeDetection_Kernel_Vertical = [
     [-1,-1,-1]
 ]
 
+Sharpen_Kernel = [
+    [0,-1,0],
+    [-1,5,-1],
+    [0,-1,0]
+]
+
+GaussianBlur_Kernel_3x3 = [
+    [1,2,1],
+    [2,4,2],
+    [1,2,1]
+]
+
+GaussianBlur_Kernel_5x5 = [
+    [1,4,7,4,1],
+    [4,16,26,16,4],
+    [7,26,41,26,7],
+    [4,16,26,16,4],
+    [1,4,7,4,1]
+]
+
+Test_Kernel = [
+    [1,1,1],
+    [1,-1,1],
+    [1,1,1]
+]
+
 def Convolution(img,kernel,autodiv,customdiv):
-    print("Started!")
+    print(f"Convolution Started!")
     new_img = Image.new(img.mode, img.size, (0,0,0)) # type: ignore
     kernelmax = 0
     for i in range(len(kernel)):
@@ -54,11 +78,13 @@ def Convolution(img,kernel,autodiv,customdiv):
     for x in range(res):
         for y in range(res):
             colors = []
+            xOffset = len(kernel)//2
+            yOffset = len(kernel[0])//2
             for dx in range(len(kernel)):
+                dx -= xOffset
                 for dy in range(len(kernel[0])):
                     try:
-                        dx -= len(kernel)//2
-                        dy -= len(kernel[0])//2
+                        dy -= yOffset
                         pending_color = img.getpixel((x+dx,y+dy))
                         prossesed_color = [0,0,0]
                         if autodiv:
@@ -74,13 +100,26 @@ def Convolution(img,kernel,autodiv,customdiv):
                         pass
             color = AverageColor(colors)
             new_img.putpixel((x,y),tuple(color))
-    print('Done!')
+    print(f'Convolution Done!')
     return new_img
 
+Original_Image.save('Original_Image.png')
 
-img.show()
-# edgeDetection_img = Convolution(img,EdgeDetection_Kernel_Horizontal,False,2)
-# edgeDetection_img = Convolution(edgeDetection_img,EdgeDetection_Kernel_Vertical,False,2)
-# edgeDetection_img.show()
-# blured_img = Convolution(img,BoxBlur_Kernel,True,1)
-# blured_img.show()
+# EdgeDetection_Image = Convolution(Original_Image,EdgeDetection_Kernel_Horizontal,False,2)
+# EdgeDetection_Image = Convolution(EdgeDetection_Image,EdgeDetection_Kernel_Vertical,False,2)
+# EdgeDetection_Image.save('EdgeDetection_Image.png')
+
+# BowBlured_Image5x5 = Convolution(Original_Image,BoxBlur_Kernel5x5,True,None)
+# BowBlured_Image5x5.save('BowBlured_Image5x5.png')
+
+# Sharpened_Image = Convolution(Original_Image, Sharpen_Kernel, False, 1)
+# Sharpened_Image.save('Sharpened_Image.png')
+
+# GaussianBlur3x3_Image = Convolution(Original_Image, GaussianBlur_Kernel_3x3, True, None)
+# GaussianBlur3x3_Image.save('GaussianBlur3x3_Image.png')
+
+# GaussianBlur5x5_Image = Convolution(Original_Image, GaussianBlur_Kernel_5x5, True, None)
+# GaussianBlur5x5_Image.save('GaussianBlur5x5_Image.png')
+
+# Test_Image = Convolution(Original_Image, Test_Kernel, True, None)
+# Test_Image.save('Test_Image.png')
