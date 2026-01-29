@@ -1,6 +1,4 @@
-from PIL import Image, ImageDraw
-import random
-import math
+from PIL import Image
 from io import BytesIO
 import requests
 
@@ -47,7 +45,8 @@ EdgeDetection_Kernel_Vertical = [
 ]
 
 def Convolution(img,kernel,autodiv,customdiv):
-    new_img = Image.new(img.mode, img.size, (0,0,0))
+    print("Started!")
+    new_img = Image.new(img.mode, img.size, (0,0,0)) # type: ignore
     kernelmax = 0
     for i in range(len(kernel)):
         for j in range(len(kernel[0])):
@@ -75,12 +74,13 @@ def Convolution(img,kernel,autodiv,customdiv):
                         pass
             color = AverageColor(colors)
             new_img.putpixel((x,y),tuple(color))
-    print('done!')
+    print('Done!')
     return new_img
 
-edgeDetection_img = Convolution(img,EdgeDetection_Kernel_Horizontal,False,2)
-edgeDetection_img = Convolution(edgeDetection_img,EdgeDetection_Kernel_Vertical,False,2)
-# blured_img = Convolution(img,BoxBlur_Kernel,True,None)
+
 img.show()
-edgeDetection_img.show()
+# edgeDetection_img = Convolution(img,EdgeDetection_Kernel_Horizontal,False,2)
+# edgeDetection_img = Convolution(edgeDetection_img,EdgeDetection_Kernel_Vertical,False,2)
+# edgeDetection_img.show()
+# blured_img = Convolution(img,BoxBlur_Kernel,True,1)
 # blured_img.show()
