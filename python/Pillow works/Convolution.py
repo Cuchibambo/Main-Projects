@@ -105,15 +105,15 @@ def Convolution(img,kernel,autodiv,customdiv):
 
 Original_Image.save('Original_Image.png')
 
-# EdgeDetection_Image = Convolution(Original_Image,EdgeDetection_Kernel_Horizontal,False,2)
-# EdgeDetection_Image = Convolution(EdgeDetection_Image,EdgeDetection_Kernel_Vertical,False,2)
-# EdgeDetection_Image.save('EdgeDetection_Image.png')
+EdgeDetection_Image = Convolution(Original_Image,EdgeDetection_Kernel_Horizontal,False,2)
+EdgeDetection_Image = Convolution(EdgeDetection_Image,EdgeDetection_Kernel_Vertical,False,2)
+EdgeDetection_Image.save('EdgeDetection_Image.png')
 
-# BowBlured_Image5x5 = Convolution(Original_Image,BoxBlur_Kernel5x5,True,None)
-# BowBlured_Image5x5.save('BowBlured_Image5x5.png')
+# BoxBlured_Image5x5 = Convolution(Original_Image,BoxBlur_Kernel5x5,True,None)
+# BoxBlured_Image5x5.save('BoxBlured_Image5x5.png')
 
-# Sharpened_Image = Convolution(Original_Image, Sharpen_Kernel, False, 1)
-# Sharpened_Image.save('Sharpened_Image.png')
+Sharpened_Image = Convolution(Original_Image, Sharpen_Kernel, False, 1)
+Sharpened_Image.save('Sharpened_Image.png')
 
 # GaussianBlur3x3_Image = Convolution(Original_Image, GaussianBlur_Kernel_3x3, True, None)
 # GaussianBlur3x3_Image.save('GaussianBlur3x3_Image.png')
