@@ -1,6 +1,7 @@
 from PIL import Image
 from io import BytesIO
 import requests
+import random as rnd
 
 res = 500
 
@@ -11,15 +12,20 @@ img_data = response.content
 Original_Image = Image.open(BytesIO(img_data))
 print('Image Gotten!')
 
-def AverageColor(cols):
+def AverageColor(cols, clampcolor):
     sum = [0,0,0]
     for col in cols:
         sum[0] += col[0]
         sum[1] += col[1]
         sum[2] += col[2]
-    sum[0] = int(sum[0])
-    sum[1] = int(sum[1])
-    sum[2] = int(sum[2])
+    if clampcolor:
+        sum[0] = int(sum[0])%256
+        sum[1] = int(sum[1])%256
+        sum[2] = int(sum[2])%256
+    else:
+        sum[0] = int(sum[0])
+        sum[1] = int(sum[1])
+        sum[2] = int(sum[2])
     return sum
 
 BoxBlur_Kernel5x5 = [
@@ -55,20 +61,26 @@ GaussianBlur_Kernel_3x3 = [
 ]
 
 GaussianBlur_Kernel_5x5 = [
-    [1,4,7,4,1],
-    [4,16,26,16,4],
-    [7,26,41,26,7],
-    [4,16,26,16,4],
-    [1,4,7,4,1]
+    [1,4,6,4,1],
+    [4,16,24,16,4],
+    [6,24,36,24,6],
+    [4,16,24,16,4],
+    [1,4,6,4,1]
 ]
 
-Test_Kernel = [
+GeneralEdgeDectection_Kernel = [
     [1,1,1],
-    [1,-1,1],
+    [1,-8,1],
     [1,1,1]
 ]
 
-def Convolution(img,kernel,autodiv,customdiv):
+Test_Kernel = [
+    [0,0,1],
+    [0,0,0],
+    [-1,0,0]
+]
+
+def Convolution(img,kernel,autodiv,customdiv,clampcolor):
     print(f"Convolution Started!")
     new_img = Image.new(img.mode, img.size, (0,0,0)) # type: ignore
     kernelmax = 0
@@ -98,28 +110,31 @@ def Convolution(img,kernel,autodiv,customdiv):
                         colors.append(prossesed_color)
                     except Exception as e:
                         pass
-            color = AverageColor(colors)
+            color = AverageColor(colors, clampcolor)
             new_img.putpixel((x,y),tuple(color))
     print(f'Convolution Done!')
     return new_img
 
 Original_Image.save('Original_Image.png')
 
-# EdgeDetection_Image = Convolution(Original_Image,EdgeDetection_Kernel_Horizontal,False,2)
-# EdgeDetection_Image = Convolution(EdgeDetection_Image,EdgeDetection_Kernel_Vertical,False,2)
+# EdgeDetection_Image = Convolution(Original_Image, EdgeDetection_Kernel_Horizontal, False, 2, False)
+# EdgeDetection_Image = Convolution(EdgeDetection_Image, EdgeDetection_Kernel_Vertical, False, 2, False)
 # EdgeDetection_Image.save('EdgeDetection_Image.png')
 
-# BowBlured_Image5x5 = Convolution(Original_Image,BoxBlur_Kernel5x5,True,None)
-# BowBlured_Image5x5.save('BowBlured_Image5x5.png')
+# BoxBlured_Image5x5 = Convolution(Original_Image,BoxBlur_Kernel5x5,True,None, False)
+# BoxBlured_Image5x5.save('BoxBlured_Image5x5.png')
 
-# Sharpened_Image = Convolution(Original_Image, Sharpen_Kernel, False, 1)
+# Sharpened_Image = Convolution(Original_Image, Sharpen_Kernel, False, 1, False)
 # Sharpened_Image.save('Sharpened_Image.png')
 
-# GaussianBlur3x3_Image = Convolution(Original_Image, GaussianBlur_Kernel_3x3, True, None)
+# GaussianBlur3x3_Image = Convolution(Original_Image, GaussianBlur_Kernel_3x3, True, None, False)
 # GaussianBlur3x3_Image.save('GaussianBlur3x3_Image.png')
 
-# GaussianBlur5x5_Image = Convolution(Original_Image, GaussianBlur_Kernel_5x5, True, None)
+# GaussianBlur5x5_Image = Convolution(Original_Image, GaussianBlur_Kernel_5x5, True, None, False)
 # GaussianBlur5x5_Image.save('GaussianBlur5x5_Image.png')
 
-# Test_Image = Convolution(Original_Image, Test_Kernel, True, None)
+# GeneralEdgeDetection_Image = Convolution(Original_Image, GeneralEdgeDectection_Kernel, False, 4, False)
+# GeneralEdgeDetection_Image.save('GeneralEdgeDetection_Image.png')
+
+# Test_Image = Convolution(Original_Image, Test_Kernel, False, 1, False)
 # Test_Image.save('Test_Image.png')
