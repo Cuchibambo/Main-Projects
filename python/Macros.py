@@ -2,14 +2,43 @@ import pyautogui
 import time
 import random
 time.sleep(1)
+pyautogui.moveTo(1000, 990)
+pyautogui.click()
 
-nbStart = 90
-nbEnd = 100
-pyautogui.moveTo(1000, 990, duration=0)
-for i in range(nbStart,nbEnd+1):
-    pyautogui.click()
-    pyautogui.typewrite(str(i))
-    pyautogui.press('enter')
+# letters = ['f','l','o','r','e','n','t']
+# letters = ['l','o','u','i','s','e']
+# letters = ['g','a','b','r','i','e','l']
+# letters = ['j','o','n','a','t','h','a','n']
+# letters = ['j','a','d','e']
+letters = ['n','i','c','o','l','a','s']
+index = 0
+
+# for _ in range(10):
+for i in range(2**len(letters)):
+    binaryIndex = bin(index)
+    binaryIndex = binaryIndex[2:]
+    newLettres = letters.copy()
+
+    for i in range(len(letters)):
+        i += 1
+        try:
+            if binaryIndex[-i] == "1":
+                newLettres[-i] = newLettres[-i].upper()
+        except:
+            pass
+    
+    newLettres.append(' ')
+    text = str.join('',newLettres)
+    pyautogui.write(text)
+    index += 1
+
+# nbStart = 90
+# nbEnd = 100
+# pyautogui.moveTo(1000, 990, duration=0)
+# for i in range(nbStart,nbEnd+1):
+#     pyautogui.click()
+#     pyautogui.typewrite(str(i))
+#     pyautogui.press('enter')
 
 # words = [
 #     "The spa attendant applied the deep cleaning mask to the gentlemans back.", 
