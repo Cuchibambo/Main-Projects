@@ -72,8 +72,8 @@ clock = pygame.time.Clock()
 dt = 1/FPS
 
 # Objects
-t = 0
-a, b, c = -0.02, -0.005, -0.25
+t = -10
+a, b, c = -0.2, 0.3, 5.1
 s1, s2 = CalcDiffEqua(a,b,c)
 redBall = Ball(Worldpos_to_pypos((0,0)),redColor,10)
 blackBall = Ball((0.0,0.0),blackColor,12)
