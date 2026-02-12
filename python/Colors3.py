@@ -24,17 +24,11 @@ while running:
             quit()
     
     pygame.draw.rect(Screen, BackgroundColor, pygame.Rect(0, 0, width, height))
-    BaseColor1 = (BaseColor[0]+random.randint(0,10),BaseColor[1]+random.randint(0,10),BaseColor[2]+random.randint(0,10))
-    BaseColor2 = (BaseColor[0]+random.randint(0,10),BaseColor[1]+random.randint(0,10),BaseColor[2]+random.randint(0,10))
-    BaseColor3 = (BaseColor[0]+random.randint(0,10),BaseColor[1]+random.randint(0,10),BaseColor[2]+random.randint(0,10))
-    BaseColor4 = (BaseColor[0]+random.randint(0,10),BaseColor[1]+random.randint(0,10),BaseColor[2]+random.randint(0,10))
-    if BaseColor1[0] > 255: BaseColor1[0] = 255
-    elif BaseColor1[0] < 0: BaseColor1[0] = 0
-    if BaseColor1[1] > 255: BaseColor1[1] = 255
-    elif BaseColor1[1] < 0: BaseColor1[1] = 0
-    if BaseColor1[2] > 255: BaseColor1[2] = 255
-    elif BaseColor1[2] < 0: BaseColor1[2] = 0
-    
+    a=2
+    BaseColor1 = [BaseColor[0]+random.randint(-a,a),BaseColor[1]+random.randint(-a,a),BaseColor[2]+random.randint(-a,a)]
+    BaseColor2 = [BaseColor[0]+random.randint(-a,a),BaseColor[1]+random.randint(-a,a),BaseColor[2]+random.randint(-a,a)]
+    BaseColor3 = [BaseColor[0]+random.randint(-a,a),BaseColor[1]+random.randint(-a,a),BaseColor[2]+random.randint(-a,a)]
+    BaseColor4 = [BaseColor[0]+random.randint(-a,a),BaseColor[1]+random.randint(-a,a),BaseColor[2]+random.randint(-a,a)]
     if BaseColor1[0] > 255: BaseColor1[0] = 255
     elif BaseColor1[0] < 0: BaseColor1[0] = 0
     if BaseColor1[1] > 255: BaseColor1[1] = 255
@@ -42,12 +36,26 @@ while running:
     if BaseColor1[2] > 255: BaseColor1[2] = 255
     elif BaseColor1[2] < 0: BaseColor1[2] = 0
 
-    if BaseColor1[0] > 255: BaseColor1[0] = 255
-    elif BaseColor1[0] < 0: BaseColor1[0] = 0
-    if BaseColor1[1] > 255: BaseColor1[1] = 255
-    elif BaseColor1[1] < 0: BaseColor1[1] = 0
-    if BaseColor1[2] > 255: BaseColor1[2] = 255
-    elif BaseColor1[2] < 0: BaseColor1[2] = 0
+    if BaseColor2[0] > 255: BaseColor2[0] = 255
+    elif BaseColor2[0] < 0: BaseColor2[0] = 0
+    if BaseColor2[1] > 255: BaseColor2[1] = 255
+    elif BaseColor2[1] < 0: BaseColor2[1] = 0
+    if BaseColor2[2] > 255: BaseColor2[2] = 255
+    elif BaseColor2[2] < 0: BaseColor2[2] = 0
+
+    if BaseColor3[0] > 255: BaseColor3[0] = 255
+    elif BaseColor3[0] < 0: BaseColor3[0] = 0
+    if BaseColor3[1] > 255: BaseColor3[1] = 255
+    elif BaseColor3[1] < 0: BaseColor3[1] = 0
+    if BaseColor3[2] > 255: BaseColor3[2] = 255
+    elif BaseColor3[2] < 0: BaseColor3[2] = 0
+
+    if BaseColor4[0] > 255: BaseColor4[0] = 255
+    elif BaseColor4[0] < 0: BaseColor4[0] = 0
+    if BaseColor4[1] > 255: BaseColor4[1] = 255
+    elif BaseColor4[1] < 0: BaseColor4[1] = 0
+    if BaseColor4[2] > 255: BaseColor4[2] = 255
+    elif BaseColor4[2] < 0: BaseColor4[2] = 0
     pygame.draw.rect(Screen, BaseColor1, (0,0,width/2,height/2))
     pygame.draw.rect(Screen, BaseColor2, (width/2,0,width/2,height/2))
     pygame.draw.rect(Screen, BaseColor3, (0,height/2,width/2,height/2))
