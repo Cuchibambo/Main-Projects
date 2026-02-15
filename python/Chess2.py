@@ -5,7 +5,11 @@ BackgroundColor = "#333333"
 LightSquareColor = "#faf8dd"
 DarkSquareColor = "#72a945"
 HighlightedSquareColor = "#99d55c"
+<<<<<<< HEAD
 WhiteTextColor = "#6b6c61"
+=======
+WhiteTextColor = "#595a50"
+>>>>>>> fc6ed7198fd5ed10e75daa1df7f7d2fcc72f2c8d
 BlackTextColor = "#45463E"
 MovementSquareColor = "#accfd8"
 TakeSquareColor = "#d8acac"
