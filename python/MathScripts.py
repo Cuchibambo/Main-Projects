@@ -244,6 +244,12 @@ def GetCoordsOfPointOnLine(t:float,Point1:tuple,Point2:tuple) -> tuple:
         AnsTuple.append(Point1[i] + t*(Point2[i]-Point1[i]))
     return tuple(AnsTuple)
 
+def projeterOrth(a,b,c,d,xa,ya,za):
+    t = -((a*xa)+(b*ya)+(c*za)+d)/((a*a)+(b*b)+(c*c))
+    x = xa+(t*a)
+    y = ya+(t*b)
+    z = za+(t*c)
+    return (x,y,z)
+
 if __name__ == "__main__":
-    print(toRGB((285,0.75,1)))
-    print(toHSV(toRGB((285,0.75,1))))
+    print(projeterOrth(2,-1,0,-16,1,-1,0))
