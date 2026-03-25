@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.27 (MiKTeX 25.4) (preloaded format=pdflatex 2025.9.12)  5 NOV 2025 20:11
+This is pdfTeX, Version 3.141592653-2.6-1.40.27 (MiKTeX 25.4) (preloaded format=pdflatex 2025.9.12)  23 MAR 2026 22:06
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -239,11 +239,11 @@ L3 programming layer <2025-07-20>
 Here is how much of TeX's memory you used:
  3436 strings out of 468134
  58393 string characters out of 5430740
- 472947 words of memory out of 5000000
+ 474947 words of memory out of 5000000
  32064 multiletter control sequences out of 15000+600000
  629973 words of font info for 50 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
- 57i,8n,65p,228b,385s stack positions out of 10000i,1000n,20000p,200000b,200000s
+ 57i,10n,65p,228b,385s stack positions out of 10000i,1000n,20000p,200000b,200000s
  <C:\Users\maubi\AppData\Local\MiKTeX\fonts/pk/ljfour/jknappen/ec/dpi600\ecti
 1000.pk> <C:\Users\maubi\AppData\Local\MiKTeX\fonts/pk/ljfour/jknappen/ec/dpi60
 0\ecrm1000.pk><C:/Users/maubi/AppData/Local/Programs/MiKTeX/fonts/type1/public/
@@ -251,14 +251,16 @@ amsfonts/cm/cmex10.pfb><C:/Users/maubi/AppData/Local/Programs/MiKTeX/fonts/type
 1/public/amsfonts/cm/cmmi10.pfb><C:/Users/maubi/AppData/Local/Programs/MiKTeX/f
 onts/type1/public/amsfonts/cm/cmmi7.pfb><C:/Users/maubi/AppData/Local/Programs/
 MiKTeX/fonts/type1/public/amsfonts/cm/cmr10.pfb><C:/Users/maubi/AppData/Local/P
-rograms/MiKTeX/fonts/type1/public/amsfonts/cm/cmr7.pfb><C:/Users/maubi/AppData/
-Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmsy10.pfb><C:/Users/maubi
-/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmsy7.pfb><C:/Use
-rs/maubi/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/symbols/msbm
-10.pfb>
-Output written on sansnom-1.pdf (1 page, 91921 bytes).
+rograms/MiKTeX/fonts/type1/public/amsfonts/cm/cmr5.pfb><C:/Users/maubi/AppData/
+Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmr7.pfb><C:/Users/maubi/A
+ppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmsy10.pfb><C:/User
+s/maubi/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmsy5.pfb>
+<C:/Users/maubi/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cm
+sy7.pfb><C:/Users/maubi/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfon
+ts/symbols/msbm10.pfb>
+Output written on sansnom-1.pdf (1 page, 111197 bytes).
 PDF statistics:
- 90 PDF objects out of 1000 (max. 8388607)
+ 102 PDF objects out of 1000 (max. 8388607)
  0 named destinations out of 1000 (max. 500000)
  1 words of extra memory for PDF output out of 10000 (max. 10000000)
 
