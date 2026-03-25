@@ -20,9 +20,19 @@
 
 
 
-test = 'Hello I am beatiful'
+# test = 'Hello I am beatiful'
 # while test.endswith('/') == False:
 #     test = test[:-1]
 #     print(test)
 
-print()
+# seet = set()
+# for A in range(1,7):
+#     for B in range(1,7):
+#         for D in range(1,7):
+#             if D != A and D != B:
+#                 for E in range(1,7):
+#                     if E != B:
+#                         for C in range(1,7):
+#                             if C != A and C != E:
+#                                 seet.add((A,B,C,D,E))
+# print(len(seet))
