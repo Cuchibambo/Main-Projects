@@ -11,7 +11,7 @@ width, height = 500, 500
 
 Voronoi = Image.new('RGB', (width, height))
 
-nbNodes = 3
+nbNodes = 5
 
 Nodes = [Node((random.randint(0,width),random.randint(0,height)),(random.randint(0,255),random.randint(0,255),random.randint(0,255))) for _ in range(nbNodes)]
 
