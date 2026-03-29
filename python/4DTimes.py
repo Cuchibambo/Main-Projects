@@ -69,7 +69,7 @@ class Face:
         self.vertexIndexs = vertexIndexs
         self.color = EdgeColor
     def draw(self, orgin, vs, angle, rot_plane):
-        self.color[0] += dt*10
+        self.color[0] += dt
         vertexPos = []
         for vIndex in self.vertexIndexs:
             pos = vs[vIndex].pos
