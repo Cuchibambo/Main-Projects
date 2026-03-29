@@ -1,10 +1,12 @@
 import pygame
 from math import pi, cos, sin
+from MathScripts import toRGB
 
 
 # Colors
 BackgroundColor = "#81abc0"
-PointColor = "#e07c09"
+PointColor = "#35085c"
+EdgeColor = [0,0.7,1]
 
 
 def toScreen(pos):
@@ -65,7 +67,9 @@ class Vertex:
 class Face:
     def __init__(self,vertexIndexs) -> None:
         self.vertexIndexs = vertexIndexs
+        self.color = EdgeColor
     def draw(self, orgin, vs, angle, rot_plane):
+        self.color[0] += dt
         vertexPos = []
         for vIndex in self.vertexIndexs:
             pos = vs[vIndex].pos
@@ -75,7 +79,7 @@ class Face:
             pos = to3d(pos)
             vertexPos.append(to2d(pos))
         for i in range(len(self.vertexIndexs)):
-            pygame.draw.line(screen, PointColor, toScreen(vertexPos[i]), toScreen(vertexPos[(i+1)%len(self.vertexIndexs)]))
+            pygame.draw.line(screen, toRGB(self.color), toScreen(vertexPos[i]), toScreen(vertexPos[(i+1)%len(self.vertexIndexs)]), 10)
 
 class Object:
     def __init__(self, vs, fs, origin) -> None:
@@ -83,10 +87,10 @@ class Object:
         self.fs = fs
         self.origin = origin
         self.angle = 0
-        self.rot_plane = [(0,3), (1,2)]
+        self.rot_plane = [(0,2), (0,3), (1,3)]
     def draw(self):
-        for v in self.vs:
-            v.draw(self.origin,self.angle,self.rot_plane)
+        # for v in self.vs:
+        #     v.draw(self.origin,self.angle,self.rot_plane)
         for f in self.fs:
             f.draw(self.origin, self.vs, self.angle, self.rot_plane)
 
@@ -130,10 +134,7 @@ cube = Object(
 )
 
 
-
-# Tesseract (4D cube)
-tesseract = Object(
-    [
+tesseract_vs = [
         # --- w = +0.5 cube ---
         Vertex([-0.5, -0.5,  0.5,  0.5]),  # 0
         Vertex([ 0.5, -0.5,  0.5,  0.5]),  # 1
@@ -155,8 +156,8 @@ tesseract = Object(
         Vertex([ 0.5, -0.5, -0.5, -0.5]),  # 13
         Vertex([ 0.5,  0.5, -0.5, -0.5]),  # 14
         Vertex([-0.5,  0.5, -0.5, -0.5])   # 15
-    ],
-    [
+    ]
+tesseract_fs = [
         # --- faces of w = +0.5 cube ---
         Face([0, 1, 2, 3]),
         Face([4, 5, 6, 7]),
@@ -183,9 +184,11 @@ tesseract = Object(
         Face([5, 6,14,13]),
         Face([6, 7,15,14]),
         Face([7, 4,12,15])
-    ],
-    [0, 0, 1.5, 0]
-)
+    ]
+tesseract_origin = [0, 0, 1.5, 0]
+# Tesseract (4D cube)
+tesseract = Object(tesseract_vs,tesseract_fs,tesseract_origin)
+# tesseract1 = Object(tesseract_vs,tesseract_fs,tesseract_origin)
 
 
 
@@ -194,6 +197,18 @@ tesseract = Object(
 class Window:
     def __init__(self) -> None:
         self.running = False
+        self.isRotating = 1
+        self.rotSpeed = 1
+    def leftClick(self,Mousepos):
+        match self.isRotating:
+            case 0:
+                self.isRotating = 1
+            case 1:
+                self.isRotating = 0
+    def rightClick(self,Mousepos):
+        pass
+    def mwheel(self,e):
+        self.rotSpeed += e.y 
     def run(self):
         self.running = True
         while self.running:
@@ -202,17 +217,25 @@ class Window:
                     pygame.quit()
                     self.running = False
                     quit()
-                    
+                elif event.type == pygame.MOUSEBUTTONDOWN:
+                    match event.button:
+                        case 1:
+                            self.leftClick(pygame.mouse.get_pos())
+                        case 3:
+                            self.rightClick(pygame.mouse.get_pos())
+                elif event.type == pygame.MOUSEWHEEL:
+                    self.mwheel(event)
             # main loop
             clock.tick(FPS)
             pygame.draw.rect(screen, BackgroundColor, pygame.Rect(0, 0, width, height)) # empty
             
-            self.update()
+            self.update([tesseract])
             
             pygame.display.flip()
-    def update(self):
-        tesseract.draw()
-        tesseract.angle += dt*pi*0.5
+    def update(self, objs):
+        for obj in objs:
+            obj.draw()
+            obj.angle += dt*pi*0.5*self.isRotating*self.rotSpeed
             
         
 # Pygame  
