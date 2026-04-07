@@ -7,6 +7,7 @@ dark_bg_color = "#191919"
 square_color = "#a5a5a5"
 number_color = "#4b4b4b"
 placing_number_color = "#677b8b"
+erasing_color = "#a02f2f"
 
 
 class Square:
@@ -21,8 +22,12 @@ class Square:
         screen_pos = (self.pos[0]*square_size,
                       self.pos[1]*square_size)
         pygame.draw.rect(screen, square_color, (screen_pos[0]+gridlines_girth,screen_pos[1]+gridlines_girth,square_size-gridlines_girth*2,square_size-gridlines_girth*2))
-        if self.isHovering:
+        if self.isHovering and self.placing_value != 0:
             RenderedText = Textfont.render(str(self.placing_value),True,placing_number_color)
+            TextRect = RenderedText.get_rect(center=(screen_pos[0]+square_size/2, screen_pos[1]+square_size/2))
+            screen.blit(RenderedText,TextRect)
+        elif self.isHovering and self.placing_value == 0:
+            RenderedText = Textfont.render('X',True,erasing_color)
             TextRect = RenderedText.get_rect(center=(screen_pos[0]+square_size/2, screen_pos[1]+square_size/2))
             screen.blit(RenderedText,TextRect)
         elif self.value != 0:
@@ -184,17 +189,14 @@ class Sudoku:
             history.append(square)
 
 
-
 pygame.init()
-res = 720
+res = 1000
 Textfont = pygame.font.SysFont('monospace', int(0.07*res), bold=True)
 screen = pygame.display.set_mode((res,res))
-
-
 
 # Game Settings
 gridlines_girth = 0.003*res
 
 # Game Start
-sudoku = Sudoku(9)
+sudoku = Sudoku()
 sudoku.run()
