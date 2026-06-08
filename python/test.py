@@ -49,10 +49,17 @@
 # print(seet.pop())
 # print(seet)
 
-LIST = [0, 1, 2]
-def a(a):
-    a[0] = 3
-    print(a)
-print(LIST)
-a(LIST)
-print(LIST)
+# LIST = [0, 1, 2]
+# def a(a):
+#     a[0] = 3
+#     print(a)
+# print(LIST)
+# a(LIST)
+# print(LIST)
+
+def f(x): 
+    if x%2 == 0:
+        return x
+
+print(f(1) == None)
+    
