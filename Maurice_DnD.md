@@ -14,8 +14,8 @@ As du parcours, le tieffelin Maurice s'est entraîné depuis des années pour va
 **SAG:** 13   
 **CHA:** 8   
 
-
-**PV:** 17   
+**MAX PV** 17  
+**PV:** 17  
 **DV:** 1d8 par niveau   
 **PO:** 36 PO   
 **CA:** 15
