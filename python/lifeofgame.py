@@ -5,7 +5,7 @@ BackgroundColor = "#2b2c2d"
 AliveCellColor = "#f2f3f4"
 RedTeamColor = "#bb1c1c"
 BlueTeamColor = "#365bbf"
-DeadCellColor = "#323143"
+DeadCellColor = "#1C1C1E"
 
 class Cell:
     def __init__(self, pos):
@@ -70,7 +70,7 @@ class Game:
         
         RedCount, BlueCount = self.countColors()
 
-        RenderedText = Textfont.render(f'Red population : {RedCount} | Blue population : {BlueCount}',True,RedTeamColor)
+        RenderedText = Textfont.render(f'Red population : {RedCount} | Blue population : {BlueCount}',True,AliveCellColor)
         TextRect = RenderedText.get_rect(center=(resolution*0.5,resolution*0.1))
         screen.blit(RenderedText,TextRect)
 
