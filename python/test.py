@@ -36,3 +36,30 @@
 #                             if C != A and C != E:
 #                                 seet.add((A,B,C,D,E))
 # print(len(seet))
+
+# seet = set()
+
+# seet.add(1)
+# seet.add(2)
+
+# print(seet)
+
+# print(next(iter(seet)))
+
+# print(seet.pop())
+# print(seet)
+
+# LIST = [0, 1, 2]
+# def a(a):
+#     a[0] = 3
+#     print(a)
+# print(LIST)
+# a(LIST)
+# print(LIST)
+
+def f(x): 
+    if x%2 == 0:
+        return x
+
+print(f(1) == None)
+    

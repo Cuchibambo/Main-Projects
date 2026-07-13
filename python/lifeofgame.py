@@ -140,8 +140,8 @@ GridSize = 50
 GridLinesWidth = 0
 updateTime = 0.01
 
-maxRed = 10
-maxBlue = 10
+maxRed = 10000
+maxBlue = 10000
 
 underpopulationthreashold = 2
 overpopulationtrhreashold = 3

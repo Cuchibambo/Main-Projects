@@ -8,8 +8,9 @@ PointColor = "#35085c"
 class Game:
     def __init__(self) -> None:
         self.running = False
+        self.zoom = 0.12
     def leftClick(self,Mousepos):
-        self.update(lambda x,y:((x-250)**2)+((y-250)**2)-1000)
+        self.update(lambda x,y:(2.71**x)-y)
     def rightClick(self,Mousepos):
         pass
     def mwheel(self,e):
@@ -41,7 +42,7 @@ class Game:
         for y in range(height+1):
             line = []
             for x in range(width+1):
-                value = func(x,y)
+                value = func((x-width/2)*self.zoom,(height-(y+height/3))*self.zoom)
                 if value == 0:
                     pygame.draw.rect(screen, PointColor, (x,y,1,1))
                     sign = 1
