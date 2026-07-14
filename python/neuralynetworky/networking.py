@@ -186,13 +186,13 @@ a = 0.001
 
 
 # input_layer = Layer(784)
-# hidden_layer_1 = Layer(16)
-# hidden_layer_2 = Layer(16)
+# hidden_layer_1 = Layer(64)
+# hidden_layer_2 = Layer(64)
 # output_layer = Layer(10)
 
 # network = Network([input_layer,hidden_layer_1,hidden_layer_2,output_layer])
 # network.makeEdges()
-# network.train(0.01)
+# network.train(a)
 # print(network.test()*100,"%")
 # network.save()
 
