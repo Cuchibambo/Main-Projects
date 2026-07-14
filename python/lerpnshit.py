@@ -56,7 +56,6 @@ class Game:
     def update(self):
         pygame.draw.rect(Screen, BackgroundColor, pygame.Rect(0, 0, width, height)) # Clear Screen
         LerpedPoint = lerp(a,b,self.t)
-        print(toScreen(LerpedPoint))
         pygame.draw.circle(Screen, PointColor, toScreen(LerpedPoint), 5)
     
     def leftClick(self,MousePos):
