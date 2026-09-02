@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"enum":["ZStringError"],"fn":["zstrings_as_zstrs"],"struct":["ArrayZString","CharDecoder","ZStr","ZString"]};

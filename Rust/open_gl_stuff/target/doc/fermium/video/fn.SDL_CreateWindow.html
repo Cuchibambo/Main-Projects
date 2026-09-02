@@ -1,0 +1,46 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Create a window with the specified position, dimensions, and flags."><title>SDL_CreateWindow in fermium::video - Rust</title><script>if(window.location.protocol!=="file:")document.head.insertAdjacentHTML("beforeend","SourceSerif4-Regular-6b053e98.ttf.woff2,FiraSans-Italic-81dc35de.woff2,FiraSans-Regular-0fe48ade.woff2,FiraSans-MediumItalic-ccf7e434.woff2,FiraSans-Medium-e1aa3f0a.woff2,SourceCodePro-Regular-8badfe75.ttf.woff2,SourceCodePro-Semibold-aa29a496.ttf.woff2".split(",").map(f=>`<link rel="preload" as="font" type="font/woff2"href="../../static.files/${f}">`).join(""))</script><link rel="stylesheet" href="../../static.files/normalize-9960930a.css"><link rel="stylesheet" href="../../static.files/rustdoc-17e0aaed.css"><meta name="rustdoc-vars" data-root-path="../../" data-static-root-path="../../static.files/" data-current-crate="fermium" data-themes="" data-resource-suffix="" data-rustdoc-version="1.97.1 (8bab26f4f 2026-07-14)" data-channel="1.97.1" data-search-js="search-fd9372ac.js" data-stringdex-js="stringdex-2da4960a.js" data-settings-js="settings-170eb4bf.js" ><script src="../../static.files/storage-41dd4d93.js"></script><script defer src="sidebar-items.js"></script><script defer src="../../static.files/main-fcd733ba.js"></script><noscript><link rel="stylesheet" href="../../static.files/noscript-f7c3ffd8.css"></noscript><link rel="alternate icon" type="image/png" href="../../static.files/favicon-32x32-eab170b8.png"><link rel="icon" type="image/svg+xml" href="../../static.files/favicon-044be391.svg"></head><body class="rustdoc fn"><a class="skip-main-content" href="#main-content">Skip to main content</a><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><rustdoc-topbar><h2><a href="#">SDL_CreateWindow</a></h2></rustdoc-topbar><nav class="sidebar"><div class="sidebar-crate"><h2><a href="../../fermium/index.html">fermium</a><span class="version">22605.0.1</span></h2></div><div class="sidebar-elems"><div id="rustdoc-modnav"><h2><a href="index.html">In fermium::<wbr>video</a></h2></div></div></nav><div class="sidebar-resizer" title="Drag to resize sidebar"></div><main><div class="width-limiter"><section id="main-content" class="content" tabindex="-1"><div class="main-heading"><div class="rustdoc-breadcrumbs"><a href="../index.html">fermium</a>::<wbr><a href="index.html">video</a></div><h1>Function <span class="fn">SDL_<wbr>Create<wbr>Window</span>&nbsp;<button id="copy-path" title="Copy item path to clipboard">Copy item path</button></h1><rustdoc-toolbar></rustdoc-toolbar><span class="sub-heading"><a class="src" href="../../src/fermium/video.rs.html#537-539">Source</a> </span></div><pre class="rust item-decl"><code>pub unsafe extern &quot;C&quot; fn SDL_CreateWindow(
+    title: <a class="primitive" href="https://doc.rust-lang.org/1.97.1/core/primitive.pointer.html">*const </a><a class="type" href="../type.c_char.html" title="type fermium::c_char">c_char</a>,
+    x: <a class="type" href="../type.c_int.html" title="type fermium::c_int">c_int</a>,
+    y: <a class="type" href="../type.c_int.html" title="type fermium::c_int">c_int</a>,
+    w: <a class="type" href="../type.c_int.html" title="type fermium::c_int">c_int</a>,
+    h: <a class="type" href="../type.c_int.html" title="type fermium::c_int">c_int</a>,
+    flags: <a class="primitive" href="https://doc.rust-lang.org/1.97.1/core/primitive.u32.html">u32</a>,
+) -&gt; <a class="primitive" href="https://doc.rust-lang.org/1.97.1/core/primitive.pointer.html">*mut </a><a class="struct" href="struct.SDL_Window.html" title="struct fermium::video::SDL_Window">SDL_Window</a></code></pre><details class="toggle top-doc" open><summary class="hideme"><span>Expand description</span></summary><div class="docblock"><p>Create a window with the specified position, dimensions, and flags.</p>
+<ul>
+<li><code>title</code> The title of the window, in UTF-8 encoding.</li>
+<li><code>x</code> The x position of the window, <a href="constant.SDL_WINDOWPOS_CENTERED.html" title="constant fermium::video::SDL_WINDOWPOS_CENTERED"><code>SDL_WINDOWPOS_CENTERED</code></a>, or
+<a href="constant.SDL_WINDOWPOS_UNDEFINED.html" title="constant fermium::video::SDL_WINDOWPOS_UNDEFINED"><code>SDL_WINDOWPOS_UNDEFINED</code></a>.</li>
+<li><code>y</code> The y position of the window, <a href="constant.SDL_WINDOWPOS_CENTERED.html" title="constant fermium::video::SDL_WINDOWPOS_CENTERED"><code>SDL_WINDOWPOS_CENTERED</code></a>, or
+<a href="constant.SDL_WINDOWPOS_UNDEFINED.html" title="constant fermium::video::SDL_WINDOWPOS_UNDEFINED"><code>SDL_WINDOWPOS_UNDEFINED</code></a>.</li>
+<li><code>w</code> The width of the window, in screen coordinates.</li>
+<li><code>h</code> The height of the window, in screen coordinates.</li>
+<li><code>flags</code> The flags for the window, a mask of any of the following:
+<a href="constant.SDL_WINDOW_FULLSCREEN.html" title="constant fermium::video::SDL_WINDOW_FULLSCREEN"><code>SDL_WINDOW_FULLSCREEN</code></a>,    <a href="constant.SDL_WINDOW_OPENGL.html" title="constant fermium::video::SDL_WINDOW_OPENGL"><code>SDL_WINDOW_OPENGL</code></a>,
+<a href="constant.SDL_WINDOW_HIDDEN.html" title="constant fermium::video::SDL_WINDOW_HIDDEN"><code>SDL_WINDOW_HIDDEN</code></a>,        <a href="constant.SDL_WINDOW_BORDERLESS.html" title="constant fermium::video::SDL_WINDOW_BORDERLESS"><code>SDL_WINDOW_BORDERLESS</code></a>,
+<a href="constant.SDL_WINDOW_RESIZABLE.html" title="constant fermium::video::SDL_WINDOW_RESIZABLE"><code>SDL_WINDOW_RESIZABLE</code></a>,     <a href="constant.SDL_WINDOW_MAXIMIZED.html" title="constant fermium::video::SDL_WINDOW_MAXIMIZED"><code>SDL_WINDOW_MAXIMIZED</code></a>,
+<a href="constant.SDL_WINDOW_MINIMIZED.html" title="constant fermium::video::SDL_WINDOW_MINIMIZED"><code>SDL_WINDOW_MINIMIZED</code></a>,     <a href="constant.SDL_WINDOW_INPUT_GRABBED.html" title="constant fermium::video::SDL_WINDOW_INPUT_GRABBED"><code>SDL_WINDOW_INPUT_GRABBED</code></a>,
+<a href="constant.SDL_WINDOW_ALLOW_HIGHDPI.html" title="constant fermium::video::SDL_WINDOW_ALLOW_HIGHDPI"><code>SDL_WINDOW_ALLOW_HIGHDPI</code></a>, <a href="constant.SDL_WINDOW_VULKAN.html" title="constant fermium::video::SDL_WINDOW_VULKAN"><code>SDL_WINDOW_VULKAN</code></a>,
+<a href="constant.SDL_WINDOW_METAL.html" title="constant fermium::video::SDL_WINDOW_METAL"><code>SDL_WINDOW_METAL</code></a>.</li>
+</ul>
+<p><strong>Returns:</strong> The created window, or <code>NULL</code> if window creation failed.</p>
+<p>If the window is created with the <code>SDL_WINDOW_ALLOW_HIGHDPI</code> flag, its
+size in pixels may differ from its size in screen coordinates on
+platforms with high-DPI support (e.g. iOS and Mac OS X). Use
+SDL_GetWindowSize() to query the client area’s size in screen
+coordinates, and SDL_GL_GetDrawableSize(), SDL_Vulkan_GetDrawableSize(),
+or SDL_GetRendererOutputSize() to query the drawable size in pixels.</p>
+<p>If the window is created with any of the SDL_WINDOW_OPENGL or
+<code>SDL_WINDOW_VULKAN</code> flags, then the corresponding LoadLibrary function
+(<a href="fn.SDL_GL_LoadLibrary.html" title="fn fermium::video::SDL_GL_LoadLibrary"><code>SDL_GL_LoadLibrary</code></a> or [<code>SDL_Vulkan_LoadLibrary</code>]) is called and the
+corresponding UnloadLibrary function is called by <a href=""><code>SDL_DestroyWindow</code></a>.</p>
+<p>If <code>SDL_WINDOW_VULKAN</code> is specified and there isn’t a working Vulkan
+driver, <a href=""><code>SDL_CreateWindow</code></a> will fail because
+<a href=""><code>SDL_Vulkan_LoadLibrary</code></a> will fail.</p>
+<p>If <code>SDL_WINDOW_METAL</code> is specified on an OS that does not support Metal,
+<a href=""><code>SDL_CreateWindow</code></a> will fail.</p>
+<p><strong>Note:</strong> On non-Apple devices, SDL requires you to either not link to the
+Vulkan loader or link to a dynamic library version. This limitation
+may be removed in a future version of SDL.</p>
+<p>See Also: <a href="fn.SDL_DestroyWindow.html" title="fn fermium::video::SDL_DestroyWindow"><code>SDL_DestroyWindow</code></a>, <a href="fn.SDL_GL_LoadLibrary.html" title="fn fermium::video::SDL_GL_LoadLibrary"><code>SDL_GL_LoadLibrary</code></a>,
+[<code>SDL_Vulkan_LoadLibrary</code>]</p>
+</div></details></section></div></main></body></html>

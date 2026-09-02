@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"constant":["FRAGMENT_SHADER","VERTEX_SHADER"],"fn":["create_program","create_shader","create_triangle","main","should_quit"]};

@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"fn":["SDL_FreeRW","SDL_RWFromFile"],"struct":["SDL_RWops"]};

@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"fn":["SDL_GetCPUCacheLineSize","SDL_GetCPUCount","SDL_GetSystemRAM"]};

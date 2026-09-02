@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"fn":["SDL_LoadDollarTemplates","SDL_RecordGesture","SDL_SaveAllDollarTemplates","SDL_SaveDollarTemplate"],"struct":["SDL_GestureID"]};

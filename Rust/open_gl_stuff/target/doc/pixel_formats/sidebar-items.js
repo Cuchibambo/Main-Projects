@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"fn":["linear_f32_to_srgb_u8","srgb_u8_to_linear_f32"],"struct":["GbaColor","r16_Unorm","r16g16b16_Unorm","r16g16b16a16_Unorm","r32_Sfloat","r32g32b32_Sfloat","r32g32b32a32_Sfloat","r8_Srgb","r8_Unorm","r8g8b8_Srgb","r8g8b8_Unorm","r8g8b8a8_Srgb","r8g8b8a8_Unorm"]};

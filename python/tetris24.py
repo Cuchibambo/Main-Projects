@@ -12,6 +12,7 @@ class Tetris:
         self.board = [None for _ in range(240)]
 
     def run(self):
+        
         # Start Pygame
         pygame.init()
         self.text_font = pygame.font.SysFont('Segoe UI Symbol', 45, bold=False)
@@ -29,7 +30,8 @@ class Tetris:
         pygame.time.set_timer(self.GRAVITY_EVENT,1000,1)
 
         self.board[40] = Test_Piece([0,0])
-
+        self.active_piece = self.board[40]
+        
         # Colors
         self.background_color = "#333333"
         self.outline_color = "#ffffff"
@@ -48,7 +50,7 @@ class Tetris:
                         case 3:
                             self.rightClick(pygame.mouse.get_pos())
                 elif event.type == self.GRAVITY_EVENT:
-                    self.active_block.pos[1] -= 1
+                    self.active_piece.pos[1] -= 1
                     self.update_cell_ownership()
 
             self.clock.tick(self.FPS) # appply fps
@@ -82,13 +84,16 @@ class Tetris:
         for x in range(10):
             for y in range(20):
                 current_piece = self.board[x + 10 * (y+4)]
-                if current_piece == None: color = self.cell_color
-                else: color = current_piece.color
-                pygame.draw.rect(self.screen,color,(top_left[0]+outline_width+x*cell_size,top_left[1]+outline_width+y*cell_size,cell_size-outline_width*2,cell_size-outline_width*2))
-        
+                if current_piece == None: pygame.draw.rect(self.screen,self.cell_color,(top_left[0]+outline_width+x*cell_size,top_left[1]+outline_width+y*cell_size,cell_size-outline_width*2,cell_size-outline_width*2))
+                else: 
+                    color = current_piece.color
+                    pygame.draw.rect(self.screen,color,(top_left[0]+outline_width+x*cell_size,top_left[1]+outline_width+y*cell_size,cell_size-outline_width*2,cell_size-outline_width*2))
+                    for dxy in current_piece.shape:
+                        pygame.draw.rect(self.screen,color,(top_left[0]+outline_width+(x+dxy[0])*cell_size,top_left[1]+outline_width+(y+dxy[1])*cell_size,cell_size-outline_width*2,cell_size-outline_width*2))
+
     def update_cell_ownership(self):
-        for i in range(240):
-            if self.board[i] != None:
+        self.board = [None for _ in range(240)]
+        for 
                 
 
 game = Tetris()

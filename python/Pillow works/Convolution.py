@@ -3,13 +3,14 @@ from io import BytesIO
 import requests
 import random as rnd
 
-res = 500
+res = 360
 
 print('Getting Image...')
-url = f"https://picsum.photos/{str(res)}"
-response = requests.get(url)
-img_data = response.content
-Original_Image = Image.open(BytesIO(img_data))
+# url = f"https://picsum.photos/{str(res)}"
+# response = requests.get(url)
+# img_data = response.content
+# Original_Image = Image.open(BytesIO(img_data))
+Original_Image = Image.open(r'python\Pillow works\badappleedgedetection.png')
 print('Image Gotten!')
 
 def AverageColor(cols, clampcolor):
@@ -117,9 +118,9 @@ def Convolution(img,kernel,autodiv,customdiv,clampcolor):
 
 Original_Image.save('Original_Image.png')
 
-# EdgeDetection_Image = Convolution(Original_Image, EdgeDetection_Kernel_Horizontal, False, 2, False)
-# EdgeDetection_Image = Convolution(EdgeDetection_Image, EdgeDetection_Kernel_Vertical, False, 2, False)
-# EdgeDetection_Image.save('EdgeDetection_Image.png')
+EdgeDetection_Image = Convolution(Original_Image, EdgeDetection_Kernel_Horizontal, False, 2, False)
+EdgeDetection_Image = Convolution(EdgeDetection_Image, EdgeDetection_Kernel_Vertical, False, 2, False)
+EdgeDetection_Image.save('EdgeDetection_Image.png')
 
 # BoxBlured_Image5x5 = Convolution(Original_Image,BoxBlur_Kernel5x5,True,None, False)
 # BoxBlured_Image5x5.save('BoxBlured_Image5x5.png')

@@ -1,0 +1,9 @@
+(function() {
+    const implementors = Object.fromEntries([["beryllium",[["impl <a class=\"trait\" href=\"https://doc.rust-lang.org/1.97.1/core/convert/trait.TryFrom.html\" title=\"trait core::convert::TryFrom\">TryFrom</a>&lt;<a class=\"union\" href=\"fermium/events/union.SDL_Event.html\" title=\"union fermium::events::SDL_Event\">SDL_Event</a>&gt; for <a class=\"enum\" href=\"beryllium/events/enum.Event.html\" title=\"enum beryllium::events::Event\">Event</a>",0]]],["zstring",[["impl <a class=\"trait\" href=\"https://doc.rust-lang.org/1.97.1/core/convert/trait.TryFrom.html\" title=\"trait core::convert::TryFrom\">TryFrom</a>&lt;&amp;<a class=\"primitive\" href=\"https://doc.rust-lang.org/1.97.1/core/primitive.str.html\">str</a>&gt; for <a class=\"struct\" href=\"zstring/struct.ZString.html\" title=\"struct zstring::ZString\">ZString</a>",0],["impl&lt;'a&gt; <a class=\"trait\" href=\"https://doc.rust-lang.org/1.97.1/core/convert/trait.TryFrom.html\" title=\"trait core::convert::TryFrom\">TryFrom</a>&lt;&amp;'a <a class=\"primitive\" href=\"https://doc.rust-lang.org/1.97.1/core/primitive.str.html\">str</a>&gt; for <a class=\"struct\" href=\"zstring/struct.ZStr.html\" title=\"struct zstring::ZStr\">ZStr</a>&lt;'a&gt;",0],["impl&lt;const N: <a class=\"primitive\" href=\"https://doc.rust-lang.org/1.97.1/core/primitive.usize.html\">usize</a>&gt; <a class=\"trait\" href=\"https://doc.rust-lang.org/1.97.1/core/convert/trait.TryFrom.html\" title=\"trait core::convert::TryFrom\">TryFrom</a>&lt;&amp;<a class=\"primitive\" href=\"https://doc.rust-lang.org/1.97.1/core/primitive.str.html\">str</a>&gt; for <a class=\"struct\" href=\"zstring/struct.ArrayZString.html\" title=\"struct zstring::ArrayZString\">ArrayZString</a>&lt;N&gt;",0]]]]);
+    if (window.register_implementors) {
+        window.register_implementors(implementors);
+    } else {
+        window.pending_implementors = implementors;
+    }
+})()
+//{"start":59,"fragment_lengths":[412,1282]}

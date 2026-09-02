@@ -1,0 +1,11 @@
+C:\Users\maubi\Bureau\Programation\Rust\open_gl_stuff\target\debug\deps\quote-38f455ad8b0338de.d: C:\Users\maubi\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\quote-1.0.47\src\lib.rs C:\Users\maubi\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\quote-1.0.47\src\ext.rs C:\Users\maubi\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\quote-1.0.47\src\format.rs C:\Users\maubi\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\quote-1.0.47\src\ident_fragment.rs C:\Users\maubi\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\quote-1.0.47\src\to_tokens.rs C:\Users\maubi\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\quote-1.0.47\src\runtime.rs C:\Users\maubi\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\quote-1.0.47\src\spanned.rs
+
+C:\Users\maubi\Bureau\Programation\Rust\open_gl_stuff\target\debug\deps\libquote-38f455ad8b0338de.rmeta: C:\Users\maubi\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\quote-1.0.47\src\lib.rs C:\Users\maubi\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\quote-1.0.47\src\ext.rs C:\Users\maubi\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\quote-1.0.47\src\format.rs C:\Users\maubi\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\quote-1.0.47\src\ident_fragment.rs C:\Users\maubi\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\quote-1.0.47\src\to_tokens.rs C:\Users\maubi\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\quote-1.0.47\src\runtime.rs C:\Users\maubi\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\quote-1.0.47\src\spanned.rs
+
+C:\Users\maubi\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\quote-1.0.47\src\lib.rs:
+C:\Users\maubi\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\quote-1.0.47\src\ext.rs:
+C:\Users\maubi\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\quote-1.0.47\src\format.rs:
+C:\Users\maubi\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\quote-1.0.47\src\ident_fragment.rs:
+C:\Users\maubi\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\quote-1.0.47\src\to_tokens.rs:
+C:\Users\maubi\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\quote-1.0.47\src\runtime.rs:
+C:\Users\maubi\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\quote-1.0.47\src\spanned.rs:

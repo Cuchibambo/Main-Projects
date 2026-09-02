@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"enum":["ControllerAxis","ControllerButton","ControllerType"],"struct":["GameController"]};

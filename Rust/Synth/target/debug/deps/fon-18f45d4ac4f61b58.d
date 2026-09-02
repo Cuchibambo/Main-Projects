@@ -1,0 +1,14 @@
+c:\Users\maubi\Bureau\Programation\Rust\Synth\target\debug\deps\fon-18f45d4ac4f61b58.d: C:\Users\maubi\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\fon-0.6.0\src\lib.rs C:\Users\maubi\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\fon-0.6.0\src\audio.rs C:\Users\maubi\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\fon-0.6.0\src\frame.rs C:\Users\maubi\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\fon-0.6.0\src\math.rs C:\Users\maubi\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\fon-0.6.0\src\private.rs C:\Users\maubi\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\fon-0.6.0\src\sink.rs C:\Users\maubi\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\fon-0.6.0\src\stream.rs C:\Users\maubi\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\fon-0.6.0\src\stream\speex.rs C:\Users\maubi\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\fon-0.6.0\src\chan.rs C:\Users\maubi\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\fon-0.6.0\src\pos.rs
+
+c:\Users\maubi\Bureau\Programation\Rust\Synth\target\debug\deps\libfon-18f45d4ac4f61b58.rmeta: C:\Users\maubi\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\fon-0.6.0\src\lib.rs C:\Users\maubi\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\fon-0.6.0\src\audio.rs C:\Users\maubi\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\fon-0.6.0\src\frame.rs C:\Users\maubi\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\fon-0.6.0\src\math.rs C:\Users\maubi\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\fon-0.6.0\src\private.rs C:\Users\maubi\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\fon-0.6.0\src\sink.rs C:\Users\maubi\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\fon-0.6.0\src\stream.rs C:\Users\maubi\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\fon-0.6.0\src\stream\speex.rs C:\Users\maubi\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\fon-0.6.0\src\chan.rs C:\Users\maubi\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\fon-0.6.0\src\pos.rs
+
+C:\Users\maubi\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\fon-0.6.0\src\lib.rs:
+C:\Users\maubi\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\fon-0.6.0\src\audio.rs:
+C:\Users\maubi\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\fon-0.6.0\src\frame.rs:
+C:\Users\maubi\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\fon-0.6.0\src\math.rs:
+C:\Users\maubi\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\fon-0.6.0\src\private.rs:
+C:\Users\maubi\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\fon-0.6.0\src\sink.rs:
+C:\Users\maubi\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\fon-0.6.0\src\stream.rs:
+C:\Users\maubi\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\fon-0.6.0\src\stream\speex.rs:
+C:\Users\maubi\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\fon-0.6.0\src\chan.rs:
+C:\Users\maubi\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\fon-0.6.0\src\pos.rs:

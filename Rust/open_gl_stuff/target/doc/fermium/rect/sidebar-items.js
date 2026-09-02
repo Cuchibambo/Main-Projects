@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"fn":["SDL_EnclosePoints","SDL_HasIntersection","SDL_IntersectRect","SDL_IntersectRectAndLine","SDL_PointInRect","SDL_RectEmpty","SDL_UnionRect"],"struct":["SDL_FPoint","SDL_FRect","SDL_Point","SDL_Rect"]};

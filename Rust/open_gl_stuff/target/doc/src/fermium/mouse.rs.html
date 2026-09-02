@@ -1,0 +1,259 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `C:\Users\maubi\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\fermium-22605.0.1\src\mouse.rs`."><title>mouse.rs - source</title><script>if(window.location.protocol!=="file:")document.head.insertAdjacentHTML("beforeend","SourceSerif4-Regular-6b053e98.ttf.woff2,FiraSans-Italic-81dc35de.woff2,FiraSans-Regular-0fe48ade.woff2,FiraSans-MediumItalic-ccf7e434.woff2,FiraSans-Medium-e1aa3f0a.woff2,SourceCodePro-Regular-8badfe75.ttf.woff2,SourceCodePro-Semibold-aa29a496.ttf.woff2".split(",").map(f=>`<link rel="preload" as="font" type="font/woff2"href="../../static.files/${f}">`).join(""))</script><link rel="stylesheet" href="../../static.files/normalize-9960930a.css"><link rel="stylesheet" href="../../static.files/rustdoc-17e0aaed.css"><meta name="rustdoc-vars" data-root-path="../../" data-static-root-path="../../static.files/" data-current-crate="fermium" data-themes="" data-resource-suffix="" data-rustdoc-version="1.97.1 (8bab26f4f 2026-07-14)" data-channel="1.97.1" data-search-js="search-fd9372ac.js" data-stringdex-js="stringdex-2da4960a.js" data-settings-js="settings-170eb4bf.js" ><script src="../../static.files/storage-41dd4d93.js"></script><script defer src="../../static.files/src-script-813739b1.js"></script><script defer src="../../src-files.js"></script><script defer src="../../static.files/main-fcd733ba.js"></script><noscript><link rel="stylesheet" href="../../static.files/noscript-f7c3ffd8.css"></noscript><link rel="alternate icon" type="image/png" href="../../static.files/favicon-32x32-eab170b8.png"><link rel="icon" type="image/svg+xml" href="../../static.files/favicon-044be391.svg"></head><body class="rustdoc src"><a class="skip-main-content" href="#main-content">Skip to main content</a><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="src-sidebar-title"><h2>Files</h2></div></nav><div class="sidebar-resizer" title="Drag to resize sidebar"></div><main><section id="main-content" class="content" tabindex="-1"><div class="main-heading"><h1><div class="sub-heading">fermium/</div>mouse.rs</h1><rustdoc-toolbar></rustdoc-toolbar></div><div class="example-wrap digits-3"><pre class="rust"><code><a href=#1 id=1 data-nosnippet>1</a><span class="doccomment">//! Mouse control and interaction.
+<a href=#2 id=2 data-nosnippet>2</a>
+<a href=#3 id=3 data-nosnippet>3</a></span><span class="kw">use crate</span>::{c_int, c_void, stdinc::<span class="kw-2">*</span>, surface::<span class="kw-2">*</span>, video::<span class="kw-2">*</span>};
+<a href=#4 id=4 data-nosnippet>4</a>
+<a href=#5 id=5 data-nosnippet>5</a><span class="doccomment">/// An opaque cursor value.
+<a href=#6 id=6 data-nosnippet>6</a>///
+<a href=#7 id=7 data-nosnippet>7</a>/// The exact layout is implementation dependent.
+<a href=#8 id=8 data-nosnippet>8</a></span><span class="attr">#[repr(transparent)]
+<a href=#9 id=9 data-nosnippet>9</a></span><span class="kw">pub struct </span>SDL_Cursor(c_void);
+<a href=#10 id=10 data-nosnippet>10</a>
+<a href=#11 id=11 data-nosnippet>11</a><span class="doccomment">/// Used with [`SDL_CreateSystemCursor`]
+<a href=#12 id=12 data-nosnippet>12</a></span><span class="attr">#[derive(Debug, Clone, Copy, Default, PartialEq, Eq, PartialOrd, Ord, Hash)]
+<a href=#13 id=13 data-nosnippet>13</a>#[repr(transparent)]
+<a href=#14 id=14 data-nosnippet>14</a></span><span class="kw">pub struct </span>SDL_SystemCursor(<span class="kw">pub </span>i32);
+<a href=#15 id=15 data-nosnippet>15</a>
+<a href=#16 id=16 data-nosnippet>16</a><span class="doccomment">/// Arrow
+<a href=#17 id=17 data-nosnippet>17</a></span><span class="kw">pub const </span>SDL_SYSTEM_CURSOR_ARROW: SDL_SystemCursor = SDL_SystemCursor(<span class="number">0</span>);
+<a href=#18 id=18 data-nosnippet>18</a><span class="doccomment">/// I-beam
+<a href=#19 id=19 data-nosnippet>19</a></span><span class="kw">pub const </span>SDL_SYSTEM_CURSOR_IBEAM: SDL_SystemCursor = SDL_SystemCursor(<span class="number">1</span>);
+<a href=#20 id=20 data-nosnippet>20</a><span class="doccomment">/// Wait
+<a href=#21 id=21 data-nosnippet>21</a></span><span class="kw">pub const </span>SDL_SYSTEM_CURSOR_WAIT: SDL_SystemCursor = SDL_SystemCursor(<span class="number">2</span>);
+<a href=#22 id=22 data-nosnippet>22</a><span class="doccomment">/// Crosshair
+<a href=#23 id=23 data-nosnippet>23</a></span><span class="kw">pub const </span>SDL_SYSTEM_CURSOR_CROSSHAIR: SDL_SystemCursor = SDL_SystemCursor(<span class="number">3</span>);
+<a href=#24 id=24 data-nosnippet>24</a><span class="doccomment">/// Small wait cursor (or Wait if not available)
+<a href=#25 id=25 data-nosnippet>25</a></span><span class="kw">pub const </span>SDL_SYSTEM_CURSOR_WAITARROW: SDL_SystemCursor = SDL_SystemCursor(<span class="number">4</span>);
+<a href=#26 id=26 data-nosnippet>26</a><span class="doccomment">/// Double arrow pointing northwest and southeast
+<a href=#27 id=27 data-nosnippet>27</a></span><span class="kw">pub const </span>SDL_SYSTEM_CURSOR_SIZENWSE: SDL_SystemCursor = SDL_SystemCursor(<span class="number">5</span>);
+<a href=#28 id=28 data-nosnippet>28</a><span class="doccomment">/// Double arrow pointing northeast and southwest
+<a href=#29 id=29 data-nosnippet>29</a></span><span class="kw">pub const </span>SDL_SYSTEM_CURSOR_SIZENESW: SDL_SystemCursor = SDL_SystemCursor(<span class="number">6</span>);
+<a href=#30 id=30 data-nosnippet>30</a><span class="doccomment">/// Double arrow pointing west and east
+<a href=#31 id=31 data-nosnippet>31</a></span><span class="kw">pub const </span>SDL_SYSTEM_CURSOR_SIZEWE: SDL_SystemCursor = SDL_SystemCursor(<span class="number">7</span>);
+<a href=#32 id=32 data-nosnippet>32</a><span class="doccomment">/// Double arrow pointing north and south
+<a href=#33 id=33 data-nosnippet>33</a></span><span class="kw">pub const </span>SDL_SYSTEM_CURSOR_SIZENS: SDL_SystemCursor = SDL_SystemCursor(<span class="number">8</span>);
+<a href=#34 id=34 data-nosnippet>34</a><span class="doccomment">/// Four pointed arrow pointing north, south, east, and west
+<a href=#35 id=35 data-nosnippet>35</a></span><span class="kw">pub const </span>SDL_SYSTEM_CURSOR_SIZEALL: SDL_SystemCursor = SDL_SystemCursor(<span class="number">9</span>);
+<a href=#36 id=36 data-nosnippet>36</a><span class="doccomment">/// Slashed circle or crossbones
+<a href=#37 id=37 data-nosnippet>37</a></span><span class="kw">pub const </span>SDL_SYSTEM_CURSOR_NO: SDL_SystemCursor = SDL_SystemCursor(<span class="number">10</span>);
+<a href=#38 id=38 data-nosnippet>38</a><span class="doccomment">/// Hand
+<a href=#39 id=39 data-nosnippet>39</a></span><span class="kw">pub const </span>SDL_SYSTEM_CURSOR_HAND: SDL_SystemCursor = SDL_SystemCursor(<span class="number">11</span>);
+<a href=#40 id=40 data-nosnippet>40</a>
+<a href=#41 id=41 data-nosnippet>41</a><span class="doccomment">/// Used for array size purposes and such.
+<a href=#42 id=42 data-nosnippet>42</a></span><span class="kw">pub const </span>SDL_NUM_SYSTEM_CURSORS: usize = <span class="number">12</span>;
+<a href=#43 id=43 data-nosnippet>43</a>
+<a href=#44 id=44 data-nosnippet>44</a><span class="doccomment">/// Scroll direction types for the Scroll event
+<a href=#45 id=45 data-nosnippet>45</a></span><span class="attr">#[derive(Debug, Clone, Copy, Default, PartialEq, Eq, PartialOrd, Ord, Hash)]
+<a href=#46 id=46 data-nosnippet>46</a>#[repr(transparent)]
+<a href=#47 id=47 data-nosnippet>47</a></span><span class="kw">pub struct </span>SDL_MouseWheelDirection(<span class="kw">pub </span>i32);
+<a href=#48 id=48 data-nosnippet>48</a>
+<a href=#49 id=49 data-nosnippet>49</a><span class="doccomment">/// The scroll direction is normal
+<a href=#50 id=50 data-nosnippet>50</a></span><span class="kw">pub const </span>SDL_MOUSEWHEEL_NORMAL: SDL_MouseWheelDirection =
+<a href=#51 id=51 data-nosnippet>51</a>  SDL_MouseWheelDirection(<span class="number">0</span>);
+<a href=#52 id=52 data-nosnippet>52</a><span class="doccomment">/// The scroll direction is flipped / natural
+<a href=#53 id=53 data-nosnippet>53</a></span><span class="kw">pub const </span>SDL_MOUSEWHEEL_FLIPPED: SDL_MouseWheelDirection =
+<a href=#54 id=54 data-nosnippet>54</a>  SDL_MouseWheelDirection(<span class="number">1</span>);
+<a href=#55 id=55 data-nosnippet>55</a>
+<a href=#56 id=56 data-nosnippet>56</a><span class="kw">extern </span><span class="string">"C" </span>{
+<a href=#57 id=57 data-nosnippet>57</a>  <span class="doccomment">/// Get the window which currently has mouse focus.
+<a href=#58 id=58 data-nosnippet>58</a>  </span><span class="kw">pub fn </span>SDL_GetMouseFocus() -&gt; <span class="kw-2">*mut </span>SDL_Window;
+<a href=#59 id=59 data-nosnippet>59</a>
+<a href=#60 id=60 data-nosnippet>60</a>  <span class="doccomment">/// Retrieve the current state of the mouse.
+<a href=#61 id=61 data-nosnippet>61</a>  ///
+<a href=#62 id=62 data-nosnippet>62</a>  /// The current button state is returned as a button bitmask, which can be
+<a href=#63 id=63 data-nosnippet>63</a>  /// tested using the SDL_BUTTON(X) macros. `x` and `y` are set to the mouse
+<a href=#64 id=64 data-nosnippet>64</a>  /// cursor position relative to the focus window for the currently selected
+<a href=#65 id=65 data-nosnippet>65</a>  /// mouse.
+<a href=#66 id=66 data-nosnippet>66</a>  ///
+<a href=#67 id=67 data-nosnippet>67</a>  /// You can safely pass NULL for either `x` or `y`.
+<a href=#68 id=68 data-nosnippet>68</a>  </span><span class="kw">pub fn </span>SDL_GetMouseState(x: <span class="kw-2">*mut </span>c_int, y: <span class="kw-2">*mut </span>c_int) -&gt; u32;
+<a href=#69 id=69 data-nosnippet>69</a>
+<a href=#70 id=70 data-nosnippet>70</a>  <span class="doccomment">/// Get the current state of the mouse, in relation to the desktop.
+<a href=#71 id=71 data-nosnippet>71</a>  ///
+<a href=#72 id=72 data-nosnippet>72</a>  /// This works just like [`SDL_GetMouseState`], but the coordinates will be
+<a href=#73 id=73 data-nosnippet>73</a>  /// reported relative to the top-left of the desktop. This can be useful if
+<a href=#74 id=74 data-nosnippet>74</a>  /// you need to track the mouse outside of a specific window and
+<a href=#75 id=75 data-nosnippet>75</a>  /// [`SDL_CaptureMouse`] doesn't fit your needs. For example, it could be
+<a href=#76 id=76 data-nosnippet>76</a>  /// useful if you need to track the mouse while dragging a window, where
+<a href=#77 id=77 data-nosnippet>77</a>  /// coordinates relative to a window might not be in sync at all times.
+<a href=#78 id=78 data-nosnippet>78</a>  ///
+<a href=#79 id=79 data-nosnippet>79</a>  /// **Note:** [`SDL_GetMouseState`] returns the mouse position as SDL
+<a href=#80 id=80 data-nosnippet>80</a>  /// understands it from the last pump of the event queue. This function,
+<a href=#81 id=81 data-nosnippet>81</a>  /// however, queries the OS for the current mouse position, and as such, might
+<a href=#82 id=82 data-nosnippet>82</a>  /// be a slightly less efficient function. Unless you know what you're doing
+<a href=#83 id=83 data-nosnippet>83</a>  /// and have a good reason to use this function, you probably want
+<a href=#84 id=84 data-nosnippet>84</a>  /// [`SDL_GetMouseState`] instead.
+<a href=#85 id=85 data-nosnippet>85</a>  ///
+<a href=#86 id=86 data-nosnippet>86</a>  /// * `x` Returns the current X coord, relative to the desktop. Can be NULL.
+<a href=#87 id=87 data-nosnippet>87</a>  /// * `y` Returns the current Y coord, relative to the desktop. Can be NULL.
+<a href=#88 id=88 data-nosnippet>88</a>  ///
+<a href=#89 id=89 data-nosnippet>89</a>  /// **Return:** The current button state as a bitmask, which can be tested
+<a href=#90 id=90 data-nosnippet>90</a>  /// using the SDL_BUTTON(X) macros.
+<a href=#91 id=91 data-nosnippet>91</a>  </span><span class="kw">pub fn </span>SDL_GetGlobalMouseState(x: <span class="kw-2">*mut </span>c_int, y: <span class="kw-2">*mut </span>c_int) -&gt; u32;
+<a href=#92 id=92 data-nosnippet>92</a>
+<a href=#93 id=93 data-nosnippet>93</a>  <span class="doccomment">/// Retrieve the relative state of the mouse.
+<a href=#94 id=94 data-nosnippet>94</a>  ///
+<a href=#95 id=95 data-nosnippet>95</a>  /// The current button state is returned as a button bitmask, which can be
+<a href=#96 id=96 data-nosnippet>96</a>  /// tested using the SDL_BUTTON(X) macros, and x and y are set to the mouse
+<a href=#97 id=97 data-nosnippet>97</a>  /// deltas since the last call to `SDL_GetRelativeMouseState`.
+<a href=#98 id=98 data-nosnippet>98</a>  </span><span class="kw">pub fn </span>SDL_GetRelativeMouseState(x: <span class="kw-2">*mut </span>c_int, y: <span class="kw-2">*mut </span>c_int) -&gt; u32;
+<a href=#99 id=99 data-nosnippet>99</a>
+<a href=#100 id=100 data-nosnippet>100</a>  <span class="doccomment">/// Moves the mouse to the given position within the window.
+<a href=#101 id=101 data-nosnippet>101</a>  ///
+<a href=#102 id=102 data-nosnippet>102</a>  /// * `window` The window to move the mouse into, or NULL for the current
+<a href=#103 id=103 data-nosnippet>103</a>  ///   mouse focus
+<a href=#104 id=104 data-nosnippet>104</a>  /// * `x` The x coordinate within the window
+<a href=#105 id=105 data-nosnippet>105</a>  /// * `y` The y coordinate within the window
+<a href=#106 id=106 data-nosnippet>106</a>  ///
+<a href=#107 id=107 data-nosnippet>107</a>  /// **Note:** This function generates a mouse motion event
+<a href=#108 id=108 data-nosnippet>108</a>  </span><span class="kw">pub fn </span>SDL_WarpMouseInWindow(window: <span class="kw-2">*mut </span>SDL_Window, x: c_int, y: c_int);
+<a href=#109 id=109 data-nosnippet>109</a>
+<a href=#110 id=110 data-nosnippet>110</a>  <span class="doccomment">/// Moves the mouse to the given position in global screen space.
+<a href=#111 id=111 data-nosnippet>111</a>  ///
+<a href=#112 id=112 data-nosnippet>112</a>  /// * `x` The x coordinate
+<a href=#113 id=113 data-nosnippet>113</a>  /// * `y` The y coordinate
+<a href=#114 id=114 data-nosnippet>114</a>  ///
+<a href=#115 id=115 data-nosnippet>115</a>  /// **Returns:** 0 on success, -1 on error (usually: unsupported by a
+<a href=#116 id=116 data-nosnippet>116</a>  /// platform).
+<a href=#117 id=117 data-nosnippet>117</a>  ///
+<a href=#118 id=118 data-nosnippet>118</a>  /// **Note:** This function generates a mouse motion event
+<a href=#119 id=119 data-nosnippet>119</a>  </span><span class="kw">pub fn </span>SDL_WarpMouseGlobal(x: c_int, y: c_int) -&gt; c_int;
+<a href=#120 id=120 data-nosnippet>120</a>
+<a href=#121 id=121 data-nosnippet>121</a>  <span class="doccomment">/// Set relative mouse mode.
+<a href=#122 id=122 data-nosnippet>122</a>  ///
+<a href=#123 id=123 data-nosnippet>123</a>  /// * `enabled` Whether or not to enable relative mode
+<a href=#124 id=124 data-nosnippet>124</a>  ///
+<a href=#125 id=125 data-nosnippet>125</a>  /// **Returns:** 0 on success, or -1 if relative mode is not supported.
+<a href=#126 id=126 data-nosnippet>126</a>  ///
+<a href=#127 id=127 data-nosnippet>127</a>  /// While the mouse is in relative mode, the cursor is hidden, and the driver
+<a href=#128 id=128 data-nosnippet>128</a>  /// will try to report continuous motion in the current window. Only relative
+<a href=#129 id=129 data-nosnippet>129</a>  /// motion events will be delivered, the mouse position will not change.
+<a href=#130 id=130 data-nosnippet>130</a>  ///
+<a href=#131 id=131 data-nosnippet>131</a>  /// In other words, this is what you'd use for an "FPS" style interface.
+<a href=#132 id=132 data-nosnippet>132</a>  ///
+<a href=#133 id=133 data-nosnippet>133</a>  /// **Note:** This function will flush any pending mouse motion.
+<a href=#134 id=134 data-nosnippet>134</a>  ///
+<a href=#135 id=135 data-nosnippet>135</a>  /// See Also: [`SDL_GetRelativeMouseMode`]
+<a href=#136 id=136 data-nosnippet>136</a>  </span><span class="kw">pub fn </span>SDL_SetRelativeMouseMode(enabled: SDL_bool) -&gt; c_int;
+<a href=#137 id=137 data-nosnippet>137</a>
+<a href=#138 id=138 data-nosnippet>138</a>  <span class="doccomment">/// Capture the mouse, to track input outside an SDL window.
+<a href=#139 id=139 data-nosnippet>139</a>  ///
+<a href=#140 id=140 data-nosnippet>140</a>  /// * `enabled` Whether or not to enable capturing
+<a href=#141 id=141 data-nosnippet>141</a>  ///
+<a href=#142 id=142 data-nosnippet>142</a>  /// Capturing enables your app to obtain mouse events globally, instead of
+<a href=#143 id=143 data-nosnippet>143</a>  /// just within your window. Not all video targets support this function. When
+<a href=#144 id=144 data-nosnippet>144</a>  /// capturing is enabled, the current window will get all mouse events, but
+<a href=#145 id=145 data-nosnippet>145</a>  /// unlike relative mode, no change is made to the cursor and it is not
+<a href=#146 id=146 data-nosnippet>146</a>  /// restrained to your window.
+<a href=#147 id=147 data-nosnippet>147</a>  ///
+<a href=#148 id=148 data-nosnippet>148</a>  /// This function may also deny mouse input to other windows--both those in
+<a href=#149 id=149 data-nosnippet>149</a>  /// your application and others on the system--so you should use this function
+<a href=#150 id=150 data-nosnippet>150</a>  /// sparingly, and in small bursts. For example, you might want to track the
+<a href=#151 id=151 data-nosnippet>151</a>  /// mouse while the user is dragging something, until the user releases a
+<a href=#152 id=152 data-nosnippet>152</a>  /// mouse button. It is not recommended that you capture the mouse for long
+<a href=#153 id=153 data-nosnippet>153</a>  /// periods of time, such as the entire time your app is running.
+<a href=#154 id=154 data-nosnippet>154</a>  ///
+<a href=#155 id=155 data-nosnippet>155</a>  /// While captured, mouse events still report coordinates relative to the
+<a href=#156 id=156 data-nosnippet>156</a>  /// current (foreground) window, but those coordinates may be outside the
+<a href=#157 id=157 data-nosnippet>157</a>  /// bounds of the window (including negative values). Capturing is only
+<a href=#158 id=158 data-nosnippet>158</a>  /// allowed for the foreground window. If the window loses focus while
+<a href=#159 id=159 data-nosnippet>159</a>  /// capturing, the capture will be disabled automatically.
+<a href=#160 id=160 data-nosnippet>160</a>  ///
+<a href=#161 id=161 data-nosnippet>161</a>  /// While capturing is enabled, the current window will have the
+<a href=#162 id=162 data-nosnippet>162</a>  /// `SDL_WINDOW_MOUSE_CAPTURE` flag set.
+<a href=#163 id=163 data-nosnippet>163</a>  ///
+<a href=#164 id=164 data-nosnippet>164</a>  /// **Return:** 0 on success, or -1 if not supported.
+<a href=#165 id=165 data-nosnippet>165</a>  </span><span class="kw">pub fn </span>SDL_CaptureMouse(enabled: SDL_bool) -&gt; c_int;
+<a href=#166 id=166 data-nosnippet>166</a>
+<a href=#167 id=167 data-nosnippet>167</a>  <span class="doccomment">/// Query whether relative mouse mode is enabled.
+<a href=#168 id=168 data-nosnippet>168</a>  ///
+<a href=#169 id=169 data-nosnippet>169</a>  /// See Also: [`SDL_SetRelativeMouseMode`]
+<a href=#170 id=170 data-nosnippet>170</a>  </span><span class="kw">pub fn </span>SDL_GetRelativeMouseMode() -&gt; SDL_bool;
+<a href=#171 id=171 data-nosnippet>171</a>
+<a href=#172 id=172 data-nosnippet>172</a>  <span class="doccomment">/// Create a cursor, using the specified bitmap data and mask (in MSB format).
+<a href=#173 id=173 data-nosnippet>173</a>  ///
+<a href=#174 id=174 data-nosnippet>174</a>  /// The cursor width must be a multiple of 8 bits.
+<a href=#175 id=175 data-nosnippet>175</a>  ///
+<a href=#176 id=176 data-nosnippet>176</a>  /// The cursor is created in black and white according to the following:
+<a href=#177 id=177 data-nosnippet>177</a>  ///
+<a href=#178 id=178 data-nosnippet>178</a>  /// | data | mask | resulting pixel on screen |
+<a href=#179 id=179 data-nosnippet>179</a>  /// |:-:|:-:|:-|
+<a href=#180 id=180 data-nosnippet>180</a>  /// |  0   |  1   | White |
+<a href=#181 id=181 data-nosnippet>181</a>  /// |  1   |  1   | Black |
+<a href=#182 id=182 data-nosnippet>182</a>  /// |  0   |  0   | Transparent |
+<a href=#183 id=183 data-nosnippet>183</a>  /// |  1   |  0   | Inverted color if possible, black if not. |
+<a href=#184 id=184 data-nosnippet>184</a>  ///
+<a href=#185 id=185 data-nosnippet>185</a>  /// See Also: [`SDL_FreeCursor`]
+<a href=#186 id=186 data-nosnippet>186</a>  </span><span class="kw">pub fn </span>SDL_CreateCursor(
+<a href=#187 id=187 data-nosnippet>187</a>    data: <span class="kw-2">*const </span>Uint8, mask: <span class="kw-2">*const </span>Uint8, w: c_int, h: c_int, hot_x: c_int,
+<a href=#188 id=188 data-nosnippet>188</a>    hot_y: c_int,
+<a href=#189 id=189 data-nosnippet>189</a>  ) -&gt; <span class="kw-2">*mut </span>SDL_Cursor;
+<a href=#190 id=190 data-nosnippet>190</a>
+<a href=#191 id=191 data-nosnippet>191</a>  <span class="doccomment">/// Create a color cursor.
+<a href=#192 id=192 data-nosnippet>192</a>  ///
+<a href=#193 id=193 data-nosnippet>193</a>  /// See Also: [`SDL_FreeCursor`]
+<a href=#194 id=194 data-nosnippet>194</a>  </span><span class="kw">pub fn </span>SDL_CreateColorCursor(
+<a href=#195 id=195 data-nosnippet>195</a>    surface: <span class="kw-2">*mut </span>SDL_Surface, hot_x: c_int, hot_y: c_int,
+<a href=#196 id=196 data-nosnippet>196</a>  ) -&gt; <span class="kw-2">*mut </span>SDL_Cursor;
+<a href=#197 id=197 data-nosnippet>197</a>
+<a href=#198 id=198 data-nosnippet>198</a>  <span class="doccomment">/// Create a system cursor.
+<a href=#199 id=199 data-nosnippet>199</a>  ///
+<a href=#200 id=200 data-nosnippet>200</a>  /// See Also: [`SDL_FreeCursor`]
+<a href=#201 id=201 data-nosnippet>201</a>  </span><span class="kw">pub fn </span>SDL_CreateSystemCursor(id: SDL_SystemCursor) -&gt; <span class="kw-2">*mut </span>SDL_Cursor;
+<a href=#202 id=202 data-nosnippet>202</a>
+<a href=#203 id=203 data-nosnippet>203</a>  <span class="doccomment">/// Set the active cursor.
+<a href=#204 id=204 data-nosnippet>204</a>  </span><span class="kw">pub fn </span>SDL_SetCursor(cursor: <span class="kw-2">*mut </span>SDL_Cursor);
+<a href=#205 id=205 data-nosnippet>205</a>
+<a href=#206 id=206 data-nosnippet>206</a>  <span class="doccomment">/// Return the active cursor.
+<a href=#207 id=207 data-nosnippet>207</a>  </span><span class="kw">pub fn </span>SDL_GetCursor() -&gt; <span class="kw-2">*mut </span>SDL_Cursor;
+<a href=#208 id=208 data-nosnippet>208</a>
+<a href=#209 id=209 data-nosnippet>209</a>  <span class="doccomment">/// Return the default cursor.
+<a href=#210 id=210 data-nosnippet>210</a>  </span><span class="kw">pub fn </span>SDL_GetDefaultCursor() -&gt; <span class="kw-2">*mut </span>SDL_Cursor;
+<a href=#211 id=211 data-nosnippet>211</a>
+<a href=#212 id=212 data-nosnippet>212</a>  <span class="doccomment">/// Frees a cursor created with [`SDL_CreateCursor`] or similar functions.
+<a href=#213 id=213 data-nosnippet>213</a>  ///
+<a href=#214 id=214 data-nosnippet>214</a>  /// See Also: [`SDL_CreateCursor`], [`SDL_CreateColorCursor`],
+<a href=#215 id=215 data-nosnippet>215</a>  /// [`SDL_CreateSystemCursor`]
+<a href=#216 id=216 data-nosnippet>216</a>  </span><span class="kw">pub fn </span>SDL_FreeCursor(cursor: <span class="kw-2">*mut </span>SDL_Cursor);
+<a href=#217 id=217 data-nosnippet>217</a>
+<a href=#218 id=218 data-nosnippet>218</a>  <span class="doccomment">/// Toggle whether or not the cursor is shown.
+<a href=#219 id=219 data-nosnippet>219</a>  ///
+<a href=#220 id=220 data-nosnippet>220</a>  /// * `toggle` 1 to show the cursor, 0 to hide it, -1 to query the current
+<a href=#221 id=221 data-nosnippet>221</a>  ///   state.
+<a href=#222 id=222 data-nosnippet>222</a>  ///
+<a href=#223 id=223 data-nosnippet>223</a>  /// **Returns:** 1 if the cursor is shown, or 0 if the cursor is hidden.
+<a href=#224 id=224 data-nosnippet>224</a>  </span><span class="kw">pub fn </span>SDL_ShowCursor(toggle: c_int) -&gt; c_int;
+<a href=#225 id=225 data-nosnippet>225</a>}
+<a href=#226 id=226 data-nosnippet>226</a>
+<a href=#227 id=227 data-nosnippet>227</a><span class="doccomment">/// Used as a mask when testing buttons in `buttonstate`.
+<a href=#228 id=228 data-nosnippet>228</a>///
+<a href=#229 id=229 data-nosnippet>229</a>/// * Button 1:  Left mouse button
+<a href=#230 id=230 data-nosnippet>230</a>/// * Button 2:  Middle mouse button
+<a href=#231 id=231 data-nosnippet>231</a>/// * Button 3:  Right mouse button
+<a href=#232 id=232 data-nosnippet>232</a></span><span class="attr">#[inline]
+<a href=#233 id=233 data-nosnippet>233</a>#[must_use]
+<a href=#234 id=234 data-nosnippet>234</a></span><span class="kw">pub const fn </span>SDL_BUTTON(x: u32) -&gt; u32 {
+<a href=#235 id=235 data-nosnippet>235</a>  <span class="number">1 </span>&lt;&lt; (x - <span class="number">1</span>)
+<a href=#236 id=236 data-nosnippet>236</a>}
+<a href=#237 id=237 data-nosnippet>237</a>
+<a href=#238 id=238 data-nosnippet>238</a><span class="doccomment">/// Individual value for the left button.
+<a href=#239 id=239 data-nosnippet>239</a></span><span class="kw">pub const </span>SDL_BUTTON_LEFT: u32 = <span class="number">1</span>;
+<a href=#240 id=240 data-nosnippet>240</a><span class="doccomment">/// Individual value for the middle button (mouse wheel).
+<a href=#241 id=241 data-nosnippet>241</a></span><span class="kw">pub const </span>SDL_BUTTON_MIDDLE: u32 = <span class="number">2</span>;
+<a href=#242 id=242 data-nosnippet>242</a><span class="doccomment">/// Individual value for the right button.
+<a href=#243 id=243 data-nosnippet>243</a></span><span class="kw">pub const </span>SDL_BUTTON_RIGHT: u32 = <span class="number">3</span>;
+<a href=#244 id=244 data-nosnippet>244</a><span class="doccomment">/// Individual value for the extra button 1.
+<a href=#245 id=245 data-nosnippet>245</a></span><span class="kw">pub const </span>SDL_BUTTON_X1: u32 = <span class="number">4</span>;
+<a href=#246 id=246 data-nosnippet>246</a><span class="doccomment">/// Individual value for the extra button 2.
+<a href=#247 id=247 data-nosnippet>247</a></span><span class="kw">pub const </span>SDL_BUTTON_X2: u32 = <span class="number">5</span>;
+<a href=#248 id=248 data-nosnippet>248</a>
+<a href=#249 id=249 data-nosnippet>249</a><span class="doccomment">/// Mask for the left button.
+<a href=#250 id=250 data-nosnippet>250</a></span><span class="kw">pub const </span>SDL_BUTTON_LMASK: u32 = SDL_BUTTON(SDL_BUTTON_LEFT);
+<a href=#251 id=251 data-nosnippet>251</a><span class="doccomment">/// Mask for the middle button (mouse wheel).
+<a href=#252 id=252 data-nosnippet>252</a></span><span class="kw">pub const </span>SDL_BUTTON_MMASK: u32 = SDL_BUTTON(SDL_BUTTON_MIDDLE);
+<a href=#253 id=253 data-nosnippet>253</a><span class="doccomment">/// Mask for the right button.
+<a href=#254 id=254 data-nosnippet>254</a></span><span class="kw">pub const </span>SDL_BUTTON_RMASK: u32 = SDL_BUTTON(SDL_BUTTON_RIGHT);
+<a href=#255 id=255 data-nosnippet>255</a><span class="doccomment">/// Mask for the extra button 1.
+<a href=#256 id=256 data-nosnippet>256</a></span><span class="kw">pub const </span>SDL_BUTTON_X1MASK: u32 = SDL_BUTTON(SDL_BUTTON_X1);
+<a href=#257 id=257 data-nosnippet>257</a><span class="doccomment">/// Mask for the extra button 2.
+<a href=#258 id=258 data-nosnippet>258</a></span><span class="kw">pub const </span>SDL_BUTTON_X2MASK: u32 = SDL_BUTTON(SDL_BUTTON_X2);
+</code></pre></div></section></main></body></html>

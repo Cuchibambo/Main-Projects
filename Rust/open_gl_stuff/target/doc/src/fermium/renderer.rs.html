@@ -1,0 +1,1073 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `C:\Users\maubi\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\fermium-22605.0.1\src\renderer.rs`."><title>renderer.rs - source</title><script>if(window.location.protocol!=="file:")document.head.insertAdjacentHTML("beforeend","SourceSerif4-Regular-6b053e98.ttf.woff2,FiraSans-Italic-81dc35de.woff2,FiraSans-Regular-0fe48ade.woff2,FiraSans-MediumItalic-ccf7e434.woff2,FiraSans-Medium-e1aa3f0a.woff2,SourceCodePro-Regular-8badfe75.ttf.woff2,SourceCodePro-Semibold-aa29a496.ttf.woff2".split(",").map(f=>`<link rel="preload" as="font" type="font/woff2"href="../../static.files/${f}">`).join(""))</script><link rel="stylesheet" href="../../static.files/normalize-9960930a.css"><link rel="stylesheet" href="../../static.files/rustdoc-17e0aaed.css"><meta name="rustdoc-vars" data-root-path="../../" data-static-root-path="../../static.files/" data-current-crate="fermium" data-themes="" data-resource-suffix="" data-rustdoc-version="1.97.1 (8bab26f4f 2026-07-14)" data-channel="1.97.1" data-search-js="search-fd9372ac.js" data-stringdex-js="stringdex-2da4960a.js" data-settings-js="settings-170eb4bf.js" ><script src="../../static.files/storage-41dd4d93.js"></script><script defer src="../../static.files/src-script-813739b1.js"></script><script defer src="../../src-files.js"></script><script defer src="../../static.files/main-fcd733ba.js"></script><noscript><link rel="stylesheet" href="../../static.files/noscript-f7c3ffd8.css"></noscript><link rel="alternate icon" type="image/png" href="../../static.files/favicon-32x32-eab170b8.png"><link rel="icon" type="image/svg+xml" href="../../static.files/favicon-044be391.svg"></head><body class="rustdoc src"><a class="skip-main-content" href="#main-content">Skip to main content</a><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="src-sidebar-title"><h2>Files</h2></div></nav><div class="sidebar-resizer" title="Drag to resize sidebar"></div><main><section id="main-content" class="content" tabindex="-1"><div class="main-heading"><h1><div class="sub-heading">fermium/</div>renderer.rs</h1><rustdoc-toolbar></rustdoc-toolbar></div><div class="example-wrap digits-4"><pre class="rust"><code><a href=#1 id=1 data-nosnippet>1</a><span class="doccomment">//! SDL's portable 2D rendering functions.
+<a href=#2 id=2 data-nosnippet>2</a>//!
+<a href=#3 id=3 data-nosnippet>3</a>//! This API supports the following features:
+<a href=#4 id=4 data-nosnippet>4</a>//! * single pixel points
+<a href=#5 id=5 data-nosnippet>5</a>//! * single pixel lines
+<a href=#6 id=6 data-nosnippet>6</a>//! * filled rectangles
+<a href=#7 id=7 data-nosnippet>7</a>//! * texture images
+<a href=#8 id=8 data-nosnippet>8</a>//!
+<a href=#9 id=9 data-nosnippet>9</a>//! The primitives may be drawn in opaque, blended, or additive modes.
+<a href=#10 id=10 data-nosnippet>10</a>//!
+<a href=#11 id=11 data-nosnippet>11</a>//! The texture images may be drawn in opaque, blended, or additive modes. They
+<a href=#12 id=12 data-nosnippet>12</a>//! can have an additional color tint or alpha modulation applied to them, and
+<a href=#13 id=13 data-nosnippet>13</a>//! may also be stretched with linear interpolation.
+<a href=#14 id=14 data-nosnippet>14</a>//!
+<a href=#15 id=15 data-nosnippet>15</a>//! This API is designed to accelerate simple 2D operations. You may want more
+<a href=#16 id=16 data-nosnippet>16</a>//! functionality such as polygons and particle effects and in that case you
+<a href=#17 id=17 data-nosnippet>17</a>//! should use SDL's OpenGL/Direct3D support or one of the many good 3D engines.
+<a href=#18 id=18 data-nosnippet>18</a>//!
+<a href=#19 id=19 data-nosnippet>19</a>//! These functions must be called from the main thread. See this bug for
+<a href=#20 id=20 data-nosnippet>20</a>//! details: &lt;http://bugzilla.libsdl.org/show_bug.cgi?id=1995&gt;
+<a href=#21 id=21 data-nosnippet>21</a>
+<a href=#22 id=22 data-nosnippet>22</a></span><span class="kw">use crate</span>::{
+<a href=#23 id=23 data-nosnippet>23</a>  blendmode::<span class="kw-2">*</span>, c_char, c_int, c_void, rect::<span class="kw-2">*</span>, stdinc::<span class="kw-2">*</span>, surface::<span class="kw-2">*</span>, video::<span class="kw-2">*</span>,
+<a href=#24 id=24 data-nosnippet>24</a>};
+<a href=#25 id=25 data-nosnippet>25</a>
+<a href=#26 id=26 data-nosnippet>26</a><span class="comment">// makes rustdoc link properly!
+<a href=#27 id=27 data-nosnippet>27</a></span><span class="attr">#[allow(unused)]
+<a href=#28 id=28 data-nosnippet>28</a></span><span class="kw">use </span><span class="kw">crate</span>::pixels::<span class="kw-2">*</span>;
+<a href=#29 id=29 data-nosnippet>29</a>
+<a href=#30 id=30 data-nosnippet>30</a><span class="doccomment">/// Flags used when creating a rendering context
+<a href=#31 id=31 data-nosnippet>31</a></span><span class="attr">#[derive(Debug, Clone, Copy, Default, PartialEq, Eq, PartialOrd, Ord, Hash)]
+<a href=#32 id=32 data-nosnippet>32</a>#[repr(transparent)]
+<a href=#33 id=33 data-nosnippet>33</a></span><span class="kw">pub struct </span>SDL_RendererFlags(<span class="kw">pub </span>u32);
+<a href=#34 id=34 data-nosnippet>34</a><span class="macro">impl_bit_ops_for_tuple_newtype!</span>(SDL_RendererFlags);
+<a href=#35 id=35 data-nosnippet>35</a><span class="doccomment">/// The renderer is a software fallback
+<a href=#36 id=36 data-nosnippet>36</a></span><span class="kw">pub const </span>SDL_RENDERER_SOFTWARE: SDL_RendererFlags =
+<a href=#37 id=37 data-nosnippet>37</a>  SDL_RendererFlags(<span class="number">0x00000001</span>);
+<a href=#38 id=38 data-nosnippet>38</a><span class="doccomment">/// The renderer uses hardware acceleration
+<a href=#39 id=39 data-nosnippet>39</a></span><span class="kw">pub const </span>SDL_RENDERER_ACCELERATED: SDL_RendererFlags =
+<a href=#40 id=40 data-nosnippet>40</a>  SDL_RendererFlags(<span class="number">0x00000002</span>);
+<a href=#41 id=41 data-nosnippet>41</a><span class="doccomment">/// Present is synchronized with the refresh rate
+<a href=#42 id=42 data-nosnippet>42</a></span><span class="kw">pub const </span>SDL_RENDERER_PRESENTVSYNC: SDL_RendererFlags =
+<a href=#43 id=43 data-nosnippet>43</a>  SDL_RendererFlags(<span class="number">0x00000004</span>);
+<a href=#44 id=44 data-nosnippet>44</a><span class="doccomment">/// The renderer supports rendering to texture
+<a href=#45 id=45 data-nosnippet>45</a></span><span class="kw">pub const </span>SDL_RENDERER_TARGETTEXTURE: SDL_RendererFlags =
+<a href=#46 id=46 data-nosnippet>46</a>  SDL_RendererFlags(<span class="number">0x00000008</span>);
+<a href=#47 id=47 data-nosnippet>47</a>
+<a href=#48 id=48 data-nosnippet>48</a><span class="doccomment">/// Information on the capabilities of a render driver or context.
+<a href=#49 id=49 data-nosnippet>49</a></span><span class="attr">#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
+<a href=#50 id=50 data-nosnippet>50</a>#[repr(C)]
+<a href=#51 id=51 data-nosnippet>51</a>#[allow(missing_docs)]
+<a href=#52 id=52 data-nosnippet>52</a></span><span class="kw">pub struct </span>SDL_RendererInfo {
+<a href=#53 id=53 data-nosnippet>53</a>  <span class="doccomment">/// The name of the renderer (borrowed)
+<a href=#54 id=54 data-nosnippet>54</a>  </span><span class="kw">pub </span>name: <span class="kw-2">*const </span>c_char,
+<a href=#55 id=55 data-nosnippet>55</a>  <span class="doccomment">/// Supported [`SDL_RendererFlags`]
+<a href=#56 id=56 data-nosnippet>56</a>  </span><span class="kw">pub </span>flags: Uint32,
+<a href=#57 id=57 data-nosnippet>57</a>  <span class="doccomment">/// The number of available texture formats
+<a href=#58 id=58 data-nosnippet>58</a>  </span><span class="kw">pub </span>num_texture_formats: Uint32,
+<a href=#59 id=59 data-nosnippet>59</a>  <span class="doccomment">/// The available texture formats
+<a href=#60 id=60 data-nosnippet>60</a>  </span><span class="kw">pub </span>texture_formats: [Uint32; <span class="number">16</span>],
+<a href=#61 id=61 data-nosnippet>61</a>  <span class="doccomment">/// The maximum texture width
+<a href=#62 id=62 data-nosnippet>62</a>  </span><span class="kw">pub </span>max_texture_width: c_int,
+<a href=#63 id=63 data-nosnippet>63</a>  <span class="doccomment">/// The maximum texture height
+<a href=#64 id=64 data-nosnippet>64</a>  </span><span class="kw">pub </span>max_texture_height: c_int,
+<a href=#65 id=65 data-nosnippet>65</a>}
+<a href=#66 id=66 data-nosnippet>66</a><span class="kw">impl </span>Default <span class="kw">for </span>SDL_RendererInfo {
+<a href=#67 id=67 data-nosnippet>67</a>  <span class="attr">#[inline]
+<a href=#68 id=68 data-nosnippet>68</a>  #[must_use]
+<a href=#69 id=69 data-nosnippet>69</a>  </span><span class="kw">fn </span>default() -&gt; <span class="self">Self </span>{
+<a href=#70 id=70 data-nosnippet>70</a>    <span class="kw">unsafe </span>{ core::mem::zeroed() }
+<a href=#71 id=71 data-nosnippet>71</a>  }
+<a href=#72 id=72 data-nosnippet>72</a>}
+<a href=#73 id=73 data-nosnippet>73</a>
+<a href=#74 id=74 data-nosnippet>74</a><span class="doccomment">/// The scaling mode for a texture.
+<a href=#75 id=75 data-nosnippet>75</a>///
+<a href=#76 id=76 data-nosnippet>76</a>/// See `SDL_ScaleMode*` constants.
+<a href=#77 id=77 data-nosnippet>77</a></span><span class="attr">#[derive(Debug, Clone, Copy, Default, PartialEq, Eq, PartialOrd, Ord, Hash)]
+<a href=#78 id=78 data-nosnippet>78</a>#[repr(transparent)]
+<a href=#79 id=79 data-nosnippet>79</a></span><span class="kw">pub struct </span>SDL_ScaleMode(<span class="kw">pub </span>i32);
+<a href=#80 id=80 data-nosnippet>80</a><span class="doccomment">/// nearest pixel sampling
+<a href=#81 id=81 data-nosnippet>81</a></span><span class="kw">pub const </span>SDL_ScaleModeNearest: SDL_ScaleMode = SDL_ScaleMode(<span class="number">0</span>);
+<a href=#82 id=82 data-nosnippet>82</a><span class="doccomment">/// linear filtering
+<a href=#83 id=83 data-nosnippet>83</a></span><span class="kw">pub const </span>SDL_ScaleModeLinear: SDL_ScaleMode = SDL_ScaleMode(<span class="number">1</span>);
+<a href=#84 id=84 data-nosnippet>84</a><span class="doccomment">/// anisotropic filtering
+<a href=#85 id=85 data-nosnippet>85</a></span><span class="kw">pub const </span>SDL_ScaleModeBest: SDL_ScaleMode = SDL_ScaleMode(<span class="number">2</span>);
+<a href=#86 id=86 data-nosnippet>86</a>
+<a href=#87 id=87 data-nosnippet>87</a><span class="doccomment">/// The access pattern allowed for a texture.
+<a href=#88 id=88 data-nosnippet>88</a>///
+<a href=#89 id=89 data-nosnippet>89</a>/// See `SDL_TEXTUREACCESS_*` constants.
+<a href=#90 id=90 data-nosnippet>90</a></span><span class="attr">#[derive(Debug, Clone, Copy, Default, PartialEq, Eq, PartialOrd, Ord, Hash)]
+<a href=#91 id=91 data-nosnippet>91</a>#[repr(transparent)]
+<a href=#92 id=92 data-nosnippet>92</a></span><span class="kw">pub struct </span>SDL_TextureAccess(<span class="kw">pub </span>i32);
+<a href=#93 id=93 data-nosnippet>93</a><span class="doccomment">/// Changes rarely, not lockable.
+<a href=#94 id=94 data-nosnippet>94</a></span><span class="kw">pub const </span>SDL_TEXTUREACCESS_STATIC: SDL_TextureAccess = SDL_TextureAccess(<span class="number">0</span>);
+<a href=#95 id=95 data-nosnippet>95</a><span class="doccomment">/// Changes frequently, lockable.
+<a href=#96 id=96 data-nosnippet>96</a></span><span class="kw">pub const </span>SDL_TEXTUREACCESS_STREAMING: SDL_TextureAccess = SDL_TextureAccess(<span class="number">1</span>);
+<a href=#97 id=97 data-nosnippet>97</a><span class="doccomment">/// Texture can be used as a render target.
+<a href=#98 id=98 data-nosnippet>98</a></span><span class="kw">pub const </span>SDL_TEXTUREACCESS_TARGET: SDL_TextureAccess = SDL_TextureAccess(<span class="number">2</span>);
+<a href=#99 id=99 data-nosnippet>99</a>
+<a href=#100 id=100 data-nosnippet>100</a><span class="doccomment">/// The texture channel modulation used in [`SDL_RenderCopy`]
+<a href=#101 id=101 data-nosnippet>101</a>///
+<a href=#102 id=102 data-nosnippet>102</a>/// See `SDL_TEXTUREMODULATE_*` constants.
+<a href=#103 id=103 data-nosnippet>103</a></span><span class="attr">#[derive(Debug, Clone, Copy, Default, PartialEq, Eq, PartialOrd, Ord, Hash)]
+<a href=#104 id=104 data-nosnippet>104</a>#[repr(transparent)]
+<a href=#105 id=105 data-nosnippet>105</a></span><span class="kw">pub struct </span>SDL_TextureModulate(<span class="kw">pub </span>i32);
+<a href=#106 id=106 data-nosnippet>106</a><span class="doccomment">/// No modulation.
+<a href=#107 id=107 data-nosnippet>107</a></span><span class="kw">pub const </span>SDL_TEXTUREMODULATE_NONE: SDL_TextureModulate =
+<a href=#108 id=108 data-nosnippet>108</a>  SDL_TextureModulate(<span class="number">0</span>);
+<a href=#109 id=109 data-nosnippet>109</a><span class="doccomment">/// `srcC = srcC * color`
+<a href=#110 id=110 data-nosnippet>110</a></span><span class="kw">pub const </span>SDL_TEXTUREMODULATE_COLOR: SDL_TextureModulate =
+<a href=#111 id=111 data-nosnippet>111</a>  SDL_TextureModulate(<span class="number">1</span>);
+<a href=#112 id=112 data-nosnippet>112</a><span class="doccomment">/// `srcA = srcA * alpha`
+<a href=#113 id=113 data-nosnippet>113</a></span><span class="kw">pub const </span>SDL_TEXTUREMODULATE_ALPHA: SDL_TextureModulate =
+<a href=#114 id=114 data-nosnippet>114</a>  SDL_TextureModulate(<span class="number">2</span>);
+<a href=#115 id=115 data-nosnippet>115</a>
+<a href=#116 id=116 data-nosnippet>116</a><span class="doccomment">/// Flip values for [`SDL_RenderCopyEx`]
+<a href=#117 id=117 data-nosnippet>117</a>///
+<a href=#118 id=118 data-nosnippet>118</a>/// See `SDL_FLIP_*` constants.
+<a href=#119 id=119 data-nosnippet>119</a></span><span class="attr">#[derive(Debug, Clone, Copy, Default, PartialEq, Eq, PartialOrd, Ord, Hash)]
+<a href=#120 id=120 data-nosnippet>120</a>#[repr(transparent)]
+<a href=#121 id=121 data-nosnippet>121</a></span><span class="kw">pub struct </span>SDL_RendererFlip(<span class="kw">pub </span>u32);
+<a href=#122 id=122 data-nosnippet>122</a><span class="macro">impl_bit_ops_for_tuple_newtype!</span>(SDL_RendererFlip);
+<a href=#123 id=123 data-nosnippet>123</a><span class="doccomment">/// Do not flip
+<a href=#124 id=124 data-nosnippet>124</a></span><span class="kw">pub const </span>SDL_FLIP_NONE: SDL_RendererFlip = SDL_RendererFlip(<span class="number">0x00000000</span>);
+<a href=#125 id=125 data-nosnippet>125</a><span class="doccomment">/// flip horizontally
+<a href=#126 id=126 data-nosnippet>126</a></span><span class="kw">pub const </span>SDL_FLIP_HORIZONTAL: SDL_RendererFlip = SDL_RendererFlip(<span class="number">0x00000001</span>);
+<a href=#127 id=127 data-nosnippet>127</a><span class="doccomment">/// flip vertically
+<a href=#128 id=128 data-nosnippet>128</a></span><span class="kw">pub const </span>SDL_FLIP_VERTICAL: SDL_RendererFlip = SDL_RendererFlip(<span class="number">0x00000002</span>);
+<a href=#129 id=129 data-nosnippet>129</a>
+<a href=#130 id=130 data-nosnippet>130</a><span class="doccomment">/// An opaque structure representing rendering state.
+<a href=#131 id=131 data-nosnippet>131</a></span><span class="attr">#[repr(transparent)]
+<a href=#132 id=132 data-nosnippet>132</a></span><span class="kw">pub struct </span>SDL_Renderer(c_void);
+<a href=#133 id=133 data-nosnippet>133</a>
+<a href=#134 id=134 data-nosnippet>134</a><span class="doccomment">/// An opaque, efficient, driver-specific representation of pixel data.
+<a href=#135 id=135 data-nosnippet>135</a></span><span class="attr">#[repr(transparent)]
+<a href=#136 id=136 data-nosnippet>136</a></span><span class="kw">pub struct </span>SDL_Texture(c_void);
+<a href=#137 id=137 data-nosnippet>137</a>
+<a href=#138 id=138 data-nosnippet>138</a><span class="kw">extern </span><span class="string">"C" </span>{
+<a href=#139 id=139 data-nosnippet>139</a>  <span class="doccomment">/// Get the number of 2D rendering drivers available for the current display.
+<a href=#140 id=140 data-nosnippet>140</a>  ///
+<a href=#141 id=141 data-nosnippet>141</a>  /// A render driver is a set of code that handles rendering and texture
+<a href=#142 id=142 data-nosnippet>142</a>  /// management on a particular display. Normally there is only one, but
+<a href=#143 id=143 data-nosnippet>143</a>  /// some drivers may have several available with different capabilities.
+<a href=#144 id=144 data-nosnippet>144</a>  ///
+<a href=#145 id=145 data-nosnippet>145</a>  /// See Also: [`SDL_GetRenderDriverInfo`] and [`SDL_CreateRenderer`]
+<a href=#146 id=146 data-nosnippet>146</a>  </span><span class="kw">pub fn </span>SDL_GetNumRenderDrivers() -&gt; c_int;
+<a href=#147 id=147 data-nosnippet>147</a>
+<a href=#148 id=148 data-nosnippet>148</a>  <span class="doccomment">/// Get information about a specific 2D rendering driver for the current
+<a href=#149 id=149 data-nosnippet>149</a>  /// display.
+<a href=#150 id=150 data-nosnippet>150</a>  ///
+<a href=#151 id=151 data-nosnippet>151</a>  /// * `index` The index of the driver to query information about.
+<a href=#152 id=152 data-nosnippet>152</a>  /// * `info`  A pointer to an SDL_RendererInfo struct to be filled with
+<a href=#153 id=153 data-nosnippet>153</a>  ///   information on the rendering driver.
+<a href=#154 id=154 data-nosnippet>154</a>  ///
+<a href=#155 id=155 data-nosnippet>155</a>  /// **Returns:** 0 on success, -1 if the index was out of range.
+<a href=#156 id=156 data-nosnippet>156</a>  ///
+<a href=#157 id=157 data-nosnippet>157</a>  /// See Also: [`SDL_CreateRenderer`]
+<a href=#158 id=158 data-nosnippet>158</a>  </span><span class="kw">pub fn </span>SDL_GetRenderDriverInfo(
+<a href=#159 id=159 data-nosnippet>159</a>    index: c_int, info: <span class="kw-2">*mut </span>SDL_RendererInfo,
+<a href=#160 id=160 data-nosnippet>160</a>  ) -&gt; c_int;
+<a href=#161 id=161 data-nosnippet>161</a>
+<a href=#162 id=162 data-nosnippet>162</a>  <span class="doccomment">/// Create a window and default renderer
+<a href=#163 id=163 data-nosnippet>163</a>  ///
+<a href=#164 id=164 data-nosnippet>164</a>  /// * `width` The width of the window
+<a href=#165 id=165 data-nosnippet>165</a>  /// * `height` The height of the window
+<a href=#166 id=166 data-nosnippet>166</a>  /// * `window_flags` The flags used to create the window
+<a href=#167 id=167 data-nosnippet>167</a>  /// * `window` A pointer filled with the window, or NULL on error
+<a href=#168 id=168 data-nosnippet>168</a>  /// * `renderer` A pointer filled with the renderer, or NULL on error
+<a href=#169 id=169 data-nosnippet>169</a>  ///
+<a href=#170 id=170 data-nosnippet>170</a>  /// **Returns:** 0 on success, or -1 on error
+<a href=#171 id=171 data-nosnippet>171</a>  </span><span class="kw">pub fn </span>SDL_CreateWindowAndRenderer(
+<a href=#172 id=172 data-nosnippet>172</a>    width: c_int, height: c_int, window_flags: Uint32,
+<a href=#173 id=173 data-nosnippet>173</a>    window: <span class="kw-2">*mut *mut </span>SDL_Window, renderer: <span class="kw-2">*mut *mut </span>SDL_Renderer,
+<a href=#174 id=174 data-nosnippet>174</a>  ) -&gt; c_int;
+<a href=#175 id=175 data-nosnippet>175</a>
+<a href=#176 id=176 data-nosnippet>176</a>  <span class="doccomment">/// Create a 2D rendering context for a window.
+<a href=#177 id=177 data-nosnippet>177</a>  ///
+<a href=#178 id=178 data-nosnippet>178</a>  /// * `window` The window where rendering is displayed.
+<a href=#179 id=179 data-nosnippet>179</a>  /// * `index` The index of the rendering driver to initialize, or -1 to
+<a href=#180 id=180 data-nosnippet>180</a>  ///   initialize the first one supporting the requested flags.
+<a href=#181 id=181 data-nosnippet>181</a>  /// * `flags` ::SDL_RendererFlags.
+<a href=#182 id=182 data-nosnippet>182</a>  ///
+<a href=#183 id=183 data-nosnippet>183</a>  /// **Returns:** A valid rendering context or NULL if there was an error.
+<a href=#184 id=184 data-nosnippet>184</a>  ///
+<a href=#185 id=185 data-nosnippet>185</a>  /// See Also: [`SDL_CreateSoftwareRenderer`], [`SDL_GetRendererInfo`],
+<a href=#186 id=186 data-nosnippet>186</a>  /// [`SDL_DestroyRenderer`]
+<a href=#187 id=187 data-nosnippet>187</a>  </span><span class="kw">pub fn </span>SDL_CreateRenderer(
+<a href=#188 id=188 data-nosnippet>188</a>    window: <span class="kw-2">*mut </span>SDL_Window, index: c_int, flags: Uint32,
+<a href=#189 id=189 data-nosnippet>189</a>  ) -&gt; <span class="kw-2">*mut </span>SDL_Renderer;
+<a href=#190 id=190 data-nosnippet>190</a>
+<a href=#191 id=191 data-nosnippet>191</a>  <span class="doccomment">/// Create a 2D software rendering context for a surface.
+<a href=#192 id=192 data-nosnippet>192</a>  ///
+<a href=#193 id=193 data-nosnippet>193</a>  /// * `surface` The surface where rendering is done.
+<a href=#194 id=194 data-nosnippet>194</a>  ///
+<a href=#195 id=195 data-nosnippet>195</a>  /// **Returns:** A valid rendering context or NULL if there was an error.
+<a href=#196 id=196 data-nosnippet>196</a>  ///
+<a href=#197 id=197 data-nosnippet>197</a>  /// See Also: [`SDL_CreateRenderer`], [`SDL_DestroyRenderer`]
+<a href=#198 id=198 data-nosnippet>198</a>  </span><span class="kw">pub fn </span>SDL_CreateSoftwareRenderer(
+<a href=#199 id=199 data-nosnippet>199</a>    surface: <span class="kw-2">*mut </span>SDL_Surface,
+<a href=#200 id=200 data-nosnippet>200</a>  ) -&gt; <span class="kw-2">*mut </span>SDL_Renderer;
+<a href=#201 id=201 data-nosnippet>201</a>
+<a href=#202 id=202 data-nosnippet>202</a>  <span class="doccomment">/// Get the renderer associated with a window.
+<a href=#203 id=203 data-nosnippet>203</a>  </span><span class="kw">pub fn </span>SDL_GetRenderer(window: <span class="kw-2">*mut </span>SDL_Window) -&gt; <span class="kw-2">*mut </span>SDL_Renderer;
+<a href=#204 id=204 data-nosnippet>204</a>
+<a href=#205 id=205 data-nosnippet>205</a>  <span class="doccomment">/// Get information about a rendering context.
+<a href=#206 id=206 data-nosnippet>206</a>  </span><span class="kw">pub fn </span>SDL_GetRendererInfo(
+<a href=#207 id=207 data-nosnippet>207</a>    renderer: <span class="kw-2">*mut </span>SDL_Renderer, info: <span class="kw-2">*mut </span>SDL_RendererInfo,
+<a href=#208 id=208 data-nosnippet>208</a>  ) -&gt; c_int;
+<a href=#209 id=209 data-nosnippet>209</a>
+<a href=#210 id=210 data-nosnippet>210</a>  <span class="doccomment">/// Get the output size in pixels of a rendering context.
+<a href=#211 id=211 data-nosnippet>211</a>  </span><span class="kw">pub fn </span>SDL_GetRendererOutputSize(
+<a href=#212 id=212 data-nosnippet>212</a>    renderer: <span class="kw-2">*mut </span>SDL_Renderer, w: <span class="kw-2">*mut </span>c_int, h: <span class="kw-2">*mut </span>c_int,
+<a href=#213 id=213 data-nosnippet>213</a>  ) -&gt; c_int;
+<a href=#214 id=214 data-nosnippet>214</a>
+<a href=#215 id=215 data-nosnippet>215</a>  <span class="doccomment">/// Create a texture for a rendering context.
+<a href=#216 id=216 data-nosnippet>216</a>  ///
+<a href=#217 id=217 data-nosnippet>217</a>  /// * `renderer` The renderer.
+<a href=#218 id=218 data-nosnippet>218</a>  /// * `format` The format of the texture.
+<a href=#219 id=219 data-nosnippet>219</a>  /// * `access` One of the enumerated values in ::SDL_TextureAccess.
+<a href=#220 id=220 data-nosnippet>220</a>  /// * `w` The width of the texture in pixels.
+<a href=#221 id=221 data-nosnippet>221</a>  /// * `h` The height of the texture in pixels.
+<a href=#222 id=222 data-nosnippet>222</a>  ///
+<a href=#223 id=223 data-nosnippet>223</a>  /// **Returns:** The created texture is returned, or NULL if no rendering
+<a href=#224 id=224 data-nosnippet>224</a>  /// context was active,  the format was unsupported, or the width or height
+<a href=#225 id=225 data-nosnippet>225</a>  /// were out of range.
+<a href=#226 id=226 data-nosnippet>226</a>  ///
+<a href=#227 id=227 data-nosnippet>227</a>  /// The contents of the texture are not defined at creation.
+<a href=#228 id=228 data-nosnippet>228</a>  ///
+<a href=#229 id=229 data-nosnippet>229</a>  /// See Also: [`SDL_QueryTexture`], [`SDL_UpdateTexture`],
+<a href=#230 id=230 data-nosnippet>230</a>  /// [`SDL_DestroyTexture`]
+<a href=#231 id=231 data-nosnippet>231</a>  </span><span class="kw">pub fn </span>SDL_CreateTexture(
+<a href=#232 id=232 data-nosnippet>232</a>    renderer: <span class="kw-2">*mut </span>SDL_Renderer, format: Uint32, access: c_int, w: c_int,
+<a href=#233 id=233 data-nosnippet>233</a>    h: c_int,
+<a href=#234 id=234 data-nosnippet>234</a>  ) -&gt; <span class="kw-2">*mut </span>SDL_Texture;
+<a href=#235 id=235 data-nosnippet>235</a>
+<a href=#236 id=236 data-nosnippet>236</a>  <span class="doccomment">/// Create a texture from an existing surface.
+<a href=#237 id=237 data-nosnippet>237</a>  ///
+<a href=#238 id=238 data-nosnippet>238</a>  /// * `renderer` The renderer.
+<a href=#239 id=239 data-nosnippet>239</a>  /// * `surface` The surface containing pixel data used to fill the texture.
+<a href=#240 id=240 data-nosnippet>240</a>  ///
+<a href=#241 id=241 data-nosnippet>241</a>  /// **Returns:** The created texture is returned, or NULL on error.
+<a href=#242 id=242 data-nosnippet>242</a>  ///
+<a href=#243 id=243 data-nosnippet>243</a>  /// The surface is not modified or freed by this function.
+<a href=#244 id=244 data-nosnippet>244</a>  ///
+<a href=#245 id=245 data-nosnippet>245</a>  /// See Also: [`SDL_QueryTexture`], [`SDL_DestroyTexture`]
+<a href=#246 id=246 data-nosnippet>246</a>  </span><span class="kw">pub fn </span>SDL_CreateTextureFromSurface(
+<a href=#247 id=247 data-nosnippet>247</a>    renderer: <span class="kw-2">*mut </span>SDL_Renderer, surface: <span class="kw-2">*mut </span>SDL_Surface,
+<a href=#248 id=248 data-nosnippet>248</a>  ) -&gt; <span class="kw-2">*mut </span>SDL_Texture;
+<a href=#249 id=249 data-nosnippet>249</a>
+<a href=#250 id=250 data-nosnippet>250</a>  <span class="doccomment">/// Query the attributes of a texture
+<a href=#251 id=251 data-nosnippet>251</a>  ///
+<a href=#252 id=252 data-nosnippet>252</a>  /// * `texture` A texture to be queried.
+<a href=#253 id=253 data-nosnippet>253</a>  /// * `format` A pointer filled in with the raw format of the texture. The
+<a href=#254 id=254 data-nosnippet>254</a>  ///   actual format may differ, but pixel transfers will use this format.
+<a href=#255 id=255 data-nosnippet>255</a>  /// * `access` A pointer filled in with the actual access to the texture.
+<a href=#256 id=256 data-nosnippet>256</a>  /// * `w` A pointer filled in with the width of the texture in pixels.
+<a href=#257 id=257 data-nosnippet>257</a>  /// * `h` A pointer filled in with the height of the texture in pixels.
+<a href=#258 id=258 data-nosnippet>258</a>  ///
+<a href=#259 id=259 data-nosnippet>259</a>  /// **Returns:** 0 on success, or -1 if the texture is not valid.
+<a href=#260 id=260 data-nosnippet>260</a>  </span><span class="kw">pub fn </span>SDL_QueryTexture(
+<a href=#261 id=261 data-nosnippet>261</a>    texture: <span class="kw-2">*mut </span>SDL_Texture, format: <span class="kw-2">*mut </span>Uint32, access: <span class="kw-2">*mut </span>c_int,
+<a href=#262 id=262 data-nosnippet>262</a>    w: <span class="kw-2">*mut </span>c_int, h: <span class="kw-2">*mut </span>c_int,
+<a href=#263 id=263 data-nosnippet>263</a>  ) -&gt; c_int;
+<a href=#264 id=264 data-nosnippet>264</a>
+<a href=#265 id=265 data-nosnippet>265</a>  <span class="doccomment">/// Set an additional color value used in render copy operations.
+<a href=#266 id=266 data-nosnippet>266</a>  ///
+<a href=#267 id=267 data-nosnippet>267</a>  /// * `texture` The texture to update.
+<a href=#268 id=268 data-nosnippet>268</a>  /// * `r` The red color value multiplied into copy operations.
+<a href=#269 id=269 data-nosnippet>269</a>  /// * `g` The green color value multiplied into copy operations.
+<a href=#270 id=270 data-nosnippet>270</a>  /// * `b` The blue color value multiplied into copy operations.
+<a href=#271 id=271 data-nosnippet>271</a>  ///
+<a href=#272 id=272 data-nosnippet>272</a>  /// **Returns:** 0 on success, or -1 if the texture is not valid or color
+<a href=#273 id=273 data-nosnippet>273</a>  /// modulation is not supported.
+<a href=#274 id=274 data-nosnippet>274</a>  ///
+<a href=#275 id=275 data-nosnippet>275</a>  /// See Also: [`SDL_GetTextureColorMod`]
+<a href=#276 id=276 data-nosnippet>276</a>  </span><span class="kw">pub fn </span>SDL_SetTextureColorMod(
+<a href=#277 id=277 data-nosnippet>277</a>    texture: <span class="kw-2">*mut </span>SDL_Texture, r: Uint8, g: Uint8, b: Uint8,
+<a href=#278 id=278 data-nosnippet>278</a>  ) -&gt; c_int;
+<a href=#279 id=279 data-nosnippet>279</a>
+<a href=#280 id=280 data-nosnippet>280</a>  <span class="doccomment">///  Get the additional color value used in render copy operations.
+<a href=#281 id=281 data-nosnippet>281</a>  ///
+<a href=#282 id=282 data-nosnippet>282</a>  /// * `texture` The texture to query.
+<a href=#283 id=283 data-nosnippet>283</a>  /// * `r` A pointer filled in with the current red color value.
+<a href=#284 id=284 data-nosnippet>284</a>  /// * `g` A pointer filled in with the current green color value.
+<a href=#285 id=285 data-nosnippet>285</a>  /// * `b` A pointer filled in with the current blue color value.
+<a href=#286 id=286 data-nosnippet>286</a>  ///
+<a href=#287 id=287 data-nosnippet>287</a>  /// **Returns:** 0 on success, or -1 if the texture is not valid.
+<a href=#288 id=288 data-nosnippet>288</a>  ///
+<a href=#289 id=289 data-nosnippet>289</a>  /// See Also: [`SDL_SetTextureColorMod`]
+<a href=#290 id=290 data-nosnippet>290</a>  </span><span class="kw">pub fn </span>SDL_GetTextureColorMod(
+<a href=#291 id=291 data-nosnippet>291</a>    texture: <span class="kw-2">*mut </span>SDL_Texture, r: <span class="kw-2">*mut </span>Uint8, g: <span class="kw-2">*mut </span>Uint8, b: <span class="kw-2">*mut </span>Uint8,
+<a href=#292 id=292 data-nosnippet>292</a>  ) -&gt; c_int;
+<a href=#293 id=293 data-nosnippet>293</a>
+<a href=#294 id=294 data-nosnippet>294</a>  <span class="doccomment">/// Set an additional alpha value used in render copy operations.
+<a href=#295 id=295 data-nosnippet>295</a>  ///
+<a href=#296 id=296 data-nosnippet>296</a>  /// * `texture` The texture to update.
+<a href=#297 id=297 data-nosnippet>297</a>  /// * `alpha` The alpha value multiplied into copy operations.
+<a href=#298 id=298 data-nosnippet>298</a>  ///
+<a href=#299 id=299 data-nosnippet>299</a>  /// **Returns:** 0 on success, or -1 if the texture is not valid or alpha
+<a href=#300 id=300 data-nosnippet>300</a>  /// modulation is not supported.
+<a href=#301 id=301 data-nosnippet>301</a>  ///
+<a href=#302 id=302 data-nosnippet>302</a>  /// See Also: [`SDL_GetTextureAlphaMod`]
+<a href=#303 id=303 data-nosnippet>303</a>  </span><span class="kw">pub fn </span>SDL_SetTextureAlphaMod(
+<a href=#304 id=304 data-nosnippet>304</a>    texture: <span class="kw-2">*mut </span>SDL_Texture, alpha: Uint8,
+<a href=#305 id=305 data-nosnippet>305</a>  ) -&gt; c_int;
+<a href=#306 id=306 data-nosnippet>306</a>
+<a href=#307 id=307 data-nosnippet>307</a>  <span class="doccomment">/// Get the additional alpha value used in render copy operations.
+<a href=#308 id=308 data-nosnippet>308</a>  ///
+<a href=#309 id=309 data-nosnippet>309</a>  /// * `texture` The texture to query.
+<a href=#310 id=310 data-nosnippet>310</a>  /// * `alpha` A pointer filled in with the current alpha value.
+<a href=#311 id=311 data-nosnippet>311</a>  ///
+<a href=#312 id=312 data-nosnippet>312</a>  /// **Returns:** 0 on success, or -1 if the texture is not valid.
+<a href=#313 id=313 data-nosnippet>313</a>  ///
+<a href=#314 id=314 data-nosnippet>314</a>  /// See Also: [`SDL_SetTextureAlphaMod`]
+<a href=#315 id=315 data-nosnippet>315</a>  </span><span class="kw">pub fn </span>SDL_GetTextureAlphaMod(
+<a href=#316 id=316 data-nosnippet>316</a>    texture: <span class="kw-2">*mut </span>SDL_Texture, alpha: <span class="kw-2">*mut </span>Uint8,
+<a href=#317 id=317 data-nosnippet>317</a>  ) -&gt; c_int;
+<a href=#318 id=318 data-nosnippet>318</a>
+<a href=#319 id=319 data-nosnippet>319</a>  <span class="doccomment">/// Set the blend mode used for texture copy operations.
+<a href=#320 id=320 data-nosnippet>320</a>  ///
+<a href=#321 id=321 data-nosnippet>321</a>  /// * `texture` The texture to update.
+<a href=#322 id=322 data-nosnippet>322</a>  /// * `blendMode` [`SDL_BlendMode`] to use for texture blending.
+<a href=#323 id=323 data-nosnippet>323</a>  ///
+<a href=#324 id=324 data-nosnippet>324</a>  /// **Returns:** 0 on success, or -1 if the texture is not valid or the blend
+<a href=#325 id=325 data-nosnippet>325</a>  /// mode is not supported.
+<a href=#326 id=326 data-nosnippet>326</a>  ///
+<a href=#327 id=327 data-nosnippet>327</a>  /// If the blend mode is not supported, the closest supported mode is chosen.
+<a href=#328 id=328 data-nosnippet>328</a>  ///
+<a href=#329 id=329 data-nosnippet>329</a>  /// See Also: [`SDL_GetTextureBlendMode`]
+<a href=#330 id=330 data-nosnippet>330</a>  </span><span class="kw">pub fn </span>SDL_SetTextureBlendMode(
+<a href=#331 id=331 data-nosnippet>331</a>    texture: <span class="kw-2">*mut </span>SDL_Texture, blendMode: SDL_BlendMode,
+<a href=#332 id=332 data-nosnippet>332</a>  ) -&gt; c_int;
+<a href=#333 id=333 data-nosnippet>333</a>
+<a href=#334 id=334 data-nosnippet>334</a>  <span class="doccomment">/// Get the blend mode used for texture copy operations.
+<a href=#335 id=335 data-nosnippet>335</a>  ///
+<a href=#336 id=336 data-nosnippet>336</a>  /// * `texture` The texture to query.
+<a href=#337 id=337 data-nosnippet>337</a>  /// * `blendMode` A pointer filled in with the current blend mode.
+<a href=#338 id=338 data-nosnippet>338</a>  ///
+<a href=#339 id=339 data-nosnippet>339</a>  /// **Returns:** 0 on success, or -1 if the texture is not valid.
+<a href=#340 id=340 data-nosnippet>340</a>  ///
+<a href=#341 id=341 data-nosnippet>341</a>  /// See Also: [`SDL_SetTextureBlendMode`]
+<a href=#342 id=342 data-nosnippet>342</a>  </span><span class="kw">pub fn </span>SDL_GetTextureBlendMode(
+<a href=#343 id=343 data-nosnippet>343</a>    texture: <span class="kw-2">*mut </span>SDL_Texture, blendMode: <span class="kw-2">*mut </span>SDL_BlendMode,
+<a href=#344 id=344 data-nosnippet>344</a>  ) -&gt; c_int;
+<a href=#345 id=345 data-nosnippet>345</a>
+<a href=#346 id=346 data-nosnippet>346</a>  <span class="doccomment">/// Set the scale mode used for texture scale operations.
+<a href=#347 id=347 data-nosnippet>347</a>  ///
+<a href=#348 id=348 data-nosnippet>348</a>  /// * `texture` The texture to update.
+<a href=#349 id=349 data-nosnippet>349</a>  /// * `scaleMode` [`SDL_ScaleMode`] to use for texture scaling.
+<a href=#350 id=350 data-nosnippet>350</a>  ///
+<a href=#351 id=351 data-nosnippet>351</a>  /// **Returns:** 0 on success, or -1 if the texture is not valid.
+<a href=#352 id=352 data-nosnippet>352</a>  ///
+<a href=#353 id=353 data-nosnippet>353</a>  /// If the scale mode is not supported, the closest supported mode is chosen.
+<a href=#354 id=354 data-nosnippet>354</a>  ///
+<a href=#355 id=355 data-nosnippet>355</a>  /// See Also: [`SDL_GetTextureScaleMode`]
+<a href=#356 id=356 data-nosnippet>356</a>  </span><span class="kw">pub fn </span>SDL_SetTextureScaleMode(
+<a href=#357 id=357 data-nosnippet>357</a>    texture: <span class="kw-2">*mut </span>SDL_Texture, scaleMode: SDL_ScaleMode,
+<a href=#358 id=358 data-nosnippet>358</a>  ) -&gt; c_int;
+<a href=#359 id=359 data-nosnippet>359</a>
+<a href=#360 id=360 data-nosnippet>360</a>  <span class="doccomment">/// Get the scale mode used for texture scale operations.
+<a href=#361 id=361 data-nosnippet>361</a>  ///
+<a href=#362 id=362 data-nosnippet>362</a>  /// * `texture` The texture to query.
+<a href=#363 id=363 data-nosnippet>363</a>  /// * `scaleMode` A pointer filled in with the current scale mode.
+<a href=#364 id=364 data-nosnippet>364</a>  ///
+<a href=#365 id=365 data-nosnippet>365</a>  /// **Returns:** 0 on success, or -1 if the texture is not valid.
+<a href=#366 id=366 data-nosnippet>366</a>  ///
+<a href=#367 id=367 data-nosnippet>367</a>  /// See Also: [`SDL_SetTextureScaleMode`]
+<a href=#368 id=368 data-nosnippet>368</a>  </span><span class="kw">pub fn </span>SDL_GetTextureScaleMode(
+<a href=#369 id=369 data-nosnippet>369</a>    texture: <span class="kw-2">*mut </span>SDL_Texture, scaleMode: <span class="kw-2">*mut </span>SDL_ScaleMode,
+<a href=#370 id=370 data-nosnippet>370</a>  ) -&gt; c_int;
+<a href=#371 id=371 data-nosnippet>371</a>
+<a href=#372 id=372 data-nosnippet>372</a>  <span class="doccomment">/// Update the given texture rectangle with new pixel data.
+<a href=#373 id=373 data-nosnippet>373</a>  ///
+<a href=#374 id=374 data-nosnippet>374</a>  /// * `texture` The texture to update
+<a href=#375 id=375 data-nosnippet>375</a>  /// * `rect` A pointer to the rectangle of pixels to update, or NULL to update
+<a href=#376 id=376 data-nosnippet>376</a>  ///   the entire texture.
+<a href=#377 id=377 data-nosnippet>377</a>  /// * `pixels` The raw pixel data in the format of the texture.
+<a href=#378 id=378 data-nosnippet>378</a>  /// * `pitch` The number of bytes in a row of pixel data, including padding
+<a href=#379 id=379 data-nosnippet>379</a>  ///   between lines.
+<a href=#380 id=380 data-nosnippet>380</a>  ///
+<a href=#381 id=381 data-nosnippet>381</a>  /// The pixel data must be in the format of the texture. The pixel format can
+<a href=#382 id=382 data-nosnippet>382</a>  /// be queried with [`SDL_QueryTexture`].
+<a href=#383 id=383 data-nosnippet>383</a>  ///
+<a href=#384 id=384 data-nosnippet>384</a>  /// **Returns:** 0 on success, or -1 if the texture is not valid.
+<a href=#385 id=385 data-nosnippet>385</a>  ///
+<a href=#386 id=386 data-nosnippet>386</a>  /// This is a fairly slow function.
+<a href=#387 id=387 data-nosnippet>387</a>  </span><span class="kw">pub fn </span>SDL_UpdateTexture(
+<a href=#388 id=388 data-nosnippet>388</a>    texture: <span class="kw-2">*mut </span>SDL_Texture, rect: <span class="kw-2">*const </span>SDL_Rect, pixels: <span class="kw-2">*const </span>c_void,
+<a href=#389 id=389 data-nosnippet>389</a>    pitch: c_int,
+<a href=#390 id=390 data-nosnippet>390</a>  ) -&gt; c_int;
+<a href=#391 id=391 data-nosnippet>391</a>
+<a href=#392 id=392 data-nosnippet>392</a>  <span class="doccomment">/// Update a rectangle within a planar YV12 or IYUV texture with new pixel
+<a href=#393 id=393 data-nosnippet>393</a>  /// data.
+<a href=#394 id=394 data-nosnippet>394</a>  ///
+<a href=#395 id=395 data-nosnippet>395</a>  /// * `texture` The texture to update
+<a href=#396 id=396 data-nosnippet>396</a>  /// * `rect` A pointer to the rectangle of pixels to update, or NULL to update
+<a href=#397 id=397 data-nosnippet>397</a>  ///   the entire texture.
+<a href=#398 id=398 data-nosnippet>398</a>  /// * `Yplane` The raw pixel data for the Y plane.
+<a href=#399 id=399 data-nosnippet>399</a>  /// * `Ypitch` The number of bytes between rows of pixel data for the Y plane.
+<a href=#400 id=400 data-nosnippet>400</a>  /// * `Uplane` The raw pixel data for the U plane.
+<a href=#401 id=401 data-nosnippet>401</a>  /// * `Upitch` The number of bytes between rows of pixel data for the U plane.
+<a href=#402 id=402 data-nosnippet>402</a>  /// * `Vplane` The raw pixel data for the V plane.
+<a href=#403 id=403 data-nosnippet>403</a>  /// * `Vpitch` The number of bytes between rows of pixel data for the V plane.
+<a href=#404 id=404 data-nosnippet>404</a>  ///
+<a href=#405 id=405 data-nosnippet>405</a>  /// **Returns:** 0 on success, or -1 if the texture is not valid.
+<a href=#406 id=406 data-nosnippet>406</a>  ///
+<a href=#407 id=407 data-nosnippet>407</a>  /// You can use [`SDL_UpdateTexture`] as long as your pixel data is
+<a href=#408 id=408 data-nosnippet>408</a>  /// a contiguous block of Y and U/V planes in the proper order, but
+<a href=#409 id=409 data-nosnippet>409</a>  /// this function is available if your pixel data is not contiguous.
+<a href=#410 id=410 data-nosnippet>410</a>  </span><span class="kw">pub fn </span>SDL_UpdateYUVTexture(
+<a href=#411 id=411 data-nosnippet>411</a>    texture: <span class="kw-2">*mut </span>SDL_Texture, rect: <span class="kw-2">*const </span>SDL_Rect, Yplane: <span class="kw-2">*const </span>Uint8,
+<a href=#412 id=412 data-nosnippet>412</a>    Ypitch: c_int, Uplane: <span class="kw-2">*const </span>Uint8, Upitch: c_int, Vplane: <span class="kw-2">*const </span>Uint8,
+<a href=#413 id=413 data-nosnippet>413</a>    Vpitch: c_int,
+<a href=#414 id=414 data-nosnippet>414</a>  ) -&gt; c_int;
+<a href=#415 id=415 data-nosnippet>415</a>
+<a href=#416 id=416 data-nosnippet>416</a>  <span class="doccomment">/// Lock a portion of the texture for write-only pixel access.
+<a href=#417 id=417 data-nosnippet>417</a>  ///
+<a href=#418 id=418 data-nosnippet>418</a>  /// * `texture` The texture to lock for access, which was created with
+<a href=#419 id=419 data-nosnippet>419</a>  ///   [`SDL_TEXTUREACCESS_STREAMING`].
+<a href=#420 id=420 data-nosnippet>420</a>  /// * `rect` A pointer to the rectangle to lock for access. If the rect is
+<a href=#421 id=421 data-nosnippet>421</a>  ///   `NULL`, the entire texture will be locked.
+<a href=#422 id=422 data-nosnippet>422</a>  /// * `pixels` This is filled in with a pointer to the locked pixels,
+<a href=#423 id=423 data-nosnippet>423</a>  ///   appropriately offset by the locked area.
+<a href=#424 id=424 data-nosnippet>424</a>  /// * `pitch` This is filled in with the pitch of the locked pixels.
+<a href=#425 id=425 data-nosnippet>425</a>  ///
+<a href=#426 id=426 data-nosnippet>426</a>  /// **Returns:** 0 on success, or -1 if the texture is not valid or was not
+<a href=#427 id=427 data-nosnippet>427</a>  /// created with [`SDL_TEXTUREACCESS_STREAMING`].
+<a href=#428 id=428 data-nosnippet>428</a>  ///
+<a href=#429 id=429 data-nosnippet>429</a>  /// See Also: [`SDL_UnlockTexture`]
+<a href=#430 id=430 data-nosnippet>430</a>  </span><span class="kw">pub fn </span>SDL_LockTexture(
+<a href=#431 id=431 data-nosnippet>431</a>    texture: <span class="kw-2">*mut </span>SDL_Texture, rect: <span class="kw-2">*const </span>SDL_Rect, pixels: <span class="kw-2">*mut *mut </span>c_void,
+<a href=#432 id=432 data-nosnippet>432</a>    pitch: <span class="kw-2">*mut </span>c_int,
+<a href=#433 id=433 data-nosnippet>433</a>  ) -&gt; c_int;
+<a href=#434 id=434 data-nosnippet>434</a>
+<a href=#435 id=435 data-nosnippet>435</a>  <span class="doccomment">/// Lock a portion of the texture for write-only pixel access. Expose it as a
+<a href=#436 id=436 data-nosnippet>436</a>  /// SDL surface.
+<a href=#437 id=437 data-nosnippet>437</a>  ///
+<a href=#438 id=438 data-nosnippet>438</a>  /// * `texture` The texture to lock for access, which was created with
+<a href=#439 id=439 data-nosnippet>439</a>  ///   [`SDL_TEXTUREACCESS_STREAMING`].
+<a href=#440 id=440 data-nosnippet>440</a>  /// * `rect` A pointer to the rectangle to lock for access. If the rect is
+<a href=#441 id=441 data-nosnippet>441</a>  ///   `NULL`, the entire texture will be locked.
+<a href=#442 id=442 data-nosnippet>442</a>  /// * `surface` This is filled in with a SDL surface representing the locked
+<a href=#443 id=443 data-nosnippet>443</a>  ///   area Surface is freed internally after calling [`SDL_UnlockTexture`] or
+<a href=#444 id=444 data-nosnippet>444</a>  ///   [`SDL_DestroyTexture`].
+<a href=#445 id=445 data-nosnippet>445</a>  ///
+<a href=#446 id=446 data-nosnippet>446</a>  /// **Returns:** 0 on success, or -1 if the texture is not valid or was not
+<a href=#447 id=447 data-nosnippet>447</a>  /// created with [`SDL_TEXTUREACCESS_STREAMING`].
+<a href=#448 id=448 data-nosnippet>448</a>  ///
+<a href=#449 id=449 data-nosnippet>449</a>  /// See Also: [`SDL_UnlockTexture`]
+<a href=#450 id=450 data-nosnippet>450</a>  </span><span class="kw">pub fn </span>SDL_LockTextureToSurface(
+<a href=#451 id=451 data-nosnippet>451</a>    texture: <span class="kw-2">*mut </span>SDL_Texture, rect: <span class="kw-2">*const </span>SDL_Rect,
+<a href=#452 id=452 data-nosnippet>452</a>    surface: <span class="kw-2">*mut *mut </span>SDL_Surface,
+<a href=#453 id=453 data-nosnippet>453</a>  ) -&gt; c_int;
+<a href=#454 id=454 data-nosnippet>454</a>
+<a href=#455 id=455 data-nosnippet>455</a>  <span class="doccomment">/// Unlock a texture, uploading the changes to video memory, if needed.
+<a href=#456 id=456 data-nosnippet>456</a>  ///
+<a href=#457 id=457 data-nosnippet>457</a>  /// If [`SDL_LockTextureToSurface`] was called for locking, the SDL surface is
+<a href=#458 id=458 data-nosnippet>458</a>  /// freed.
+<a href=#459 id=459 data-nosnippet>459</a>  ///
+<a href=#460 id=460 data-nosnippet>460</a>  /// See Also: [`SDL_LockTexture`], [`SDL_LockTextureToSurface`]
+<a href=#461 id=461 data-nosnippet>461</a>  </span><span class="kw">pub fn </span>SDL_UnlockTexture(texture: <span class="kw-2">*mut </span>SDL_Texture);
+<a href=#462 id=462 data-nosnippet>462</a>
+<a href=#463 id=463 data-nosnippet>463</a>  <span class="doccomment">/// Determines whether a window supports the use of render targets
+<a href=#464 id=464 data-nosnippet>464</a>  ///
+<a href=#465 id=465 data-nosnippet>465</a>  /// * `renderer` The renderer that will be checked
+<a href=#466 id=466 data-nosnippet>466</a>  ///
+<a href=#467 id=467 data-nosnippet>467</a>  /// **Returns:** SDL_TRUE if supported, SDL_FALSE if not.
+<a href=#468 id=468 data-nosnippet>468</a>  </span><span class="kw">pub fn </span>SDL_RenderTargetSupported(renderer: <span class="kw-2">*mut </span>SDL_Renderer) -&gt; SDL_bool;
+<a href=#469 id=469 data-nosnippet>469</a>
+<a href=#470 id=470 data-nosnippet>470</a>  <span class="doccomment">/// Set a texture as the current rendering target.
+<a href=#471 id=471 data-nosnippet>471</a>  ///
+<a href=#472 id=472 data-nosnippet>472</a>  /// * `renderer` The renderer.
+<a href=#473 id=473 data-nosnippet>473</a>  /// * `texture` The targeted texture, which must be created with the
+<a href=#474 id=474 data-nosnippet>474</a>  ///   SDL_TEXTUREACCESS_TARGET flag, or NULL for the default render target
+<a href=#475 id=475 data-nosnippet>475</a>  ///
+<a href=#476 id=476 data-nosnippet>476</a>  /// **Returns:** 0 on success, or -1 on error
+<a href=#477 id=477 data-nosnippet>477</a>  ///
+<a href=#478 id=478 data-nosnippet>478</a>  /// See Also: [`SDL_GetRenderTarget`]
+<a href=#479 id=479 data-nosnippet>479</a>  </span><span class="kw">pub fn </span>SDL_SetRenderTarget(
+<a href=#480 id=480 data-nosnippet>480</a>    renderer: <span class="kw-2">*mut </span>SDL_Renderer, texture: <span class="kw-2">*mut </span>SDL_Texture,
+<a href=#481 id=481 data-nosnippet>481</a>  ) -&gt; c_int;
+<a href=#482 id=482 data-nosnippet>482</a>
+<a href=#483 id=483 data-nosnippet>483</a>  <span class="doccomment">/// Get the current render target or `NULL` for the default render target.
+<a href=#484 id=484 data-nosnippet>484</a>  ///
+<a href=#485 id=485 data-nosnippet>485</a>  /// **Returns:** The current render target
+<a href=#486 id=486 data-nosnippet>486</a>  ///
+<a href=#487 id=487 data-nosnippet>487</a>  /// See Also: [`SDL_SetRenderTarget`]
+<a href=#488 id=488 data-nosnippet>488</a>  </span><span class="kw">pub fn </span>SDL_GetRenderTarget(renderer: <span class="kw-2">*mut </span>SDL_Renderer) -&gt; <span class="kw-2">*mut </span>SDL_Texture;
+<a href=#489 id=489 data-nosnippet>489</a>
+<a href=#490 id=490 data-nosnippet>490</a>  <span class="doccomment">/// Set device independent resolution for rendering
+<a href=#491 id=491 data-nosnippet>491</a>  ///
+<a href=#492 id=492 data-nosnippet>492</a>  /// * `renderer` The renderer for which resolution should be set.
+<a href=#493 id=493 data-nosnippet>493</a>  /// * `w` The width of the logical resolution
+<a href=#494 id=494 data-nosnippet>494</a>  /// * `h` The height of the logical resolution
+<a href=#495 id=495 data-nosnippet>495</a>  ///
+<a href=#496 id=496 data-nosnippet>496</a>  /// This function uses the viewport and scaling functionality to allow a fixed
+<a href=#497 id=497 data-nosnippet>497</a>  /// logical resolution for rendering, regardless of the actual output
+<a href=#498 id=498 data-nosnippet>498</a>  /// resolution. If the actual output resolution doesn't have the same aspect
+<a href=#499 id=499 data-nosnippet>499</a>  /// ratio the output rendering will be centered within the output display.
+<a href=#500 id=500 data-nosnippet>500</a>  ///
+<a href=#501 id=501 data-nosnippet>501</a>  /// If the output display is a window, mouse events in the window will be
+<a href=#502 id=502 data-nosnippet>502</a>  /// filtered and scaled so they seem to arrive within the logical
+<a href=#503 id=503 data-nosnippet>503</a>  /// resolution.
+<a href=#504 id=504 data-nosnippet>504</a>  ///
+<a href=#505 id=505 data-nosnippet>505</a>  /// If this function results in scaling or subpixel drawing by the
+<a href=#506 id=506 data-nosnippet>506</a>  /// rendering backend, it will be handled using the appropriate
+<a href=#507 id=507 data-nosnippet>507</a>  /// quality hints.
+<a href=#508 id=508 data-nosnippet>508</a>  ///
+<a href=#509 id=509 data-nosnippet>509</a>  /// See Also: [`SDL_RenderGetLogicalSize`], [`SDL_RenderSetScale`],
+<a href=#510 id=510 data-nosnippet>510</a>  /// [`SDL_RenderSetViewport`]
+<a href=#511 id=511 data-nosnippet>511</a>  </span><span class="kw">pub fn </span>SDL_RenderSetLogicalSize(
+<a href=#512 id=512 data-nosnippet>512</a>    renderer: <span class="kw-2">*mut </span>SDL_Renderer, w: c_int, h: c_int,
+<a href=#513 id=513 data-nosnippet>513</a>  ) -&gt; c_int;
+<a href=#514 id=514 data-nosnippet>514</a>
+<a href=#515 id=515 data-nosnippet>515</a>  <span class="doccomment">/// Get device independent resolution for rendering
+<a href=#516 id=516 data-nosnippet>516</a>  ///
+<a href=#517 id=517 data-nosnippet>517</a>  /// * `renderer` The renderer from which resolution should be queried.
+<a href=#518 id=518 data-nosnippet>518</a>  /// * `w` A pointer filled with the width of the logical resolution
+<a href=#519 id=519 data-nosnippet>519</a>  /// * `h` A pointer filled with the height of the logical resolution
+<a href=#520 id=520 data-nosnippet>520</a>  ///
+<a href=#521 id=521 data-nosnippet>521</a>  /// See Also: [`SDL_RenderSetLogicalSize`]
+<a href=#522 id=522 data-nosnippet>522</a>  </span><span class="kw">pub fn </span>SDL_RenderGetLogicalSize(
+<a href=#523 id=523 data-nosnippet>523</a>    renderer: <span class="kw-2">*mut </span>SDL_Renderer, w: <span class="kw-2">*mut </span>c_int, h: <span class="kw-2">*mut </span>c_int,
+<a href=#524 id=524 data-nosnippet>524</a>  );
+<a href=#525 id=525 data-nosnippet>525</a>
+<a href=#526 id=526 data-nosnippet>526</a>  <span class="doccomment">/// Set whether to force integer scales for resolution-independent rendering
+<a href=#527 id=527 data-nosnippet>527</a>  ///
+<a href=#528 id=528 data-nosnippet>528</a>  /// * `renderer` The renderer for which integer scaling should be set.
+<a href=#529 id=529 data-nosnippet>529</a>  /// * `enable` Enable or disable integer scaling
+<a href=#530 id=530 data-nosnippet>530</a>  ///
+<a href=#531 id=531 data-nosnippet>531</a>  /// This function restricts the logical viewport to integer values - that is,
+<a href=#532 id=532 data-nosnippet>532</a>  /// when a resolution is between two multiples of a logical size, the
+<a href=#533 id=533 data-nosnippet>533</a>  /// viewport size is rounded down to the lower multiple.
+<a href=#534 id=534 data-nosnippet>534</a>  ///
+<a href=#535 id=535 data-nosnippet>535</a>  /// See Also: [`SDL_RenderSetLogicalSize`]
+<a href=#536 id=536 data-nosnippet>536</a>  </span><span class="kw">pub fn </span>SDL_RenderSetIntegerScale(
+<a href=#537 id=537 data-nosnippet>537</a>    renderer: <span class="kw-2">*mut </span>SDL_Renderer, enable: SDL_bool,
+<a href=#538 id=538 data-nosnippet>538</a>  ) -&gt; c_int;
+<a href=#539 id=539 data-nosnippet>539</a>
+<a href=#540 id=540 data-nosnippet>540</a>  <span class="doccomment">/// Get whether integer scales are forced for resolution-independent rendering
+<a href=#541 id=541 data-nosnippet>541</a>  ///
+<a href=#542 id=542 data-nosnippet>542</a>  /// * `renderer` The renderer from which integer scaling should be queried.
+<a href=#543 id=543 data-nosnippet>543</a>  ///
+<a href=#544 id=544 data-nosnippet>544</a>  /// See Also: [`SDL_RenderSetIntegerScale`]
+<a href=#545 id=545 data-nosnippet>545</a>  </span><span class="kw">pub fn </span>SDL_RenderGetIntegerScale(renderer: <span class="kw-2">*mut </span>SDL_Renderer) -&gt; SDL_bool;
+<a href=#546 id=546 data-nosnippet>546</a>
+<a href=#547 id=547 data-nosnippet>547</a>  <span class="doccomment">/// Set the drawing area for rendering on the current target.
+<a href=#548 id=548 data-nosnippet>548</a>  ///
+<a href=#549 id=549 data-nosnippet>549</a>  /// * `renderer` The renderer for which the drawing area should be set.
+<a href=#550 id=550 data-nosnippet>550</a>  /// * `rect` The rectangle representing the drawing area, or NULL to set the
+<a href=#551 id=551 data-nosnippet>551</a>  ///   viewport to the entire target.
+<a href=#552 id=552 data-nosnippet>552</a>  ///
+<a href=#553 id=553 data-nosnippet>553</a>  /// The x,y of the viewport rect represents the origin for rendering.
+<a href=#554 id=554 data-nosnippet>554</a>  ///
+<a href=#555 id=555 data-nosnippet>555</a>  /// **Returns:** 0 on success, or -1 on error
+<a href=#556 id=556 data-nosnippet>556</a>  ///
+<a href=#557 id=557 data-nosnippet>557</a>  /// If the window associated with the renderer is resized, the viewport is
+<a href=#558 id=558 data-nosnippet>558</a>  /// automatically reset.
+<a href=#559 id=559 data-nosnippet>559</a>  ///
+<a href=#560 id=560 data-nosnippet>560</a>  /// See Also: [`SDL_RenderGetViewport`], [`SDL_RenderSetLogicalSize`]
+<a href=#561 id=561 data-nosnippet>561</a>  </span><span class="kw">pub fn </span>SDL_RenderSetViewport(
+<a href=#562 id=562 data-nosnippet>562</a>    renderer: <span class="kw-2">*mut </span>SDL_Renderer, rect: <span class="kw-2">*const </span>SDL_Rect,
+<a href=#563 id=563 data-nosnippet>563</a>  ) -&gt; c_int;
+<a href=#564 id=564 data-nosnippet>564</a>
+<a href=#565 id=565 data-nosnippet>565</a>  <span class="doccomment">/// Get the drawing area for the current target.
+<a href=#566 id=566 data-nosnippet>566</a>  ///
+<a href=#567 id=567 data-nosnippet>567</a>  /// See Also: [`SDL_RenderSetViewport`]
+<a href=#568 id=568 data-nosnippet>568</a>  </span><span class="kw">pub fn </span>SDL_RenderGetViewport(
+<a href=#569 id=569 data-nosnippet>569</a>    renderer: <span class="kw-2">*mut </span>SDL_Renderer, rect: <span class="kw-2">*mut </span>SDL_Rect,
+<a href=#570 id=570 data-nosnippet>570</a>  ) -&gt; c_void;
+<a href=#571 id=571 data-nosnippet>571</a>
+<a href=#572 id=572 data-nosnippet>572</a>  <span class="doccomment">/// Set the clip rectangle for the current target.
+<a href=#573 id=573 data-nosnippet>573</a>  ///
+<a href=#574 id=574 data-nosnippet>574</a>  /// * `renderer` The renderer for which clip rectangle should be set.
+<a href=#575 id=575 data-nosnippet>575</a>  /// * `rect` A pointer to the rectangle to set as the clip rectangle, relative
+<a href=#576 id=576 data-nosnippet>576</a>  ///   to the viewport, or NULL to disable clipping.
+<a href=#577 id=577 data-nosnippet>577</a>  ///
+<a href=#578 id=578 data-nosnippet>578</a>  /// **Returns:** 0 on success, or -1 on error
+<a href=#579 id=579 data-nosnippet>579</a>  ///
+<a href=#580 id=580 data-nosnippet>580</a>  /// See Also: [`SDL_RenderGetClipRect`]
+<a href=#581 id=581 data-nosnippet>581</a>  </span><span class="kw">pub fn </span>SDL_RenderSetClipRect(
+<a href=#582 id=582 data-nosnippet>582</a>    renderer: <span class="kw-2">*mut </span>SDL_Renderer, rect: <span class="kw-2">*const </span>SDL_Rect,
+<a href=#583 id=583 data-nosnippet>583</a>  ) -&gt; c_int;
+<a href=#584 id=584 data-nosnippet>584</a>
+<a href=#585 id=585 data-nosnippet>585</a>  <span class="doccomment">/// Get the clip rectangle for the current target.
+<a href=#586 id=586 data-nosnippet>586</a>  ///
+<a href=#587 id=587 data-nosnippet>587</a>  /// * `renderer` The renderer from which clip rectangle should be queried.
+<a href=#588 id=588 data-nosnippet>588</a>  /// * `rect` A pointer filled in with the current clip rectangle, or an empty
+<a href=#589 id=589 data-nosnippet>589</a>  ///   rectangle if clipping is disabled.
+<a href=#590 id=590 data-nosnippet>590</a>  ///
+<a href=#591 id=591 data-nosnippet>591</a>  /// See Also: [`SDL_RenderSetClipRect`]
+<a href=#592 id=592 data-nosnippet>592</a>  </span><span class="kw">pub fn </span>SDL_RenderGetClipRect(
+<a href=#593 id=593 data-nosnippet>593</a>    renderer: <span class="kw-2">*mut </span>SDL_Renderer, rect: <span class="kw-2">*mut </span>SDL_Rect,
+<a href=#594 id=594 data-nosnippet>594</a>  ) -&gt; c_void;
+<a href=#595 id=595 data-nosnippet>595</a>
+<a href=#596 id=596 data-nosnippet>596</a>  <span class="doccomment">/// Get whether clipping is enabled on the given renderer.
+<a href=#597 id=597 data-nosnippet>597</a>  ///
+<a href=#598 id=598 data-nosnippet>598</a>  /// * `renderer` The renderer from which clip state should be queried.
+<a href=#599 id=599 data-nosnippet>599</a>  ///
+<a href=#600 id=600 data-nosnippet>600</a>  /// See Also: [`SDL_RenderGetClipRect`]
+<a href=#601 id=601 data-nosnippet>601</a>  </span><span class="kw">pub fn </span>SDL_RenderIsClipEnabled(renderer: <span class="kw-2">*mut </span>SDL_Renderer) -&gt; SDL_bool;
+<a href=#602 id=602 data-nosnippet>602</a>
+<a href=#603 id=603 data-nosnippet>603</a>  <span class="doccomment">/// Set the drawing scale for rendering on the current target.
+<a href=#604 id=604 data-nosnippet>604</a>  ///
+<a href=#605 id=605 data-nosnippet>605</a>  /// * `renderer` The renderer for which the drawing scale should be set.
+<a href=#606 id=606 data-nosnippet>606</a>  /// * `scaleX` The horizontal scaling factor
+<a href=#607 id=607 data-nosnippet>607</a>  /// * `scaleY` The vertical scaling factor
+<a href=#608 id=608 data-nosnippet>608</a>  ///
+<a href=#609 id=609 data-nosnippet>609</a>  /// The drawing coordinates are scaled by the x/y scaling factors
+<a href=#610 id=610 data-nosnippet>610</a>  /// before they are used by the renderer.  This allows resolution
+<a href=#611 id=611 data-nosnippet>611</a>  /// independent drawing with a single coordinate system.
+<a href=#612 id=612 data-nosnippet>612</a>  ///
+<a href=#613 id=613 data-nosnippet>613</a>  /// If this results in scaling or subpixel drawing by the
+<a href=#614 id=614 data-nosnippet>614</a>  /// rendering backend, it will be handled using the appropriate
+<a href=#615 id=615 data-nosnippet>615</a>  /// quality hints.  For best results use integer scaling factors.
+<a href=#616 id=616 data-nosnippet>616</a>  ///
+<a href=#617 id=617 data-nosnippet>617</a>  /// See Also: [`SDL_RenderGetScale`], [`SDL_RenderSetLogicalSize`]
+<a href=#618 id=618 data-nosnippet>618</a>  </span><span class="kw">pub fn </span>SDL_RenderSetScale(
+<a href=#619 id=619 data-nosnippet>619</a>    renderer: <span class="kw-2">*mut </span>SDL_Renderer, scaleX: f32, scaleY: f32,
+<a href=#620 id=620 data-nosnippet>620</a>  ) -&gt; c_int;
+<a href=#621 id=621 data-nosnippet>621</a>
+<a href=#622 id=622 data-nosnippet>622</a>  <span class="doccomment">/// Get the drawing scale for the current target.
+<a href=#623 id=623 data-nosnippet>623</a>  ///
+<a href=#624 id=624 data-nosnippet>624</a>  /// * `renderer` The renderer from which drawing scale should be queried.
+<a href=#625 id=625 data-nosnippet>625</a>  /// * `scaleX` A pointer filled in with the horizontal scaling factor
+<a href=#626 id=626 data-nosnippet>626</a>  /// * `scaleY` A pointer filled in with the vertical scaling factor
+<a href=#627 id=627 data-nosnippet>627</a>  ///
+<a href=#628 id=628 data-nosnippet>628</a>  /// See Also: [`SDL_RenderSetScale`]
+<a href=#629 id=629 data-nosnippet>629</a>  </span><span class="kw">pub fn </span>SDL_RenderGetScale(
+<a href=#630 id=630 data-nosnippet>630</a>    renderer: <span class="kw-2">*mut </span>SDL_Renderer, scaleX: <span class="kw-2">*mut </span>f32, scaleY: <span class="kw-2">*mut </span>f32,
+<a href=#631 id=631 data-nosnippet>631</a>  );
+<a href=#632 id=632 data-nosnippet>632</a>
+<a href=#633 id=633 data-nosnippet>633</a>  <span class="doccomment">/// Set the color used for drawing operations (Rect, Line and Clear).
+<a href=#634 id=634 data-nosnippet>634</a>  ///
+<a href=#635 id=635 data-nosnippet>635</a>  /// * `renderer` The renderer for which drawing color should be set.
+<a href=#636 id=636 data-nosnippet>636</a>  /// * `r` The red value used to draw on the rendering target.
+<a href=#637 id=637 data-nosnippet>637</a>  /// * `g` The green value used to draw on the rendering target.
+<a href=#638 id=638 data-nosnippet>638</a>  /// * `b` The blue value used to draw on the rendering target.
+<a href=#639 id=639 data-nosnippet>639</a>  /// * `a` The alpha value used to draw on the rendering target, usually
+<a href=#640 id=640 data-nosnippet>640</a>  ///   `SDL_ALPHA_OPAQUE` (255).
+<a href=#641 id=641 data-nosnippet>641</a>  ///
+<a href=#642 id=642 data-nosnippet>642</a>  /// **Returns:** 0 on success, or -1 on error
+<a href=#643 id=643 data-nosnippet>643</a>  </span><span class="kw">pub fn </span>SDL_SetRenderDrawColor(
+<a href=#644 id=644 data-nosnippet>644</a>    renderer: <span class="kw-2">*mut </span>SDL_Renderer, r: Uint8, g: Uint8, b: Uint8, a: Uint8,
+<a href=#645 id=645 data-nosnippet>645</a>  ) -&gt; c_int;
+<a href=#646 id=646 data-nosnippet>646</a>
+<a href=#647 id=647 data-nosnippet>647</a>  <span class="doccomment">/// Get the color used for drawing operations (Rect, Line and Clear).
+<a href=#648 id=648 data-nosnippet>648</a>  ///
+<a href=#649 id=649 data-nosnippet>649</a>  /// * `renderer` The renderer from which drawing color should be queried.
+<a href=#650 id=650 data-nosnippet>650</a>  /// * `r` A pointer to the red value used to draw on the rendering target.
+<a href=#651 id=651 data-nosnippet>651</a>  /// * `g` A pointer to the green value used to draw on the rendering target.
+<a href=#652 id=652 data-nosnippet>652</a>  /// * `b` A pointer to the blue value used to draw on the rendering target.
+<a href=#653 id=653 data-nosnippet>653</a>  /// * `a` A pointer to the alpha value used to draw on the rendering target,
+<a href=#654 id=654 data-nosnippet>654</a>  ///   usually [`SDL_ALPHA_OPAQUE`] (255).
+<a href=#655 id=655 data-nosnippet>655</a>  ///
+<a href=#656 id=656 data-nosnippet>656</a>  /// **Returns:** 0 on success, or -1 on error
+<a href=#657 id=657 data-nosnippet>657</a>  </span><span class="kw">pub fn </span>SDL_GetRenderDrawColor(
+<a href=#658 id=658 data-nosnippet>658</a>    renderer: <span class="kw-2">*mut </span>SDL_Renderer, r: <span class="kw-2">*mut </span>Uint8, g: <span class="kw-2">*mut </span>Uint8, b: <span class="kw-2">*mut </span>Uint8,
+<a href=#659 id=659 data-nosnippet>659</a>    a: <span class="kw-2">*mut </span>Uint8,
+<a href=#660 id=660 data-nosnippet>660</a>  ) -&gt; c_int;
+<a href=#661 id=661 data-nosnippet>661</a>
+<a href=#662 id=662 data-nosnippet>662</a>  <span class="doccomment">/// Set the blend mode used for drawing operations (Fill and Line).
+<a href=#663 id=663 data-nosnippet>663</a>  ///
+<a href=#664 id=664 data-nosnippet>664</a>  /// * `renderer` The renderer for which blend mode should be set.
+<a href=#665 id=665 data-nosnippet>665</a>  /// * `blendMode` [`SDL_BlendMode`] to use for blending.
+<a href=#666 id=666 data-nosnippet>666</a>  ///
+<a href=#667 id=667 data-nosnippet>667</a>  /// **Returns:** 0 on success, or -1 on error
+<a href=#668 id=668 data-nosnippet>668</a>  ///
+<a href=#669 id=669 data-nosnippet>669</a>  /// If the blend mode is not supported, the closest supported mode is
+<a href=#670 id=670 data-nosnippet>670</a>  /// chosen.
+<a href=#671 id=671 data-nosnippet>671</a>  ///
+<a href=#672 id=672 data-nosnippet>672</a>  /// See Also: [`SDL_GetRenderDrawBlendMode`]
+<a href=#673 id=673 data-nosnippet>673</a>  </span><span class="kw">pub fn </span>SDL_SetRenderDrawBlendMode(
+<a href=#674 id=674 data-nosnippet>674</a>    renderer: <span class="kw-2">*mut </span>SDL_Renderer, blendMode: SDL_BlendMode,
+<a href=#675 id=675 data-nosnippet>675</a>  ) -&gt; c_int;
+<a href=#676 id=676 data-nosnippet>676</a>
+<a href=#677 id=677 data-nosnippet>677</a>  <span class="doccomment">/// Get the blend mode used for drawing operations.
+<a href=#678 id=678 data-nosnippet>678</a>  ///
+<a href=#679 id=679 data-nosnippet>679</a>  /// * `renderer` The renderer from which blend mode should be queried.
+<a href=#680 id=680 data-nosnippet>680</a>  /// * `blendMode` A pointer filled in with the current blend mode.
+<a href=#681 id=681 data-nosnippet>681</a>  ///
+<a href=#682 id=682 data-nosnippet>682</a>  /// **Returns:** 0 on success, or -1 on error
+<a href=#683 id=683 data-nosnippet>683</a>  ///
+<a href=#684 id=684 data-nosnippet>684</a>  /// See Also: [`SDL_SetRenderDrawBlendMode`]
+<a href=#685 id=685 data-nosnippet>685</a>  </span><span class="kw">pub fn </span>SDL_GetRenderDrawBlendMode(
+<a href=#686 id=686 data-nosnippet>686</a>    renderer: <span class="kw-2">*mut </span>SDL_Renderer, blendMode: <span class="kw-2">*mut </span>SDL_BlendMode,
+<a href=#687 id=687 data-nosnippet>687</a>  ) -&gt; c_int;
+<a href=#688 id=688 data-nosnippet>688</a>
+<a href=#689 id=689 data-nosnippet>689</a>  <span class="doccomment">/// Clear the current rendering target with the drawing color
+<a href=#690 id=690 data-nosnippet>690</a>  ///
+<a href=#691 id=691 data-nosnippet>691</a>  /// This function clears the entire rendering target, ignoring the viewport
+<a href=#692 id=692 data-nosnippet>692</a>  /// and the clip rectangle.
+<a href=#693 id=693 data-nosnippet>693</a>  ///
+<a href=#694 id=694 data-nosnippet>694</a>  /// **Returns:** 0 on success, or -1 on error
+<a href=#695 id=695 data-nosnippet>695</a>  </span><span class="kw">pub fn </span>SDL_RenderClear(renderer: <span class="kw-2">*mut </span>SDL_Renderer) -&gt; c_int;
+<a href=#696 id=696 data-nosnippet>696</a>
+<a href=#697 id=697 data-nosnippet>697</a>  <span class="doccomment">/// Draw a point on the current rendering target.
+<a href=#698 id=698 data-nosnippet>698</a>  ///
+<a href=#699 id=699 data-nosnippet>699</a>  /// * `renderer` The renderer which should draw a point.
+<a href=#700 id=700 data-nosnippet>700</a>  /// * `x` The x coordinate of the point.
+<a href=#701 id=701 data-nosnippet>701</a>  /// * `y` The y coordinate of the point.
+<a href=#702 id=702 data-nosnippet>702</a>  ///
+<a href=#703 id=703 data-nosnippet>703</a>  /// **Returns:** 0 on success, or -1 on error
+<a href=#704 id=704 data-nosnippet>704</a>  </span><span class="kw">pub fn </span>SDL_RenderDrawPoint(
+<a href=#705 id=705 data-nosnippet>705</a>    renderer: <span class="kw-2">*mut </span>SDL_Renderer, x: c_int, y: c_int,
+<a href=#706 id=706 data-nosnippet>706</a>  ) -&gt; c_int;
+<a href=#707 id=707 data-nosnippet>707</a>
+<a href=#708 id=708 data-nosnippet>708</a>  <span class="doccomment">/// Draw multiple points on the current rendering target.
+<a href=#709 id=709 data-nosnippet>709</a>  ///
+<a href=#710 id=710 data-nosnippet>710</a>  /// * `renderer` The renderer which should draw multiple points.
+<a href=#711 id=711 data-nosnippet>711</a>  /// * `points` The points to draw
+<a href=#712 id=712 data-nosnippet>712</a>  /// * `count` The number of points to draw
+<a href=#713 id=713 data-nosnippet>713</a>  ///
+<a href=#714 id=714 data-nosnippet>714</a>  /// **Returns:** 0 on success, or -1 on error
+<a href=#715 id=715 data-nosnippet>715</a>  </span><span class="kw">pub fn </span>SDL_RenderDrawPoints(
+<a href=#716 id=716 data-nosnippet>716</a>    renderer: <span class="kw-2">*mut </span>SDL_Renderer, points: <span class="kw-2">*const </span>SDL_Point, count: c_int,
+<a href=#717 id=717 data-nosnippet>717</a>  ) -&gt; c_int;
+<a href=#718 id=718 data-nosnippet>718</a>
+<a href=#719 id=719 data-nosnippet>719</a>  <span class="doccomment">/// Draw a line on the current rendering target.
+<a href=#720 id=720 data-nosnippet>720</a>  ///
+<a href=#721 id=721 data-nosnippet>721</a>  /// * `renderer` The renderer which should draw a line.
+<a href=#722 id=722 data-nosnippet>722</a>  /// * `x1` The x coordinate of the start point.
+<a href=#723 id=723 data-nosnippet>723</a>  /// * `y1` The y coordinate of the start point.
+<a href=#724 id=724 data-nosnippet>724</a>  /// * `x2` The x coordinate of the end point.
+<a href=#725 id=725 data-nosnippet>725</a>  /// * `y2` The y coordinate of the end point.
+<a href=#726 id=726 data-nosnippet>726</a>  ///
+<a href=#727 id=727 data-nosnippet>727</a>  /// **Returns:** 0 on success, or -1 on error
+<a href=#728 id=728 data-nosnippet>728</a>  </span><span class="kw">pub fn </span>SDL_RenderDrawLine(
+<a href=#729 id=729 data-nosnippet>729</a>    renderer: <span class="kw-2">*mut </span>SDL_Renderer, x1: c_int, y1: c_int, x2: c_int, y2: c_int,
+<a href=#730 id=730 data-nosnippet>730</a>  ) -&gt; c_int;
+<a href=#731 id=731 data-nosnippet>731</a>
+<a href=#732 id=732 data-nosnippet>732</a>  <span class="doccomment">/// Draw a series of connected lines on the current rendering target.
+<a href=#733 id=733 data-nosnippet>733</a>  ///
+<a href=#734 id=734 data-nosnippet>734</a>  /// * `renderer` The renderer which should draw multiple lines.
+<a href=#735 id=735 data-nosnippet>735</a>  /// * `points` The points along the lines
+<a href=#736 id=736 data-nosnippet>736</a>  /// * `count` The number of points, drawing count-1 lines
+<a href=#737 id=737 data-nosnippet>737</a>  ///
+<a href=#738 id=738 data-nosnippet>738</a>  /// **Returns:** 0 on success, or -1 on error
+<a href=#739 id=739 data-nosnippet>739</a>  </span><span class="kw">pub fn </span>SDL_RenderDrawLines(
+<a href=#740 id=740 data-nosnippet>740</a>    renderer: <span class="kw-2">*mut </span>SDL_Renderer, points: <span class="kw-2">*const </span>SDL_Point, count: c_int,
+<a href=#741 id=741 data-nosnippet>741</a>  ) -&gt; c_int;
+<a href=#742 id=742 data-nosnippet>742</a>
+<a href=#743 id=743 data-nosnippet>743</a>  <span class="doccomment">/// Draw a rectangle on the current rendering target.
+<a href=#744 id=744 data-nosnippet>744</a>  ///
+<a href=#745 id=745 data-nosnippet>745</a>  /// * `renderer` The renderer which should draw a rectangle.
+<a href=#746 id=746 data-nosnippet>746</a>  /// * `rect` A pointer to the destination rectangle, or NULL to outline the
+<a href=#747 id=747 data-nosnippet>747</a>  ///   entire rendering target.
+<a href=#748 id=748 data-nosnippet>748</a>  ///
+<a href=#749 id=749 data-nosnippet>749</a>  /// **Returns:** 0 on success, or -1 on error
+<a href=#750 id=750 data-nosnippet>750</a>  </span><span class="kw">pub fn </span>SDL_RenderDrawRect(
+<a href=#751 id=751 data-nosnippet>751</a>    renderer: <span class="kw-2">*mut </span>SDL_Renderer, rect: <span class="kw-2">*const </span>SDL_Rect,
+<a href=#752 id=752 data-nosnippet>752</a>  ) -&gt; c_int;
+<a href=#753 id=753 data-nosnippet>753</a>
+<a href=#754 id=754 data-nosnippet>754</a>  <span class="doccomment">/// Draw some number of rectangles on the current rendering target.
+<a href=#755 id=755 data-nosnippet>755</a>  ///
+<a href=#756 id=756 data-nosnippet>756</a>  /// * `renderer` The renderer which should draw multiple rectangles.
+<a href=#757 id=757 data-nosnippet>757</a>  /// * `rects` A pointer to an array of destination rectangles.
+<a href=#758 id=758 data-nosnippet>758</a>  /// * `count` The number of rectangles.
+<a href=#759 id=759 data-nosnippet>759</a>  ///
+<a href=#760 id=760 data-nosnippet>760</a>  /// **Returns:** 0 on success, or -1 on error
+<a href=#761 id=761 data-nosnippet>761</a>  </span><span class="kw">pub fn </span>SDL_RenderDrawRects(
+<a href=#762 id=762 data-nosnippet>762</a>    renderer: <span class="kw-2">*mut </span>SDL_Renderer, rects: <span class="kw-2">*const </span>SDL_Rect, count: c_int,
+<a href=#763 id=763 data-nosnippet>763</a>  ) -&gt; c_int;
+<a href=#764 id=764 data-nosnippet>764</a>
+<a href=#765 id=765 data-nosnippet>765</a>  <span class="doccomment">/// Fill a rectangle on the current rendering target with the drawing color.
+<a href=#766 id=766 data-nosnippet>766</a>  ///
+<a href=#767 id=767 data-nosnippet>767</a>  /// * `renderer` The renderer which should fill a rectangle.
+<a href=#768 id=768 data-nosnippet>768</a>  /// * `rect` A pointer to the destination rectangle, or NULL for the entire
+<a href=#769 id=769 data-nosnippet>769</a>  ///   rendering target.
+<a href=#770 id=770 data-nosnippet>770</a>  ///
+<a href=#771 id=771 data-nosnippet>771</a>  /// **Returns:** 0 on success, or -1 on error
+<a href=#772 id=772 data-nosnippet>772</a>  </span><span class="kw">pub fn </span>SDL_RenderFillRect(
+<a href=#773 id=773 data-nosnippet>773</a>    renderer: <span class="kw-2">*mut </span>SDL_Renderer, rect: <span class="kw-2">*const </span>SDL_Rect,
+<a href=#774 id=774 data-nosnippet>774</a>  ) -&gt; c_int;
+<a href=#775 id=775 data-nosnippet>775</a>
+<a href=#776 id=776 data-nosnippet>776</a>  <span class="doccomment">/// Fill some number of rectangles on the current rendering target with the
+<a href=#777 id=777 data-nosnippet>777</a>  /// drawing color.
+<a href=#778 id=778 data-nosnippet>778</a>  ///
+<a href=#779 id=779 data-nosnippet>779</a>  /// * `renderer` The renderer which should fill multiple rectangles.
+<a href=#780 id=780 data-nosnippet>780</a>  /// * `rects` A pointer to an array of destination rectangles.
+<a href=#781 id=781 data-nosnippet>781</a>  /// * `count` The number of rectangles.
+<a href=#782 id=782 data-nosnippet>782</a>  ///
+<a href=#783 id=783 data-nosnippet>783</a>  /// **Returns:** 0 on success, or -1 on error
+<a href=#784 id=784 data-nosnippet>784</a>  </span><span class="kw">pub fn </span>SDL_RenderFillRects(
+<a href=#785 id=785 data-nosnippet>785</a>    renderer: <span class="kw-2">*mut </span>SDL_Renderer, rects: <span class="kw-2">*const </span>SDL_Rect, count: c_int,
+<a href=#786 id=786 data-nosnippet>786</a>  ) -&gt; c_int;
+<a href=#787 id=787 data-nosnippet>787</a>
+<a href=#788 id=788 data-nosnippet>788</a>  <span class="doccomment">/// Copy a portion of the texture to the current rendering target.
+<a href=#789 id=789 data-nosnippet>789</a>  ///
+<a href=#790 id=790 data-nosnippet>790</a>  /// * `renderer` The renderer which should copy parts of a texture.
+<a href=#791 id=791 data-nosnippet>791</a>  /// * `texture` The source texture.
+<a href=#792 id=792 data-nosnippet>792</a>  /// * `srcrect` A pointer to the source rectangle, or `NULL` for the entire
+<a href=#793 id=793 data-nosnippet>793</a>  ///   texture.
+<a href=#794 id=794 data-nosnippet>794</a>  /// * `dstrect` A pointer to the destination rectangle, or `NULL` for the
+<a href=#795 id=795 data-nosnippet>795</a>  ///   entire rendering target.
+<a href=#796 id=796 data-nosnippet>796</a>  ///
+<a href=#797 id=797 data-nosnippet>797</a>  /// **Returns:** 0 on success, or -1 on error
+<a href=#798 id=798 data-nosnippet>798</a>  </span><span class="kw">pub fn </span>SDL_RenderCopy(
+<a href=#799 id=799 data-nosnippet>799</a>    renderer: <span class="kw-2">*mut </span>SDL_Renderer, texture: <span class="kw-2">*mut </span>SDL_Texture,
+<a href=#800 id=800 data-nosnippet>800</a>    srcrect: <span class="kw-2">*const </span>SDL_Rect, dstrect: <span class="kw-2">*const </span>SDL_Rect,
+<a href=#801 id=801 data-nosnippet>801</a>  ) -&gt; c_int;
+<a href=#802 id=802 data-nosnippet>802</a>
+<a href=#803 id=803 data-nosnippet>803</a>  <span class="doccomment">/// Copy a portion of the source texture to the current rendering target,
+<a href=#804 id=804 data-nosnippet>804</a>  /// rotating it by angle around the given center
+<a href=#805 id=805 data-nosnippet>805</a>  ///
+<a href=#806 id=806 data-nosnippet>806</a>  /// * `renderer` The renderer which should copy parts of a texture.
+<a href=#807 id=807 data-nosnippet>807</a>  /// * `texture` The source texture.
+<a href=#808 id=808 data-nosnippet>808</a>  /// * `srcrect` A pointer to the source rectangle, or `NULL` for the entire
+<a href=#809 id=809 data-nosnippet>809</a>  ///   texture.
+<a href=#810 id=810 data-nosnippet>810</a>  /// * `dstrect` A pointer to the destination rectangle, or `NULL` for the
+<a href=#811 id=811 data-nosnippet>811</a>  ///   entire rendering target.
+<a href=#812 id=812 data-nosnippet>812</a>  /// * `angle` An angle in degrees that indicates the rotation that will be
+<a href=#813 id=813 data-nosnippet>813</a>  ///   applied to dstrect, rotating it in a clockwise direction
+<a href=#814 id=814 data-nosnippet>814</a>  /// * `center` A pointer to a point indicating the point around which dstrect
+<a href=#815 id=815 data-nosnippet>815</a>  ///   will be rotated (if `NULL`, rotation will be done around `dstrect.w/2`,
+<a href=#816 id=816 data-nosnippet>816</a>  ///   `dstrect.h/2`).
+<a href=#817 id=817 data-nosnippet>817</a>  /// * `flip` An [`SDL_RendererFlip`] value stating which flipping actions
+<a href=#818 id=818 data-nosnippet>818</a>  ///   should be performed on the texture
+<a href=#819 id=819 data-nosnippet>819</a>  ///
+<a href=#820 id=820 data-nosnippet>820</a>  /// **Returns:** 0 on success, or -1 on error
+<a href=#821 id=821 data-nosnippet>821</a>  </span><span class="kw">pub fn </span>SDL_RenderCopyEx(
+<a href=#822 id=822 data-nosnippet>822</a>    renderer: <span class="kw-2">*mut </span>SDL_Renderer, texture: <span class="kw-2">*mut </span>SDL_Texture,
+<a href=#823 id=823 data-nosnippet>823</a>    srcrect: <span class="kw-2">*const </span>SDL_Rect, dstrect: <span class="kw-2">*const </span>SDL_Rect, angle: f64,
+<a href=#824 id=824 data-nosnippet>824</a>    center: <span class="kw-2">*const </span>SDL_Point, flip: SDL_RendererFlip,
+<a href=#825 id=825 data-nosnippet>825</a>  ) -&gt; c_int;
+<a href=#826 id=826 data-nosnippet>826</a>
+<a href=#827 id=827 data-nosnippet>827</a>  <span class="doccomment">/// Draw a point on the current rendering target.
+<a href=#828 id=828 data-nosnippet>828</a>  ///
+<a href=#829 id=829 data-nosnippet>829</a>  /// * `renderer` The renderer which should draw a point.
+<a href=#830 id=830 data-nosnippet>830</a>  /// * `x` The x coordinate of the point.
+<a href=#831 id=831 data-nosnippet>831</a>  /// * `y` The y coordinate of the point.
+<a href=#832 id=832 data-nosnippet>832</a>  ///
+<a href=#833 id=833 data-nosnippet>833</a>  /// **Returns:** 0 on success, or -1 on error
+<a href=#834 id=834 data-nosnippet>834</a>  </span><span class="kw">pub fn </span>SDL_RenderDrawPointF(
+<a href=#835 id=835 data-nosnippet>835</a>    renderer: <span class="kw-2">*mut </span>SDL_Renderer, x: f32, y: f32,
+<a href=#836 id=836 data-nosnippet>836</a>  ) -&gt; c_int;
+<a href=#837 id=837 data-nosnippet>837</a>
+<a href=#838 id=838 data-nosnippet>838</a>  <span class="doccomment">/// Draw multiple points on the current rendering target.
+<a href=#839 id=839 data-nosnippet>839</a>  ///
+<a href=#840 id=840 data-nosnippet>840</a>  /// * `renderer` The renderer which should draw multiple points.
+<a href=#841 id=841 data-nosnippet>841</a>  /// * `points` The points to draw
+<a href=#842 id=842 data-nosnippet>842</a>  /// * `count` The number of points to draw
+<a href=#843 id=843 data-nosnippet>843</a>  ///
+<a href=#844 id=844 data-nosnippet>844</a>  /// **Returns:** 0 on success, or -1 on error
+<a href=#845 id=845 data-nosnippet>845</a>  </span><span class="kw">pub fn </span>SDL_RenderDrawPointsF(
+<a href=#846 id=846 data-nosnippet>846</a>    renderer: <span class="kw-2">*mut </span>SDL_Renderer, points: <span class="kw-2">*const </span>SDL_FPoint, count: c_int,
+<a href=#847 id=847 data-nosnippet>847</a>  ) -&gt; c_int;
+<a href=#848 id=848 data-nosnippet>848</a>
+<a href=#849 id=849 data-nosnippet>849</a>  <span class="doccomment">/// Draw a line on the current rendering target.
+<a href=#850 id=850 data-nosnippet>850</a>  ///
+<a href=#851 id=851 data-nosnippet>851</a>  /// * `renderer` The renderer which should draw a line.
+<a href=#852 id=852 data-nosnippet>852</a>  /// * `x1` The x coordinate of the start point.
+<a href=#853 id=853 data-nosnippet>853</a>  /// * `y1` The y coordinate of the start point.
+<a href=#854 id=854 data-nosnippet>854</a>  /// * `x2` The x coordinate of the end point.
+<a href=#855 id=855 data-nosnippet>855</a>  /// * `y2` The y coordinate of the end point.
+<a href=#856 id=856 data-nosnippet>856</a>  ///
+<a href=#857 id=857 data-nosnippet>857</a>  /// **Returns:** 0 on success, or -1 on error
+<a href=#858 id=858 data-nosnippet>858</a>  </span><span class="kw">pub fn </span>SDL_RenderDrawLineF(
+<a href=#859 id=859 data-nosnippet>859</a>    renderer: <span class="kw-2">*mut </span>SDL_Renderer, x1: f32, y1: f32, x2: f32, y2: f32,
+<a href=#860 id=860 data-nosnippet>860</a>  ) -&gt; c_int;
+<a href=#861 id=861 data-nosnippet>861</a>
+<a href=#862 id=862 data-nosnippet>862</a>  <span class="doccomment">/// Draw a series of connected lines on the current rendering target.
+<a href=#863 id=863 data-nosnippet>863</a>  ///
+<a href=#864 id=864 data-nosnippet>864</a>  /// * `renderer` The renderer which should draw multiple lines.
+<a href=#865 id=865 data-nosnippet>865</a>  /// * `points` The points along the lines
+<a href=#866 id=866 data-nosnippet>866</a>  /// * `count` The number of points, drawing count-1 lines
+<a href=#867 id=867 data-nosnippet>867</a>  ///
+<a href=#868 id=868 data-nosnippet>868</a>  /// **Returns:** 0 on success, or -1 on error
+<a href=#869 id=869 data-nosnippet>869</a>  </span><span class="kw">pub fn </span>SDL_RenderDrawLinesF(
+<a href=#870 id=870 data-nosnippet>870</a>    renderer: <span class="kw-2">*mut </span>SDL_Renderer, points: <span class="kw-2">*const </span>SDL_FPoint, count: c_int,
+<a href=#871 id=871 data-nosnippet>871</a>  ) -&gt; c_int;
+<a href=#872 id=872 data-nosnippet>872</a>
+<a href=#873 id=873 data-nosnippet>873</a>  <span class="doccomment">/// Draw a rectangle on the current rendering target.
+<a href=#874 id=874 data-nosnippet>874</a>  ///
+<a href=#875 id=875 data-nosnippet>875</a>  /// * `renderer` The renderer which should draw a rectangle.
+<a href=#876 id=876 data-nosnippet>876</a>  /// * `rect` A pointer to the destination rectangle, or `NULL` to outline the
+<a href=#877 id=877 data-nosnippet>877</a>  ///   entire rendering target.
+<a href=#878 id=878 data-nosnippet>878</a>  ///
+<a href=#879 id=879 data-nosnippet>879</a>  /// **Returns:** 0 on success, or -1 on error
+<a href=#880 id=880 data-nosnippet>880</a>  </span><span class="kw">pub fn </span>SDL_RenderDrawRectF(
+<a href=#881 id=881 data-nosnippet>881</a>    renderer: <span class="kw-2">*mut </span>SDL_Renderer, rect: <span class="kw-2">*const </span>SDL_FRect,
+<a href=#882 id=882 data-nosnippet>882</a>  ) -&gt; c_int;
+<a href=#883 id=883 data-nosnippet>883</a>
+<a href=#884 id=884 data-nosnippet>884</a>  <span class="doccomment">/// Draw some number of rectangles on the current rendering target.
+<a href=#885 id=885 data-nosnippet>885</a>  ///
+<a href=#886 id=886 data-nosnippet>886</a>  /// * `renderer` The renderer which should draw multiple rectangles.
+<a href=#887 id=887 data-nosnippet>887</a>  /// * `rects` A pointer to an array of destination rectangles.
+<a href=#888 id=888 data-nosnippet>888</a>  /// * `count` The number of rectangles.
+<a href=#889 id=889 data-nosnippet>889</a>  ///
+<a href=#890 id=890 data-nosnippet>890</a>  /// **Returns:** 0 on success, or -1 on error
+<a href=#891 id=891 data-nosnippet>891</a>  </span><span class="kw">pub fn </span>SDL_RenderDrawRectsF(
+<a href=#892 id=892 data-nosnippet>892</a>    renderer: <span class="kw-2">*mut </span>SDL_Renderer, rects: <span class="kw-2">*const </span>SDL_FRect, count: c_int,
+<a href=#893 id=893 data-nosnippet>893</a>  ) -&gt; c_int;
+<a href=#894 id=894 data-nosnippet>894</a>
+<a href=#895 id=895 data-nosnippet>895</a>  <span class="doccomment">/// Fill a rectangle on the current rendering target with the drawing color.
+<a href=#896 id=896 data-nosnippet>896</a>  ///
+<a href=#897 id=897 data-nosnippet>897</a>  /// * `renderer` The renderer which should fill a rectangle.
+<a href=#898 id=898 data-nosnippet>898</a>  /// * `rect` A pointer to the destination rectangle, or NULL for the entire
+<a href=#899 id=899 data-nosnippet>899</a>  ///   rendering target.
+<a href=#900 id=900 data-nosnippet>900</a>  ///
+<a href=#901 id=901 data-nosnippet>901</a>  /// **Returns:** 0 on success, or -1 on error
+<a href=#902 id=902 data-nosnippet>902</a>  </span><span class="kw">pub fn </span>SDL_RenderFillRectF(
+<a href=#903 id=903 data-nosnippet>903</a>    renderer: <span class="kw-2">*mut </span>SDL_Renderer, rect: <span class="kw-2">*const </span>SDL_FRect,
+<a href=#904 id=904 data-nosnippet>904</a>  ) -&gt; c_int;
+<a href=#905 id=905 data-nosnippet>905</a>
+<a href=#906 id=906 data-nosnippet>906</a>  <span class="doccomment">/// Fill some number of rectangles on the current rendering target with the
+<a href=#907 id=907 data-nosnippet>907</a>  /// drawing color.
+<a href=#908 id=908 data-nosnippet>908</a>  ///
+<a href=#909 id=909 data-nosnippet>909</a>  /// * `renderer` The renderer which should fill multiple rectangles.
+<a href=#910 id=910 data-nosnippet>910</a>  /// * `rects` A pointer to an array of destination rectangles.
+<a href=#911 id=911 data-nosnippet>911</a>  /// * `count` The number of rectangles.
+<a href=#912 id=912 data-nosnippet>912</a>  ///
+<a href=#913 id=913 data-nosnippet>913</a>  /// **Returns:** 0 on success, or -1 on error
+<a href=#914 id=914 data-nosnippet>914</a>  </span><span class="kw">pub fn </span>SDL_RenderFillRectsF(
+<a href=#915 id=915 data-nosnippet>915</a>    renderer: <span class="kw-2">*mut </span>SDL_Renderer, rects: <span class="kw-2">*const </span>SDL_FRect, count: c_int,
+<a href=#916 id=916 data-nosnippet>916</a>  ) -&gt; c_int;
+<a href=#917 id=917 data-nosnippet>917</a>
+<a href=#918 id=918 data-nosnippet>918</a>  <span class="doccomment">/// Copy a portion of the texture to the current rendering target.
+<a href=#919 id=919 data-nosnippet>919</a>  ///
+<a href=#920 id=920 data-nosnippet>920</a>  /// * `renderer` The renderer which should copy parts of a texture.
+<a href=#921 id=921 data-nosnippet>921</a>  /// * `texture` The source texture.
+<a href=#922 id=922 data-nosnippet>922</a>  /// * `srcrect` A pointer to the source rectangle, or NULL for the entire
+<a href=#923 id=923 data-nosnippet>923</a>  ///   texture.
+<a href=#924 id=924 data-nosnippet>924</a>  /// * `dstrect` A pointer to the destination rectangle, or NULL for the entire
+<a href=#925 id=925 data-nosnippet>925</a>  ///   rendering target.
+<a href=#926 id=926 data-nosnippet>926</a>  ///
+<a href=#927 id=927 data-nosnippet>927</a>  /// **Returns:** 0 on success, or -1 on error
+<a href=#928 id=928 data-nosnippet>928</a>  </span><span class="kw">pub fn </span>SDL_RenderCopyF(
+<a href=#929 id=929 data-nosnippet>929</a>    renderer: <span class="kw-2">*mut </span>SDL_Renderer, texture: <span class="kw-2">*mut </span>SDL_Texture,
+<a href=#930 id=930 data-nosnippet>930</a>    srcrect: <span class="kw-2">*const </span>SDL_Rect, dstrect: <span class="kw-2">*const </span>SDL_FRect,
+<a href=#931 id=931 data-nosnippet>931</a>  ) -&gt; c_int;
+<a href=#932 id=932 data-nosnippet>932</a>
+<a href=#933 id=933 data-nosnippet>933</a>  <span class="doccomment">/// Copy a portion of the source texture to the current rendering target,
+<a href=#934 id=934 data-nosnippet>934</a>  /// rotating it by angle around the given center
+<a href=#935 id=935 data-nosnippet>935</a>  ///
+<a href=#936 id=936 data-nosnippet>936</a>  /// * `renderer` The renderer which should copy parts of a texture.
+<a href=#937 id=937 data-nosnippet>937</a>  /// * `texture` The source texture.
+<a href=#938 id=938 data-nosnippet>938</a>  /// * `srcrect` A pointer to the source rectangle, or NULL for the entire
+<a href=#939 id=939 data-nosnippet>939</a>  ///   texture.
+<a href=#940 id=940 data-nosnippet>940</a>  /// * `dstrect` A pointer to the destination rectangle, or NULL for the entire
+<a href=#941 id=941 data-nosnippet>941</a>  ///   rendering target.
+<a href=#942 id=942 data-nosnippet>942</a>  /// * `angle` An angle in degrees that indicates the rotation that will be
+<a href=#943 id=943 data-nosnippet>943</a>  ///   applied to dstrect, rotating it in a clockwise direction
+<a href=#944 id=944 data-nosnippet>944</a>  /// * `center` A pointer to a point indicating the point around which dstrect
+<a href=#945 id=945 data-nosnippet>945</a>  ///   will be rotated (if NULL, rotation will be done around dstrect.w/2,
+<a href=#946 id=946 data-nosnippet>946</a>  ///   dstrect.h/2).
+<a href=#947 id=947 data-nosnippet>947</a>  /// * `flip` An SDL_RendererFlip value stating which flipping actions should
+<a href=#948 id=948 data-nosnippet>948</a>  ///   be performed on the texture
+<a href=#949 id=949 data-nosnippet>949</a>  ///
+<a href=#950 id=950 data-nosnippet>950</a>  /// **Returns:** 0 on success, or -1 on error
+<a href=#951 id=951 data-nosnippet>951</a>  </span><span class="kw">pub fn </span>SDL_RenderCopyExF(
+<a href=#952 id=952 data-nosnippet>952</a>    renderer: <span class="kw-2">*mut </span>SDL_Renderer, texture: <span class="kw-2">*mut </span>SDL_Texture,
+<a href=#953 id=953 data-nosnippet>953</a>    srcrect: <span class="kw-2">*const </span>SDL_Rect, dstrect: <span class="kw-2">*const </span>SDL_FRect, angle: f64,
+<a href=#954 id=954 data-nosnippet>954</a>    center: <span class="kw-2">*const </span>SDL_FPoint, flip: SDL_RendererFlip,
+<a href=#955 id=955 data-nosnippet>955</a>  ) -&gt; c_int;
+<a href=#956 id=956 data-nosnippet>956</a>
+<a href=#957 id=957 data-nosnippet>957</a>  <span class="doccomment">/// Read pixels from the current rendering target.
+<a href=#958 id=958 data-nosnippet>958</a>  ///
+<a href=#959 id=959 data-nosnippet>959</a>  /// * `renderer` The renderer from which pixels should be read.
+<a href=#960 id=960 data-nosnippet>960</a>  /// * `rect` A pointer to the rectangle to read, or NULL for the entire render
+<a href=#961 id=961 data-nosnippet>961</a>  ///   target.
+<a href=#962 id=962 data-nosnippet>962</a>  /// * `format` The desired format of the pixel data, or 0 to use the format of
+<a href=#963 id=963 data-nosnippet>963</a>  ///   the rendering target
+<a href=#964 id=964 data-nosnippet>964</a>  /// * `pixels` A pointer to be filled in with the pixel data
+<a href=#965 id=965 data-nosnippet>965</a>  /// * `pitch` The pitch of the pixels parameter.
+<a href=#966 id=966 data-nosnippet>966</a>  ///
+<a href=#967 id=967 data-nosnippet>967</a>  /// **Returns:** 0 on success, or -1 if pixel reading is not supported.
+<a href=#968 id=968 data-nosnippet>968</a>  ///
+<a href=#969 id=969 data-nosnippet>969</a>  /// **Warning:** This is a very slow operation, and should not be used
+<a href=#970 id=970 data-nosnippet>970</a>  /// frequently.
+<a href=#971 id=971 data-nosnippet>971</a>  </span><span class="kw">pub fn </span>SDL_RenderReadPixels(
+<a href=#972 id=972 data-nosnippet>972</a>    renderer: <span class="kw-2">*mut </span>SDL_Renderer, rect: <span class="kw-2">*const </span>SDL_Rect, format: Uint32,
+<a href=#973 id=973 data-nosnippet>973</a>    pixels: <span class="kw-2">*mut </span>c_void, pitch: c_int,
+<a href=#974 id=974 data-nosnippet>974</a>  ) -&gt; c_int;
+<a href=#975 id=975 data-nosnippet>975</a>
+<a href=#976 id=976 data-nosnippet>976</a>  <span class="doccomment">/// Update the screen with rendering performed.
+<a href=#977 id=977 data-nosnippet>977</a>  </span><span class="kw">pub fn </span>SDL_RenderPresent(renderer: <span class="kw-2">*mut </span>SDL_Renderer);
+<a href=#978 id=978 data-nosnippet>978</a>
+<a href=#979 id=979 data-nosnippet>979</a>  <span class="doccomment">/// Destroy the specified texture.
+<a href=#980 id=980 data-nosnippet>980</a>  ///
+<a href=#981 id=981 data-nosnippet>981</a>  /// See Also: [`SDL_CreateTexture`], [`SDL_CreateTextureFromSurface`]
+<a href=#982 id=982 data-nosnippet>982</a>  </span><span class="kw">pub fn </span>SDL_DestroyTexture(texture: <span class="kw-2">*mut </span>SDL_Texture);
+<a href=#983 id=983 data-nosnippet>983</a>
+<a href=#984 id=984 data-nosnippet>984</a>  <span class="doccomment">/// Destroy the rendering context for a window and free associated textures.
+<a href=#985 id=985 data-nosnippet>985</a>  ///
+<a href=#986 id=986 data-nosnippet>986</a>  /// See Also: [`SDL_CreateRenderer`]
+<a href=#987 id=987 data-nosnippet>987</a>  </span><span class="kw">pub fn </span>SDL_DestroyRenderer(renderer: <span class="kw-2">*mut </span>SDL_Renderer);
+<a href=#988 id=988 data-nosnippet>988</a>
+<a href=#989 id=989 data-nosnippet>989</a>  <span class="doccomment">/// Force the rendering context to flush any pending commands to the
+<a href=#990 id=990 data-nosnippet>990</a>  /// underlying rendering API.
+<a href=#991 id=991 data-nosnippet>991</a>  ///
+<a href=#992 id=992 data-nosnippet>992</a>  /// You do not need to (and in fact, shouldn't) call this function unless
+<a href=#993 id=993 data-nosnippet>993</a>  /// you are planning to call into OpenGL/Direct3D/Metal/whatever directly
+<a href=#994 id=994 data-nosnippet>994</a>  /// in addition to using an SDL_Renderer.
+<a href=#995 id=995 data-nosnippet>995</a>  ///
+<a href=#996 id=996 data-nosnippet>996</a>  /// This is for a very-specific case: if you are using SDL's render API,
+<a href=#997 id=997 data-nosnippet>997</a>  /// you asked for a specific renderer backend (OpenGL, Direct3D, etc),
+<a href=#998 id=998 data-nosnippet>998</a>  /// you set SDL_HINT_RENDER_BATCHING to "1", and you plan to make
+<a href=#999 id=999 data-nosnippet>999</a>  /// OpenGL/D3D/whatever calls in addition to SDL render API calls. If all of
+<a href=#1000 id=1000 data-nosnippet>1000</a>  /// this applies, you should call SDL_RenderFlush() between calls to SDL's
+<a href=#1001 id=1001 data-nosnippet>1001</a>  /// render API and the low-level API you're using in cooperation.
+<a href=#1002 id=1002 data-nosnippet>1002</a>  ///
+<a href=#1003 id=1003 data-nosnippet>1003</a>  /// In all other cases, you can ignore this function. This is only here to
+<a href=#1004 id=1004 data-nosnippet>1004</a>  /// get maximum performance out of a specific situation. In all other cases,
+<a href=#1005 id=1005 data-nosnippet>1005</a>  /// SDL will do the right thing, perhaps at a performance loss.
+<a href=#1006 id=1006 data-nosnippet>1006</a>  ///
+<a href=#1007 id=1007 data-nosnippet>1007</a>  /// This function is first available in SDL 2.0.10, and is not needed in
+<a href=#1008 id=1008 data-nosnippet>1008</a>  /// 2.0.9 and earlier, as earlier versions did not queue rendering commands
+<a href=#1009 id=1009 data-nosnippet>1009</a>  /// at all, instead flushing them to the OS immediately.
+<a href=#1010 id=1010 data-nosnippet>1010</a>  </span><span class="kw">pub fn </span>SDL_RenderFlush(renderer: <span class="kw-2">*mut </span>SDL_Renderer) -&gt; c_int;
+<a href=#1011 id=1011 data-nosnippet>1011</a>
+<a href=#1012 id=1012 data-nosnippet>1012</a>  <span class="doccomment">/// Bind the texture to the current OpenGL/ES/ES2 context for use with OpenGL
+<a href=#1013 id=1013 data-nosnippet>1013</a>  /// instructions.
+<a href=#1014 id=1014 data-nosnippet>1014</a>  ///
+<a href=#1015 id=1015 data-nosnippet>1015</a>  /// * `texture` The SDL texture to bind.
+<a href=#1016 id=1016 data-nosnippet>1016</a>  /// * `texw` A pointer to a float that will be filled with the texture width.
+<a href=#1017 id=1017 data-nosnippet>1017</a>  /// * `texh` A pointer to a float that will be filled with the texture height.
+<a href=#1018 id=1018 data-nosnippet>1018</a>  ///
+<a href=#1019 id=1019 data-nosnippet>1019</a>  /// **Returns:** 0 on success, or -1 if the operation is not supported
+<a href=#1020 id=1020 data-nosnippet>1020</a>  </span><span class="kw">pub fn </span>SDL_GL_BindTexture(
+<a href=#1021 id=1021 data-nosnippet>1021</a>    texture: <span class="kw-2">*mut </span>SDL_Texture, texw: <span class="kw-2">*mut </span>f32, texh: <span class="kw-2">*mut </span>f32,
+<a href=#1022 id=1022 data-nosnippet>1022</a>  ) -&gt; c_int;
+<a href=#1023 id=1023 data-nosnippet>1023</a>
+<a href=#1024 id=1024 data-nosnippet>1024</a>  <span class="doccomment">/// Unbind a texture from the current OpenGL/ES/ES2 context.
+<a href=#1025 id=1025 data-nosnippet>1025</a>  ///
+<a href=#1026 id=1026 data-nosnippet>1026</a>  /// * `texture` The SDL texture to unbind
+<a href=#1027 id=1027 data-nosnippet>1027</a>  ///
+<a href=#1028 id=1028 data-nosnippet>1028</a>  /// **Returns:** 0 on success, or -1 if the operation is not supported
+<a href=#1029 id=1029 data-nosnippet>1029</a>  </span><span class="kw">pub fn </span>SDL_GL_UnbindTexture(texture: <span class="kw-2">*mut </span>SDL_Texture) -&gt; c_int;
+<a href=#1030 id=1030 data-nosnippet>1030</a>
+<a href=#1031 id=1031 data-nosnippet>1031</a>  <span class="doccomment">/// Get the `CAMetalLayer` associated with the given Metal renderer
+<a href=#1032 id=1032 data-nosnippet>1032</a>  ///
+<a href=#1033 id=1033 data-nosnippet>1033</a>  /// * `renderer` The renderer to query
+<a href=#1034 id=1034 data-nosnippet>1034</a>  ///
+<a href=#1035 id=1035 data-nosnippet>1035</a>  /// **Returns:** `CAMetalLayer*` on success, or `NULL` if the renderer isn't a
+<a href=#1036 id=1036 data-nosnippet>1036</a>  /// Metal renderer
+<a href=#1037 id=1037 data-nosnippet>1037</a>  ///
+<a href=#1038 id=1038 data-nosnippet>1038</a>  /// See Also: [`SDL_RenderGetMetalCommandEncoder`]
+<a href=#1039 id=1039 data-nosnippet>1039</a>  </span><span class="kw">pub fn </span>SDL_RenderGetMetalLayer(renderer: <span class="kw-2">*mut </span>SDL_Renderer) -&gt; <span class="kw-2">*mut </span>c_void;
+<a href=#1040 id=1040 data-nosnippet>1040</a>
+<a href=#1041 id=1041 data-nosnippet>1041</a>  <span class="doccomment">/// Get the Metal command encoder for the current frame
+<a href=#1042 id=1042 data-nosnippet>1042</a>  ///
+<a href=#1043 id=1043 data-nosnippet>1043</a>  /// * `renderer` The renderer to query
+<a href=#1044 id=1044 data-nosnippet>1044</a>  ///
+<a href=#1045 id=1045 data-nosnippet>1045</a>  /// **Returns:** `id&lt;MTLRenderCommandEncoder&gt;` on success, or `NULL` if the
+<a href=#1046 id=1046 data-nosnippet>1046</a>  /// renderer isn't a Metal renderer
+<a href=#1047 id=1047 data-nosnippet>1047</a>  ///
+<a href=#1048 id=1048 data-nosnippet>1048</a>  /// See Also: [`SDL_RenderGetMetalLayer`]
+<a href=#1049 id=1049 data-nosnippet>1049</a>  </span><span class="kw">pub fn </span>SDL_RenderGetMetalCommandEncoder(
+<a href=#1050 id=1050 data-nosnippet>1050</a>    renderer: <span class="kw-2">*mut </span>SDL_Renderer,
+<a href=#1051 id=1051 data-nosnippet>1051</a>  ) -&gt; <span class="kw-2">*mut </span>c_void;
+<a href=#1052 id=1052 data-nosnippet>1052</a>
+<a href=#1053 id=1053 data-nosnippet>1053</a>  <span class="doccomment">/// Update a rectangle within a planar NV12 or NV21 texture with new pixels.
+<a href=#1054 id=1054 data-nosnippet>1054</a>  ///
+<a href=#1055 id=1055 data-nosnippet>1055</a>  /// You can use [SDL_UpdateTexture] as long as your pixel data is a contiguous
+<a href=#1056 id=1056 data-nosnippet>1056</a>  /// block of NV12/21 planes in the proper order, but this function is
+<a href=#1057 id=1057 data-nosnippet>1057</a>  /// available if your pixel data is not contiguous.
+<a href=#1058 id=1058 data-nosnippet>1058</a>  ///
+<a href=#1059 id=1059 data-nosnippet>1059</a>  /// * `texture` the texture to update
+<a href=#1060 id=1060 data-nosnippet>1060</a>  /// * `rect` a pointer to the rectangle of pixels to update, or NULL to update
+<a href=#1061 id=1061 data-nosnippet>1061</a>  ///   the entire texture.
+<a href=#1062 id=1062 data-nosnippet>1062</a>  /// * `Yplane` the raw pixel data for the Y plane.
+<a href=#1063 id=1063 data-nosnippet>1063</a>  /// * `Ypitch` the number of bytes between rows of pixel data for the Y plane.
+<a href=#1064 id=1064 data-nosnippet>1064</a>  /// * `UVplane` the raw pixel data for the UV plane.
+<a href=#1065 id=1065 data-nosnippet>1065</a>  /// * `UVpitch` the number of bytes between rows of pixel data for the UV
+<a href=#1066 id=1066 data-nosnippet>1066</a>  ///   plane.
+<a href=#1067 id=1067 data-nosnippet>1067</a>  /// * **Returns:** 0 on success, or -1 if the texture is not valid.
+<a href=#1068 id=1068 data-nosnippet>1068</a>  </span><span class="kw">pub fn </span>SDL_UpdateNVTexture(
+<a href=#1069 id=1069 data-nosnippet>1069</a>    texture: <span class="kw-2">*mut </span>SDL_Texture, rect: <span class="kw-2">*const </span>SDL_Rect, Yplane: <span class="kw-2">*const </span>Uint8,
+<a href=#1070 id=1070 data-nosnippet>1070</a>    Ypitch: c_int, UVplane: <span class="kw-2">*const </span>Uint8, UVpitch: c_int,
+<a href=#1071 id=1071 data-nosnippet>1071</a>  ) -&gt; c_int;
+<a href=#1072 id=1072 data-nosnippet>1072</a>}
+</code></pre></div></section></main></body></html>

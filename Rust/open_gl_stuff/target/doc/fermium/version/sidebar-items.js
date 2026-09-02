@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"constant":["SDL_MAJOR_VERSION","SDL_MINOR_VERSION","SDL_PATCHLEVEL"],"fn":["SDL_GetRevision","SDL_GetVersion","SDL_VERSION"],"struct":["SDL_version"]};

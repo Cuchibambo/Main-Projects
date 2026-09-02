@@ -1,0 +1,47 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="This function opens the audio device with the desired parameters, and returns 0 if successful, placing the actual hardware parameters in the structure pointed to by `obtained`. If `obtained` is NULL, the audio data passed to the callback function will be guaranteed to be in the requested format, and will be automatically converted to the hardware audio format if necessary.  This function returns -1 if it failed to open the audio device, or couldn’t set up the audio thread."><title>SDL_OpenAudio in fermium::audio - Rust</title><script>if(window.location.protocol!=="file:")document.head.insertAdjacentHTML("beforeend","SourceSerif4-Regular-6b053e98.ttf.woff2,FiraSans-Italic-81dc35de.woff2,FiraSans-Regular-0fe48ade.woff2,FiraSans-MediumItalic-ccf7e434.woff2,FiraSans-Medium-e1aa3f0a.woff2,SourceCodePro-Regular-8badfe75.ttf.woff2,SourceCodePro-Semibold-aa29a496.ttf.woff2".split(",").map(f=>`<link rel="preload" as="font" type="font/woff2"href="../../static.files/${f}">`).join(""))</script><link rel="stylesheet" href="../../static.files/normalize-9960930a.css"><link rel="stylesheet" href="../../static.files/rustdoc-17e0aaed.css"><meta name="rustdoc-vars" data-root-path="../../" data-static-root-path="../../static.files/" data-current-crate="fermium" data-themes="" data-resource-suffix="" data-rustdoc-version="1.97.1 (8bab26f4f 2026-07-14)" data-channel="1.97.1" data-search-js="search-fd9372ac.js" data-stringdex-js="stringdex-2da4960a.js" data-settings-js="settings-170eb4bf.js" ><script src="../../static.files/storage-41dd4d93.js"></script><script defer src="sidebar-items.js"></script><script defer src="../../static.files/main-fcd733ba.js"></script><noscript><link rel="stylesheet" href="../../static.files/noscript-f7c3ffd8.css"></noscript><link rel="alternate icon" type="image/png" href="../../static.files/favicon-32x32-eab170b8.png"><link rel="icon" type="image/svg+xml" href="../../static.files/favicon-044be391.svg"></head><body class="rustdoc fn"><a class="skip-main-content" href="#main-content">Skip to main content</a><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><rustdoc-topbar><h2><a href="#">SDL_OpenAudio</a></h2></rustdoc-topbar><nav class="sidebar"><div class="sidebar-crate"><h2><a href="../../fermium/index.html">fermium</a><span class="version">22605.0.1</span></h2></div><div class="sidebar-elems"><div id="rustdoc-modnav"><h2><a href="index.html">In fermium::<wbr>audio</a></h2></div></div></nav><div class="sidebar-resizer" title="Drag to resize sidebar"></div><main><div class="width-limiter"><section id="main-content" class="content" tabindex="-1"><div class="main-heading"><div class="rustdoc-breadcrumbs"><a href="../index.html">fermium</a>::<wbr><a href="index.html">audio</a></div><h1>Function <span class="fn">SDL_<wbr>Open<wbr>Audio</span>&nbsp;<button id="copy-path" title="Copy item path to clipboard">Copy item path</button></h1><rustdoc-toolbar></rustdoc-toolbar><span class="sub-heading"><a class="src" href="../../src/fermium/audio.rs.html#298-300">Source</a> </span></div><pre class="rust item-decl"><code>pub unsafe extern &quot;C&quot; fn SDL_OpenAudio(
+    desired: <a class="primitive" href="https://doc.rust-lang.org/1.97.1/core/primitive.pointer.html">*mut </a><a class="struct" href="struct.SDL_AudioSpec.html" title="struct fermium::audio::SDL_AudioSpec">SDL_AudioSpec</a>,
+    obtained: <a class="primitive" href="https://doc.rust-lang.org/1.97.1/core/primitive.pointer.html">*mut </a><a class="struct" href="struct.SDL_AudioSpec.html" title="struct fermium::audio::SDL_AudioSpec">SDL_AudioSpec</a>,
+) -&gt; <a class="type" href="../type.c_int.html" title="type fermium::c_int">c_int</a></code></pre><details class="toggle top-doc" open><summary class="hideme"><span>Expand description</span></summary><div class="docblock"><p>This function opens the audio device with the desired parameters, and
+returns 0 if successful, placing the actual hardware parameters in the
+structure pointed to by <code>obtained</code>. If <code>obtained</code> is NULL, the audio
+data passed to the callback function will be guaranteed to be in the
+requested format, and will be automatically converted to the hardware
+audio format if necessary.  This function returns -1 if it failed
+to open the audio device, or couldn’t set up the audio thread.</p>
+<p>When filling in the desired audio spec structure,</p>
+<ul>
+<li><code>desired-&gt;freq</code> should be the desired audio frequency in samples-per-
+second.</li>
+<li><code>desired-&gt;format</code> should be the desired audio format.</li>
+<li><code>desired-&gt;samples</code> is the desired size of the audio buffer, in samples.
+This number should be a power of two, and may be adjusted by the audio
+driver to a value more suitable for the hardware.  Good values seem to
+range between 512 and 8096 inclusive, depending on the application and
+CPU speed.  Smaller values yield faster response time, but can lead to
+underflow if the application is doing heavy processing and cannot fill
+the audio buffer in time.  A stereo sample consists of both right and
+left channels in LR ordering. Note that the number of samples is
+directly related to time by the following formula: <code>ms = (samples*1000)/freq</code></li>
+<li><code>desired-&gt;size</code> is the size in bytes of the audio buffer, and is
+calculated by SDL_OpenAudio().</li>
+<li><code>desired-&gt;silence</code> is the value used to set the buffer to silence, and
+is calculated by SDL_OpenAudio().</li>
+<li><code>desired-&gt;callback</code> should be set to a function that will be called when
+the audio device is ready for more data.  It is passed a pointer to the
+audio buffer, and the length in bytes of the audio buffer. This function
+usually runs in a separate thread, and so you should protect data
+structures that it accesses by calling SDL_LockAudio() and
+SDL_UnlockAudio() in your code. Alternately, you may pass a NULL pointer
+here, and call SDL_QueueAudio() with some frequency, to queue more audio
+samples to be played (or for capture devices, call SDL_DequeueAudio()
+with some frequency, to obtain audio samples).</li>
+<li><code>desired-&gt;userdata</code> is passed as the first parameter to your callback
+function. If you passed a NULL callback, this value is ignored.</li>
+</ul>
+<p>The audio device starts out playing silence when it’s opened, and should
+be enabled for playing by calling <a href="fn.SDL_PauseAudio.html" title="fn fermium::audio::SDL_PauseAudio"><code>SDL_PauseAudio(0)</code></a>
+when you are ready  for your audio callback function to be called.
+Since the audio driver  may modify the requested size of the audio
+buffer, you should allocate  any local mixing buffers after you open the
+audio device.</p>
+</div></details></section></div></main></body></html>

@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"constant":["SDL_FALSE","SDL_TRUE"],"fn":["SDL_FOURCC","SDL_GetMemoryFunctions","SDL_GetNumAllocations","SDL_SetMemoryFunctions","SDL_calloc","SDL_free","SDL_malloc","SDL_realloc"],"type":["SDL_bool","SDL_calloc_func","SDL_free_func","SDL_malloc_func","SDL_realloc_func"]};

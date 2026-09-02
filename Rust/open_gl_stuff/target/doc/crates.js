@@ -1,0 +1,2 @@
+window.ALL_CRATES = ["beryllium","bitfrob","bool32","bytemuck","bytemuck_derive","fast_srgb8","fermium","glow","open_gl_stuff","pixel_formats","proc_macro2","ptr_iter","quote","syn","unicode_ident","zstring"];
+//{"start":21,"fragment_lengths":[11,10,9,11,18,13,10,7,16,16,14,11,8,6,16,10]}

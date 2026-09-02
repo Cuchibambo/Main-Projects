@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"fn":["SDL_GetClipboardText","SDL_HasClipboardText","SDL_SetClipboardText"]};
