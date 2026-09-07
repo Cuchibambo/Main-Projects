@@ -31,7 +31,7 @@ def listeSigne(L:list) -> list:
     nouvelle_L = []
     for v in L:
         if v == 0:
-            nouvelle_L.append(0)
+            nouvelle_L.append(v)
         else:
             nouvelle_L.append(int(v/abs(v)))
     return nouvelle_L
